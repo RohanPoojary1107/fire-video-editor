@@ -1,4 +1,4 @@
-<h1>SUMMARY.MD</h1> <br>
+<h1>summery.md</h1> <br>
 The main motive of our project is to introduce the internet world to an efficient video editing application. We want to engineer a web based video editor that allows users to manipulate videos from their computer, export the final video and save the project files to a cloud account. We are designing this project to be very easy to use for the average user.<br>
 <br>
 <b>Key User Case 1</b> - David: A middle school student who likes to play games and upload his game play on Youtube. He’s not a professional video editor. He wants to become the popular dude in his school through the means of his videos. He plays fortnite daily and uploads his highlights to youtube. After coming back from school he plays fortnite for around 5 hours and then does any homework from school.

@@ -1,4 +1,4 @@
-<h1>PB.MD</h1> <br>
+<h1>PB.md</h1> <br>
 
 - As a secondary school student, I want to select videos from my computer on the website so they can be edited.
 
