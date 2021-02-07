@@ -9,9 +9,9 @@ h2{color:#636363;font-weight:500;}
 .App{order: 2;flex:7;}
 .VideoPlayer{background:#030303;height:calc(100vh - 250px);}
 .VideoTimeline{align-self:flex-end;background:#0C0C0C;height:250px;overflow:auto;}
-.video{background-color: #101010;border-radius:10px;padding:10px;display:flex;align-items: center;margin-bottom:20px;width:calc(100% - 20px);}
-.video video{border-radius:10px;}
-.video small{color:#636363;padding:10px;}
+.video, .image{background-color: #101010;border-radius:10px;padding:10px;display:flex;align-items: center;margin-bottom:20px;width:calc(100% - 20px);}
+.video video, .image img{border-radius:10px;}
+.video small, .image small{color:#636363;padding:10px;}
 ::-webkit-scrollbar {width: 5px;}
 ::-webkit-scrollbar-track {background: #000000;width: 2px;}
 ::-webkit-scrollbar-thumb {background: #1C1C1C;border-radius:10px;transition: all .3s;}
