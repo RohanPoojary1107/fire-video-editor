@@ -11,6 +11,9 @@ class App extends React.Component {
           <div class="VideoPlayer"></div>
           <div class="VideoTimeline"></div>
       </div>
+      <div class="About">
+        <a class="Aboutl" href="../about.html" target="_blank">About</a>
+      </div>
       </div>
     );
   }
