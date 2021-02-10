@@ -134,22 +134,10 @@ export class WebGLRenderer {
         return tex;
     }
 
-    async loadFrame(segment: Segment) {
-        await new Promise<void>((resolve, reject) => {
-            segment.media.element.onload = () => {
-                segment.properties.width = segment.media.element.videoWidth;
-                segment.properties.height = segment.media.element.videoHeight;
-                this.context.bindTexture(this.context.TEXTURE_2D, segment.texture);
-                this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, segment.media.element);
-                resolve();
-            };
-        });
-    }
-
     // Unlike images, textures do not have a width and height associated
     // with them so we'll pass in the width and height of the texture
     private drawImage(segment: Segment) {
-        this.context.bindTexture(this.context.TEXTURE_2D, segment.texture);
+        this.context.bindTexture(this.context.TEXTURE_2D, segment.media.texture);
         this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, segment.media.element);
 
         // Tell WebGL to use our shader program pair

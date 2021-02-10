@@ -1,5 +1,8 @@
 export interface Media {
     element: HTMLVideoElement;
+    file: File;
+    thumbnail: string;
+    texture: WebGLTexture;
 }
 
 export interface Segment {
@@ -8,7 +11,6 @@ export interface Segment {
     duration: number;
     mediaStart: number;
     keyframes: KeyFrame[];
-    texture: WebGLTexture;
     properties: Properties;
 }
 
@@ -29,7 +31,8 @@ export interface Project {
     width: number;
     height: number;
     framerate: number;
-    media: Segment[];
+    media: Media[];
+    segments: Segment[];
     currTimestamp: number;
     duration: number; // in seconds
 }
