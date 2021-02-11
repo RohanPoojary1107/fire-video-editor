@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import model from "../../model/model";
 import { Media } from "../../model/types";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-
 const options = {
     types: [
         {
@@ -19,18 +18,19 @@ const options = {
 
 export default function MediaPool() {
     const [files, setFiles] = useState<Media[]>([]);
+    const [status, setStatus] = useState<string>('');
 
     const listItems = files.map((item, index) => {
         return (
             <Draggable key={item.file.name} draggableId={item.file.name} index={index}>
                 {(provided) => (
                     <li className={styles.card} key={item.file.name} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                    <img className={styles.img} src={item.thumbnail} alt={item.file.name} />
-                    <p className={styles.cardCaption}>{item.file.name}</p>
-                    <button className={styles.button} onClick={() => deleteVideo(item)}>
-                        <span className="material-icons">close</span>
-                    </button>
-                    </li>  
+                        <img className={styles.img} src={item.thumbnail} alt={item.file.name} />
+                        <p className={styles.cardCaption}>{item.file.name}</p>
+                        <button className={styles.button} onClick={() => deleteVideo(item)}>
+                            <span className="material-icons">close</span>
+                        </button>
+                    </li>
                 )}
             </Draggable>
         );
@@ -43,9 +43,10 @@ export default function MediaPool() {
 
     const onClick = async () => {
         try {
+            const load = document.getElementById("lo") as HTMLElement;
             //@ts-ignore
             const Handle = await window.showOpenFilePicker(options);
-
+            setStatus('Loading...');
             for (const entry of Handle) {
                 let file = await entry.getFile();
 
@@ -62,6 +63,7 @@ export default function MediaPool() {
                 await model.addVideo(file);
                 setFiles([...model.project.media]);
             }
+            setStatus('');
         } catch (error) {
             console.log(error);
         }
@@ -82,7 +84,7 @@ export default function MediaPool() {
             }
         }
     }
-    
+
     //@ts-ignore
     function handleOnDragEnd(result) {
         if (!result.destination) return;
@@ -90,15 +92,15 @@ export default function MediaPool() {
         const items = Array.from(files);
         const [reorderedItem] = items.splice(result.source.index, 1);
         items.splice(result.destination.index, 0, reorderedItem);
-    
+
         setFiles(items);
     }
 
     return (
         <div className={styles.container}
-        onDragOver={(e) => { e.stopPropagation(); e.preventDefault() }}
-        onDragEnter={(e) => { e.stopPropagation(); e.preventDefault() }}
-        onDrop={onDrag}>
+            onDragOver={(e) => { e.stopPropagation(); e.preventDefault() }}
+            onDragEnter={(e) => { e.stopPropagation(); e.preventDefault() }}
+            onDrop={onDrag}>
             <div className={styles.hbox}>
                 <h2 className={styles.title}>Media:</h2>
                 <button
@@ -114,13 +116,16 @@ export default function MediaPool() {
                             (provided) => (
                                 <ul className="card" {...provided.droppableProps} ref={provided.innerRef}>
                                     {listItems}
-                                {provided.placeholder}
+                                    {provided.placeholder}
                                 </ul>
                             )
                         }
                     </Droppable>
                 </DragDropContext>
             </div>
+
+
+            <p className={styles.loader}>{status}</p>
         </div>
     )
 }
