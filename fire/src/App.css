@@ -103,3 +103,22 @@ h2 {
   border-radius: 10px;
   transition: all 0.3s;
 }
+
+
+.button {
+  border: 1px solid #a2a2a2;
+  border-radius: 50%;
+  height: 60px;
+  width: 60px;
+  -webkit-text-stroke: 1px #a2a2a2;
+  color: black;
+  /* background-color: #1c1c1c; */
+  text-align: center;
+  font-size: 32px;
+  padding: 20px;
+  margin: 10px;
+}
+
+.button p {
+  margin: auto;
+}

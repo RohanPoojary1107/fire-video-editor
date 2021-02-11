@@ -5,6 +5,7 @@ import PlayIcon from "@material-ui/icons/PlayCircleFilledWhite";
 import SkipPrevious from "@material-ui/icons/SkipPrevious";
 import SkipNext from "@material-ui/icons/SkipNext";
 import PauseIcon from "@material-ui/icons/Pause";
+import local from "./controlPanel.module.css"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,7 +21,7 @@ export default function IconButtons() {
   const [play, changePlay] = useState(false);
 
   return (
-    <div className={classes.root} id="buttons">
+    <div id="buttons">
       <IconButton aria-label="skipPrev">
         <SkipPrevious />
       </IconButton>
@@ -45,6 +46,8 @@ export default function IconButtons() {
       <IconButton aria-label="skipNext">
         <SkipNext />
       </IconButton>
+      <input type="range" min="1" max="100" className={local.slider}></input>
     </div>
+
   );
 }
