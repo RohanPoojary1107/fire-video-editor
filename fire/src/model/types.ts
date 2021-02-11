@@ -33,6 +33,5 @@ export interface Project {
     framerate: number;
     media: Media[];
     segments: Segment[];
-    currTimestamp: number;
     duration: number; // in seconds
 }

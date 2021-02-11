@@ -1,42 +1,25 @@
 export let VERTEX_SHADER = `
-    attribute vec2 a_position;
-    attribute vec2 a_texCoord;
+    attribute vec4 a_position;
+    attribute vec2 a_texcoord;
 
-    uniform vec2 u_resolution;
+    uniform mat4 u_matrix;
 
-    varying vec2 v_texCoord;
+    varying vec2 v_texcoord;
 
     void main() {
-       // convert the rectangle from pixels to 0.0 to 1.0
-       vec2 zeroToOne = a_position / u_resolution;
-
-       // convert from 0->1 to 0->2
-       vec2 zeroToTwo = zeroToOne * 2.0;
-
-       // convert from 0->2 to -1->+1 (clipspace)
-       vec2 clipSpace = zeroToTwo - 1.0;
-
-       gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
-
-       // pass the texCoord to the fragment shader
-       // The GPU will interpolate this value between points.
-       v_texCoord = a_texCoord;
+        gl_Position = u_matrix * a_position;
+        v_texcoord = a_texcoord;
     }
 `;
 
 export let FRAGMENT_SHADER = `
     precision mediump float;
-    ()
-    // our textures
-    uniform sampler2D u_image0;
-    uniform sampler2D u_image1;
+    
+    uniform sampler2D u_texture;
 
-    // the texCoords passed in from the vertex shader.
-    varying vec2 v_texCoord;
+    varying vec2 v_texcoord;
 
     void main() {
-       vec4 color0 = texture2D(u_image0, v_texCoord);
-       vec4 color1 = texture2D(u_image1, v_texCoord);
-       gl_FragColor = color0 * color1;
+       gl_FragColor = texture2D(u_texture, v_texcoord);
     }
 `;

@@ -40,7 +40,7 @@ export class WebGLRenderer {
 
         // look up where the vertex data needs to go.
         this.positionLocation = this.context.getAttribLocation(this.program, "a_position");
-        this.texcoordLocation = this.context.getAttribLocation(this.program, "a_texCoord");
+        this.texcoordLocation = this.context.getAttribLocation(this.program, "a_texcoord");
 
         // lookup uniforms
         this.matrixLocation = this.context.getUniformLocation(this.program, "u_matrix") as WebGLUniformLocation;
@@ -84,6 +84,8 @@ export class WebGLRenderer {
         for (const med of media) {
             this.drawImage(med);
         }
+
+        this.context.flush();
     }
 
     private loadShader(shaderSource: string, shaderType: number) {
@@ -126,6 +128,9 @@ export class WebGLRenderer {
     createTexture() {
         let tex = this.context.createTexture() as WebGLTexture;
         this.context.bindTexture(this.context.TEXTURE_2D, tex);
+        // Fill the texture with a 1x1 blue pixel.
+        this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, 1, 1, 0, this.context.RGBA, this.context.UNSIGNED_BYTE,
+            new Uint8Array([0, 0, 255, 255]));
 
         // let's assume all images are not a power of 2
         this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
@@ -155,7 +160,7 @@ export class WebGLRenderer {
         let matrix = m4.ortho(0, this.context.canvas.width, this.context.canvas.height, 0, -1, 1);
 
         // this matrix will translate our quad to dstX, dstY
-        matrix = m4.translate(matrix, [segment.properties.x, segment.properties.y, 0]);
+        matrix = m4.translate(matrix, [segment.properties.x, segment.properties.y, 0, 0]);
 
         // this matrix will scale our 1 unit quad
         // from 1 unit to texWidth, texHeight units
