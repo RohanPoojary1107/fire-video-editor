@@ -1,0 +1,15 @@
+.container {
+  grid-area: actions;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing);
+  padding-left: 0;
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: row;
+    padding-left: var(--spacing);
+  }
+}

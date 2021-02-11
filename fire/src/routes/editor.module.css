@@ -1,0 +1,32 @@
+.container {
+  display: grid;
+
+  grid-template-areas:
+    "mediaPool mediaPlayer actions"
+    "mediaPool controls controls"
+    "mediaPool timeline timeline";
+
+  grid-template-columns: 300px minmax(0, 1fr) min-content;
+  grid-template-rows: minmax(0, 1fr) min-content 300px;
+
+  height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .container {
+    grid-template-areas:
+      "mediaPool"
+      "actions"
+      "mediaPlayer"
+      "controls"
+      "timeline";
+
+    grid-template-columns: 1fr;
+    grid-template-rows:
+      300px
+      min-content
+      auto
+      min-content
+      200px;
+  }
+}
