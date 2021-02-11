@@ -2,6 +2,7 @@ import styles from "./mediaPool.module.css";
 import React, { useState } from 'react';
 import model from "../../model/model";
 import { Media } from "../../model/types";
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const options = {
     types: [
@@ -18,14 +19,27 @@ const options = {
 
 export default function MediaPool() {
     const [files, setFiles] = useState<Media[]>([]);
-    const listItems = files.map((item) => {
+
+    const listItems = files.map((item, index) => {
         return (
-            <div className={styles.card} key={item.file.name}>
-                <img className={styles.img} src={item.thumbnail} alt={item.file.name} />
-                <p className={styles.cardCaption}>{item.file.name}</p>
-            </div>
+            <Draggable key={item.file.name} draggableId={item.file.name} index={index}>
+                {(provided) => (
+                    <li className={styles.card} key={item.file.name} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                    <img className={styles.img} src={item.thumbnail} alt={item.file.name} />
+                    <p className={styles.cardCaption}>{item.file.name}</p>
+                    <button className={styles.button} onClick={() => deleteVideo(item)}>
+                        <span className="material-icons">close</span>
+                    </button>
+                    </li>  
+                )}
+            </Draggable>
         );
     });
+
+    const deleteVideo = (media: Media) => {
+        model.deleteVideo(media);
+        setFiles([...model.project.media]);
+    }
 
     const onClick = async () => {
         try {
@@ -68,9 +82,23 @@ export default function MediaPool() {
             }
         }
     }
+    
+    //@ts-ignore
+    function handleOnDragEnd(result) {
+        if (!result.destination) return;
+
+        const items = Array.from(files);
+        const [reorderedItem] = items.splice(result.source.index, 1);
+        items.splice(result.destination.index, 0, reorderedItem);
+    
+        setFiles(items);
+    }
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container}
+        onDragOver={(e) => { e.stopPropagation(); e.preventDefault() }}
+        onDragEnter={(e) => { e.stopPropagation(); e.preventDefault() }}
+        onDrop={onDrag}>
             <div className={styles.hbox}>
                 <h2 className={styles.title}>Media:</h2>
                 <button
@@ -79,12 +107,19 @@ export default function MediaPool() {
                     <span className="material-icons md-36">add</span>
                 </button>
             </div>
-            <div className={styles.mediaList}
-                onDragOver={(e) => { e.stopPropagation(); e.preventDefault() }}
-                onDragEnter={(e) => { e.stopPropagation(); e.preventDefault() }}
-                onDrop={onDrag}>
-
-                {listItems}
+            <div className={styles.mediaList}>
+                <DragDropContext onDragEnd={handleOnDragEnd}>
+                    <Droppable droppableId="card">
+                        {
+                            (provided) => (
+                                <ul className="card" {...provided.droppableProps} ref={provided.innerRef}>
+                                    {listItems}
+                                {provided.placeholder}
+                                </ul>
+                            )
+                        }
+                    </Droppable>
+                </DragDropContext>
             </div>
         </div>
     )

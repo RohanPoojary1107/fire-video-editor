@@ -1,5 +1,6 @@
 import { Segment, Project } from "./types";
 import { WebGLRenderer } from "./webgl";
+import { Media } from "./types";
 
 const model = new class Model {
     renderer: WebGLRenderer;
@@ -61,6 +62,19 @@ const model = new class Model {
 
     public async seek(timestamp: number) {
 
+    }
+
+    public deleteVideo(media: Media){
+
+        let index = this.project.media.indexOf(media);
+        this.project.media.splice(index, 1);
+
+        for(let i=0; i<this.project.segments.length; i++){
+            if(this.project.segments[i].media === media){
+                this.project.segments.splice(i, 1);
+                break;
+            }
+        }
     }
 
     public play() {
