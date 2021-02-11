@@ -8,7 +8,7 @@ import Timeline from "../components/timeline/timeline";
 export default function Editor() {
   return (
     <div className={styles.container}>
-      <MediaPool />
+        <MediaPool />
       <MediaPlayer></MediaPlayer>
       <Controls />
       <Timeline></Timeline>

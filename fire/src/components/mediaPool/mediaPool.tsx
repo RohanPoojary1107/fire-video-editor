@@ -19,16 +19,17 @@ const options = {
 
 export default function MediaPool() {
     const [files, setFiles] = useState<Media[]>([]);
+    const [draggedOn, setDraggedOn] = useState<String>("");
 
     const listItems = files.map((item, index) => {
         return (
             <Draggable key={item.file.name} draggableId={item.file.name} index={index}>
                 {(provided) => (
-                    <li className={styles.card} key={item.file.name} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                    <li className={`${styles.card}`} key={item.file.name} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} onDoubleClick={() => {selectVideo(item)}}>
                     <img className={styles.img} src={item.thumbnail} alt={item.file.name} />
                     <p className={styles.cardCaption}>{item.file.name}</p>
                     <button className={styles.button} onClick={() => deleteVideo(item)}>
-                        <span className="material-icons">close</span>
+                        <span className="material-icons">delete</span>
                     </button>
                     </li>  
                 )}
@@ -39,6 +40,10 @@ export default function MediaPool() {
     const deleteVideo = (media: Media) => {
         model.deleteVideo(media);
         setFiles([...model.project.media]);
+    }
+
+    const selectVideo = (media: Media) => {
+        model.previewVideo(media);
     }
 
     const onClick = async () => {
@@ -70,7 +75,7 @@ export default function MediaPool() {
     const onDrag = async (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
-
+        setDraggedOn("");
         if (!e.dataTransfer) return;
 
         for (const item of Object.values(e.dataTransfer.items)) {
@@ -90,17 +95,20 @@ export default function MediaPool() {
         const items = Array.from(files);
         const [reorderedItem] = items.splice(result.source.index, 1);
         items.splice(result.destination.index, 0, reorderedItem);
-    
+        model.project.media=items;
         setFiles(items);
     }
 
     return (
-        <div className={styles.container}
-        onDragOver={(e) => { e.stopPropagation(); e.preventDefault() }}
-        onDragEnter={(e) => { e.stopPropagation(); e.preventDefault() }}
-        onDrop={onDrag}>
+        <div
+        onDragOver={(e) => { e.stopPropagation(); e.preventDefault(); setDraggedOn('draggedOn');}}
+        onDragEnter={(e) => { e.stopPropagation(); e.preventDefault(); setDraggedOn('draggedOn');}}
+        onDragLeave={(e) => { e.stopPropagation(); e.preventDefault(); setDraggedOn("");}}
+        onDrop={onDrag}
+        className={`${styles.container} ${draggedOn}`}
+        >
             <div className={styles.hbox}>
-                <h2 className={styles.title}>Media:</h2>
+                <h2 className={styles.title}>Project Files</h2>
                 <button
                     className={styles.addFiles}
                     onClick={onClick}>

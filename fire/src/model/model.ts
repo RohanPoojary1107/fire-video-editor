@@ -3,6 +3,7 @@ import { WebGLRenderer } from "./webgl";
 import { Media } from "./types";
 
 const model = new class Model {
+
     renderer: WebGLRenderer;
     thumbnailCanvas: HTMLCanvasElement;
     thumbnailCanvasContext: CanvasRenderingContext2D;
@@ -11,6 +12,7 @@ const model = new class Model {
     playing: boolean = false;
     currTimestamp: number = 0;
     timeout: number = 0;
+    currentSegment: Segment[];
 
     constructor() {
         this.canvas = document.createElement("canvas");
@@ -18,6 +20,7 @@ const model = new class Model {
         this.renderer = new WebGLRenderer(this.canvas, this.project);
         this.thumbnailCanvas = document.createElement("canvas");
         this.thumbnailCanvasContext = this.thumbnailCanvas.getContext("2d") as CanvasRenderingContext2D;
+        this.currentSegment = this.project.segments;
     }
 
     public async addVideo(file: File) {
@@ -48,12 +51,26 @@ const model = new class Model {
             mediaStart: 0,
             keyframes: [],
             properties: {
-                x: this.project.media.length % 2 * this.project.width / 2,
-                y: Math.floor(this.project.media.length / 2) * this.project.height / 2,
-                width: elm.videoWidth / 2,
-                height: elm.videoHeight / 2,
+                x: 0,
+                y: 0,
+                width: this.project.width,
+                height: this.project.height,
             },
         }
+
+        // let segment: Segment = {
+        //     media: media,
+        //     start: 0,
+        //     duration: 0,
+        //     mediaStart: 0,
+        //     keyframes: [],
+        //     properties: {
+        //         x: this.project.media.length % 2 * this.project.width / 2,
+        //         y: Math.floor(this.project.media.length / 2) * this.project.height / 2,
+        //         width: elm.videoWidth / 2,
+        //         height: elm.videoHeight / 2,
+        //     },
+        // }
 
         this.project.media.push(media);
         this.project.segments.push(segment);
@@ -77,15 +94,25 @@ const model = new class Model {
         }
     }
 
-    public play() {
+    public previewVideo(media: Media){
+        for(let i=0; i<this.project.segments.length; i++){
+            if(this.project.segments[i].media === media){
+                this.currentSegment=[this.project.segments[i]];
+                break;
+            }
+        }
+    }
+
+    public play(segment = this.currentSegment) {
         if (this.project.media.length === 0) return;
 
         this.playing = true;
         clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => { this.renderFrame(); }, 1 / this.project.framerate) as unknown as number;
-        for (const media of this.project.media) {
-            media.element.play();
-        }
+        this.timeout = setTimeout(() => { this.renderFrame(segment); }, 1 / this.project.framerate) as unknown as number;
+        this.currentSegment[0].media.element.play();
+        // for (const media of this.project.media) {
+        //     media.element.play();
+        // }
     }
 
     public pause() {
@@ -96,9 +123,10 @@ const model = new class Model {
         }
     }
 
-    private renderFrame() {
-        this.renderer.drawMedia(this.project.segments);
-        this.timeout = setTimeout(() => { this.renderFrame(); }, 1 / this.project.framerate) as unknown as number;
+    private renderFrame(segment: Segment[]) {
+        //this.renderer.drawMedia(this.project.segments);
+        this.renderer.drawMedia(segment);
+        this.timeout = setTimeout(() => { this.renderFrame(segment); }, 1 / this.project.framerate) as unknown as number;
     }
 }();
 
