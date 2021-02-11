@@ -1,0 +1,40 @@
+.container {
+  grid-area: controls;
+  display: flex;
+  flex-direction: row;
+  padding: var(--spacing);
+  align-items: center;
+  background: var(--icon-background-color);
+  gap: var(--spacing);
+}
+
+.trackbar {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 5px;
+  border-radius: var(--border-radius);
+  background: var(--icon-background-hover-color);
+  outline: none;
+  transition: opacity 0.2s;
+}
+
+.trackbar:hover {
+  background: var(--scrollbar-hover-color);
+  cursor: pointer;
+}
+
+.trackbar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--font-color);
+}
+
+.trackbar::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--font-color);
+}

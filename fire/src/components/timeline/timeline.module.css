@@ -1,0 +1,4 @@
+.container {
+  grid-area: timeline;
+  background: var(--timeline-background-color);
+}
