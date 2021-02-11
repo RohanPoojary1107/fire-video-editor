@@ -1,7 +1,7 @@
 import "./App.css";
 import React from "react";
 import MediaPool from "./components/mediaPool";
-import ControlPanel from "./components/controlPanel";
+import ControlPanel from "./components/controlPanel/controlPanel.js";
 
 class App extends React.Component {
   render() {
