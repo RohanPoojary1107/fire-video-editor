@@ -5,12 +5,15 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-
+import About from "./routes/about";
 
 function App() {
   return (
     <Router>
       <Switch>
+        <Route path="/about">
+          <About></About>
+        </Route>
         <Route path="/">
           <Editor></Editor>
         </Route>

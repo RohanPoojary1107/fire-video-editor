@@ -5,6 +5,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing);
+  overflow-y: hidden;
 }
 
 .mediaList {
@@ -12,9 +13,7 @@
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  gap: var(--spacing);
   overflow-y: auto;
-  padding: var(--spacing);
 }
 
 .hbox {
@@ -34,8 +33,9 @@
   padding: var(--spacing);
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   gap: var(--spacing);
+  margin-bottom: 20px;
 }
 
 .img {
@@ -45,25 +45,39 @@
 .cardCaption {
   color: var(--font-color);
   text-overflow: ellipsis;
-  word-wrap: break-word;
+  word-break: break-word;
+  font-size: 12px;
   max-width: calc(100% - 100px - var(--spacing));
 }
 
 .title {
   color: var(--font-color);
   font-weight: 400;
-  font-size: 32px;
+  font-size: 26px;
   line-height: 50px;
 }
 
-.button{
-  position: relative;
-  top: 0;
-  right: 0;
+.button {
+  align-self: flex-end;
+  padding: 0px;
+  margin: 0px -10px -10px 0px;
+  height: auto;
+  width: auto;
 }
 
+.button:hover {
+  background: transparent;
+}
 
+.button span {
+  font-size: 16px;
+  color: #3a3a3a;
+}
 
+.button:hover span {
+  font-size: 16px;
+  color: #686868;
+}
 .loader {
   color: rgb(255, 255, 255);
   font-size: large;

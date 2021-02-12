@@ -4,7 +4,7 @@
   flex-direction: row;
   padding: var(--spacing);
   align-items: center;
-  background: var(--icon-background-color);
+  background: transparent;
   gap: var(--spacing);
 }
 
@@ -19,7 +19,7 @@
 }
 
 .trackbar:hover {
-  background: var(--scrollbar-hover-color);
+  background: var(--icon-background-hover-color);
   cursor: pointer;
 }
 
