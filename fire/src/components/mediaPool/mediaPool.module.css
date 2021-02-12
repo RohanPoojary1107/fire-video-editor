@@ -35,7 +35,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing);
-  margin-bottom:20px;
+  margin-bottom: 20px;
 }
 
 .img {
@@ -57,18 +57,28 @@
   line-height: 50px;
 }
 
-.button{
-  align-self:flex-end;
-  padding:0px;
-  margin:0px -10px -10px 0px;
-  height:auto;
+.button {
+  align-self: flex-end;
+  padding: 0px;
+  margin: 0px -10px -10px 0px;
+  height: auto;
   width: auto;
 }
 
-.button:hover{
+.button:hover {
   background: transparent;
 }
 
-.button span{font-size:16px;color:#3a3a3a;}
+.button span {
+  font-size: 16px;
+  color: #3a3a3a;
+}
 
-.button:hover span{font-size:16px;color:#686868;}
+.button:hover span {
+  font-size: 16px;
+  color: #686868;
+}
+.loader {
+  color: rgb(255, 255, 255);
+  font-size: large;
+}

@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import model from "../../model/model";
 import { Media } from "../../model/types";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-
 const options = {
     types: [
         {
@@ -19,6 +18,7 @@ const options = {
 
 export default function MediaPool() {
     const [files, setFiles] = useState<Media[]>([]);
+    const [status, setStatus] = useState<string>('');
     const [draggedOn, setDraggedOn] = useState<String>("");
 
     const listItems = files.map((item, index) => {
@@ -48,9 +48,10 @@ export default function MediaPool() {
 
     const onClick = async () => {
         try {
+            const load = document.getElementById("lo") as HTMLElement;
             //@ts-ignore
             const Handle = await window.showOpenFilePicker(options);
-
+            setStatus('Loading...');
             for (const entry of Handle) {
                 let file = await entry.getFile();
 
@@ -67,6 +68,7 @@ export default function MediaPool() {
                 await model.addVideo(file);
                 setFiles([...model.project.media]);
             }
+            setStatus('');
         } catch (error) {
             console.log(error);
         }
@@ -87,7 +89,7 @@ export default function MediaPool() {
             }
         }
     }
-    
+
     //@ts-ignore
     function handleOnDragEnd(result) {
         if (!result.destination) return;
@@ -122,13 +124,16 @@ export default function MediaPool() {
                             (provided) => (
                                 <ul className="card" {...provided.droppableProps} ref={provided.innerRef}>
                                     {listItems}
-                                {provided.placeholder}
+                                    {provided.placeholder}
                                 </ul>
                             )
                         }
                     </Droppable>
                 </DragDropContext>
             </div>
+
+
+            <p className={styles.loader}>{status}</p>
         </div>
     )
 }
