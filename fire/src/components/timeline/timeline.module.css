@@ -1,4 +1,10 @@
 .container {
   grid-area: timeline;
   background: var(--timeline-background-color);
+  padding:15px;
 }
+.timebar{width:100%;display:flex;}
+.time{width:100%;color: var(--font-color);font-size: 18px;-moz-user-select: none;-khtml-user-select: none;-webkit-user-select: none;-ms-user-select: none;user-select: none;cursor: pointer;}
+.highlight{background:#ff000021;border:1px solid #FF0000;border-radius:100px;width:64px;height:30px;}
+.indicator{background:#FF0000;width:1px;height:100%;margin:auto;}
+.pointer{position:absolute;z-index: 4;will-change: transform;display:block;margin-top:-3px;margin-left:-12px;}
