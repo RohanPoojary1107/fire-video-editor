@@ -1,10 +1,6 @@
 import "./App.css";
 import Editor from "./routes/editor";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import About from "./routes/about";
 
 function App() {
