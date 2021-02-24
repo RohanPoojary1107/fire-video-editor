@@ -123,6 +123,29 @@ const model = new class Model {
         }
     }
 
+    public split(timestamp: number) {
+        for(let i=0; i<this.project.segments.length; i++){
+            let duration = this.project.segments[i].duration;
+            // start & end is relative to timeline
+            let start = this.project.segments[i].start;
+            let end = start + duration;
+
+            if(start < timestamp && end > timestamp){
+                // copy over all Segment data to new segement
+                let newSegment = Object.assign({}, this.project.segments[i]);
+                // change new Segment properties to adjust to timestamp
+                newSegment.start = timestamp;
+                newSegment.duration = end-timestamp;
+                newSegment.mediaStart = timestamp - start;
+                // update original Segment properties to prevent overlap
+                this.project.segments[i].duration = timestamp - start;
+                // include new Segment to project
+                this.project.segments.splice(i+1, 0, newSegment);
+                break;
+            }
+        }
+    }
+
     private renderFrame(segment: Segment[]) {
         //this.renderer.drawMedia(this.project.segments);
         this.renderer.drawMedia(segment);
