@@ -16,7 +16,7 @@ const model = new class Model {
 
     constructor() {
         this.canvas = document.createElement("canvas");
-        this.project = { name: "test", media: [], segments: [], width: 1920, height: 1080, framerate: 30, duration: 0 };
+        this.project = { name: "test", media: [], timelineMedia: [], segments: [], width: 1920, height: 1080, framerate: 30, duration: 0 };
         this.renderer = new WebGLRenderer(this.canvas, this.project);
         this.thumbnailCanvas = document.createElement("canvas");
         this.thumbnailCanvasContext = this.thumbnailCanvas.getContext("2d") as CanvasRenderingContext2D;
@@ -86,6 +86,11 @@ const model = new class Model {
         let index = this.project.media.indexOf(media);
         this.project.media.splice(index, 1);
 
+        let indexTimeline = this.project.timelineMedia.indexOf(media);
+        if(indexTimeline>=0){
+            this.project.timelineMedia.splice(indexTimeline, 1);
+        }
+        
         for(let i=0; i<this.project.segments.length; i++){
             if(this.project.segments[i].media === media){
                 this.project.segments.splice(i, 1);

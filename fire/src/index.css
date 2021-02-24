@@ -44,23 +44,24 @@ button:hover {
   transition: 1s;
 }
 
+::-webkit-scrollbar-corner{
+  background: var(--timeline-background-color);
+  }
+
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 30px;
+  height: 30px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background-color);
-  width: var(--spacing);
+  background: transparent;
   border-radius: var(--border-radius);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-color);
-  border-radius: var(--border-radius);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-color);
+  box-shadow: inset 0 0 15px 15px var(--scrollbar-color);
+  border: solid 10px transparent;
+  border-radius: 100px;
 }
 
 .material-icons.md-18 {

@@ -32,6 +32,7 @@ export interface Project {
     height: number;
     framerate: number;
     media: Media[];
+    timelineMedia: Media[];
     segments: Segment[];
     duration: number; // in seconds
 }
