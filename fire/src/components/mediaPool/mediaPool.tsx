@@ -16,7 +16,7 @@ const options = {
     excludeAcceptAllOption: true
 };
 
-export default function MediaPool() {
+export default function MediaPool(props:any) {
     const [files, setFiles] = useState<Media[]>([]);
     const [status, setStatus] = useState<string>('');
     const [draggedOn, setDraggedOn] = useState<String>("");
@@ -40,6 +40,7 @@ export default function MediaPool() {
     const deleteVideo = (media: Media) => {
         model.deleteVideo(media);
         setFiles([...model.project.media]);
+        props.handler([...model.project.timelineMedia]);
     }
 
     const selectVideo = (media: Media) => {
@@ -92,13 +93,19 @@ export default function MediaPool() {
 
     //@ts-ignore
     function handleOnDragEnd(result) {
-        if (!result.destination) return;
-
-        const items = Array.from(files);
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
-        model.project.media=items;
-        setFiles(items);
+        if (result.destination){
+            const items = Array.from(files);
+            const [reorderedItem] = items.splice(result.source.index, 1);
+            items.splice(result.destination.index, 0, reorderedItem);
+            model.project.media=items;
+            setFiles(items);
+        }
+        else{
+            const items = Array.from(model.project.timelineMedia);
+            items.push(model.project.media[result.source.index]);
+            model.project.timelineMedia=items;
+            props.handler(items);
+        }
     }
 
     return (
@@ -131,7 +138,6 @@ export default function MediaPool() {
                     </Droppable>
                 </DragDropContext>
             </div>
-
 
             <p className={styles.loader}>{status}</p>
         </div>
