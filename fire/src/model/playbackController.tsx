@@ -13,6 +13,7 @@ export default function PlaybackController(props: {
     setTrackList: (segments: Segment[][]) => void,
     addVideo: (file: File) => void,
     deleteVideo: (media: Media) => void,
+    deleteSelectedSegment: () => void,
     projectWidth: number,
     projectHeight: number,
     renderer: WebGLRenderer,

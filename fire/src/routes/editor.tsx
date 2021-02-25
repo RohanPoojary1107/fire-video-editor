@@ -25,6 +25,7 @@ export default function Editor(props: any) {
       playVideo={props.playVideo}
       pauseVideo={props.pauseVideo}
       isPlaying={props.isPlaying}
+      deleteSelectedSegment={props.deleteSelectedSegment}
       />
       <Timeline videos={props.trackList[0]}></Timeline>
       <Actions></Actions>

@@ -1,6 +1,6 @@
 import styles from "./controls.module.css";
 
-export default function Controls({playVideo, pauseVideo, isPlaying}: {playVideo:any, pauseVideo:any, isPlaying: boolean}) {
+export default function Controls({playVideo, pauseVideo, isPlaying, deleteSelectedSegment}: {playVideo:any, pauseVideo:any, isPlaying: boolean, deleteSelectedSegment:any}) {
   // const [playing, setPlaying] = useState(false);
   const togglePlaying = () => {
     if (isPlaying) {
@@ -54,7 +54,7 @@ export default function Controls({playVideo, pauseVideo, isPlaying}: {playVideo:
       <button className={styles.button}>
         <span className="material-icons">content_cut</span>
       </button>
-      <button className={styles.button}>
+      <button className={styles.button} onClick={deleteSelectedSegment}>
         <span className="material-icons">delete</span>
       </button>
       <button className={styles.button}>
