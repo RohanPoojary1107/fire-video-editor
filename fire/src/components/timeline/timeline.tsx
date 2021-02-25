@@ -1,8 +1,7 @@
 import styles from "./timeline.module.css";
 import CSS from 'csstype';
-import model from "../../model/model";
-import { Media } from "../../model/types";
-import { useEffect, useRef, useState } from 'react';
+import { Segment } from "../../model/types";
+import { useRef, useState } from 'react';
 
 export default function Timeline(props:any) {
 
@@ -23,7 +22,7 @@ export default function Timeline(props:any) {
   const handleOnScoll = async(e) => {
     if(setFirstLine.current){
       setScrollX(setFirstLine.current.getBoundingClientRect().left);
-      if (screenOffset==0){
+      if (screenOffset===0){
         setScreenOffset(scrollX);
       }
     }
@@ -61,7 +60,7 @@ export default function Timeline(props:any) {
                   <div className={styles.sec}></div>
                   <div className={styles.sec}></div>
                   <div className={styles.sec}></div>
-                  {index==0?<div ref={setFirstLine} className={styles.sec} style={{height:12}}></div>:''}
+                  {index===0?<div ref={setFirstLine} className={styles.sec} style={{height:12}}></div>:''}
               </div>
           )}
       </div>
@@ -78,7 +77,7 @@ function pointer() {
     width = setTimeLine.current?.clientWidth;
   }
   if(mouseOffset===-1){
-    if(pointerOffset==0){
+    if(pointerOffset===0){
       offset = 1;
     }
     else{
@@ -101,20 +100,20 @@ function pointer() {
   )
 }
 
-function frame(media: Media){
-  let duration = media.element.duration;
+function frame(segment: Segment){
+  let duration = segment.duration;
   return(
-    <li className={`${styles.card}`} key={media.file.name} style={{width:duration*5}}>
-      <img className={styles.img} src={media.thumbnail} alt={media.file.name} />
+    <li className={`${styles.card}`} key={segment.media.file.name} style={{width:duration*5}}>
+      <img className={styles.img} src={segment.media.thumbnail} alt={segment.media.file.name} />
     </li>  
   )
 }
 
-function frames(videos: Media[]){
+function frames(segmentList: Segment[]){
   return(
     <ul className={styles.frames}>
-      {videos.map((item)=>{
-        return(frame(item));
+      {segmentList.map((segment)=>{
+        return(frame(segment));
         })}
     </ul>
   )
