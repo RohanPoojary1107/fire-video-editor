@@ -73,6 +73,55 @@ export default function MediaManager(props: {}) {
         setTrackList(trackList.map((track) => track.filter((item: Segment) => item.media !== media)));
     }
 
+    const split = (timestamp: number, trackNum: number) => {
+        var index = getSegement(timestamp, trackNum);
+        
+        if (index !== -1) {
+            let duration = trackList[trackNum][index].duration;
+            // start & end is relative to timeline
+            let start = trackList[trackNum][index].start;
+            let end = start + duration;
+
+            // create and change new Segment properties to adjust to timestamp
+            let newSegment: Segment = {
+                media: trackList[trackNum][index].media,
+                start: timestamp,
+                duration: end-timestamp,
+                mediaStart: timestamp - start,
+                texture: trackList[trackNum][index].texture,
+                // TODO: Deep copy keyframes adjusted to the split
+                keyframes: trackList[trackNum][index].keyframes
+            }
+
+            // update original Segment properties to prevent overlap
+            trackList[trackNum][index].duration = timestamp - start;
+            // TODO: Deep copy keyframes adjusted to the split
+
+            // include new Segment to TrackList
+            setTrackList([...trackList.slice(0, trackNum), [...trackList[trackNum].splice(index+1), newSegment], ...trackList.slice(trackNum+1)]);
+
+        }
+    }
+    
+    // given specified trackNum, return the index of the segment given timestamp
+    // if no segement exists, return -1
+    const getSegement = (timestamp: number, trackNum: number) => {
+        var index = -1;
+
+        for(let i=0; i<trackList.length; i++){
+            let duration = trackList[trackNum][i].duration;
+            // start & end is relative to timeline
+            let start = trackList[trackNum][i].start;
+            let end = start + duration;
+
+            if(start <= timestamp && end > timestamp){
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+
     return (
         <PlaybackController {...props}
             canvasRef={canvasRef}
