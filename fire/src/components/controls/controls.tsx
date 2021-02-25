@@ -1,18 +1,24 @@
 import styles from "./controls.module.css";
-import { useState } from "react";
-import model from "../../model/model";
 
-export default function Controls() {
-  const [playing, setPlaying] = useState(false);
+export default function Controls({
+  playVideo,
+  pauseVideo,
+  isPlaying,
+}: {
+  playVideo: any;
+  pauseVideo: any;
+  isPlaying: boolean;
+}) {
+  // const [playing, setPlaying] = useState(false);
   const togglePlaying = () => {
-    if (playing) {
-      model.pause();
+    if (isPlaying) {
+      // model.pause();
+      pauseVideo();
     } else {
-      model.play();
-      // model.project.segments[0].properties.x = -400;
+      playVideo();
     }
 
-    setPlaying(model.playing);
+    // setPlaying(model.playing);
   };
 
   return (
@@ -22,7 +28,7 @@ export default function Controls() {
       </button>
       <button className={styles.button} onClick={togglePlaying}>
         <span className="material-icons">
-          {playing ? "pause" : "play_arrow"}
+          {isPlaying ? "pause" : "play_arrow"}
         </span>
       </button>
       <button className={styles.button}>
