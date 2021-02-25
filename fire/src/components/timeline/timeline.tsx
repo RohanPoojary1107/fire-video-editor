@@ -1,7 +1,7 @@
 import styles from "./timeline.module.css";
 import CSS from 'csstype';
 import { Segment } from "../../model/types";
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Timeline(props:any) {
 
@@ -12,11 +12,33 @@ export default function Timeline(props:any) {
   const [draggedOn, setDraggedOn] = useState<String>("");
   const setTimeLine = useRef<HTMLDivElement>(null);
   const setFirstLine = useRef<HTMLDivElement>(null);
+  // const [segmentThumbnails, setSegmentThumbnails] = useState<any>([]); 
 
   const DEFAULT_SECONDS_RULER = 60;
   const RULER_EXTRA_PIXEL = 10;
   const SECONDS_LENGTH = 5;
   const SECONDS_CHUNKS = 10;
+
+  // useEffect(() => {
+  //   const t = props.videos.map(async (segment: Segment) => {
+  //     let thumbnails = await generateThumbnail(segment, segment.duration*5);
+  //     console.log(thumbnails);
+  //     return(
+  //       <ul className={styles.frames}>
+  //         <li className={`${styles.card}`} key={segment.media.file.name} style={{width:segment.duration*5}}>
+  //           {thumbnails.map((imgSrc: string) => {
+  //             <img className={styles.img} src={imgSrc} alt={segment.media.file.name} />
+  //           })}
+  //         </li>
+  //       </ul>  
+  //     );
+  //   });
+
+  //   async function getThumbnail(){
+  //     return(await t);
+  //   }
+  //   setSegmentThumbnails(getThumbnail());
+  // }, [props.videos]);
 
   //@ts-ignore
   const handleOnScoll = async(e) => {
@@ -90,7 +112,7 @@ function pointer() {
   
   const pointerStyle: CSS.Properties = {
     height: 'calc(' + height +'px + 30px)',
-    transform: 'translateX('+ (offset + scrollX - screenOffset - 1) +'px)'
+    transform: 'translateX('+ (offset + scrollX - screenOffset) +'px)'
   }
   return(
     <div style={pointerStyle} className={styles.pointer}>
@@ -100,11 +122,35 @@ function pointer() {
   )
 }
 
-function frame(segment: Segment){
+// async function generateThumbnail(segment: Segment, width: number){
+//   let imageWidth = segment.media.element.videoWidth;
+//   let imageHeight = segment.media.element.videoHeight;
+//   let shrinkRatio =  imageHeight / 55;  // since the height of the timeline card has been set to 55px
+//   let numThumbnails = Math.ceil(width / (imageWidth / shrinkRatio));
+//   let offset = segment.duration/numThumbnails;
+//   let thumbnails= Array();
+
+//   for(let i=0; i < numThumbnails; i++){
+//     thumbnails.push(await props.generateThumbnail(segment, i*offset));
+//   }
+//   return thumbnails;
+// }
+
+  function frame(segment: Segment){
   let duration = segment.duration;
+  // let thumbnails = await generateThumbnail(segment, duration*5);
+  const divStyle = {
+    backgroundImage: 'url(' + segment.media.thumbnail + ')',
+    backgroundSize: 'contain'
+  };
   return(
-    <li className={`${styles.card}`} key={segment.media.file.name} style={{width:duration*5}}>
-      <img className={styles.img} src={segment.media.thumbnail} alt={segment.media.file.name} />
+    <li 
+    className={`${props.selectedSegment === segment ?  styles.cardActive : styles.card}`} 
+    key={segment.media.file.name} 
+    style={{width:duration*5}} 
+    onDoubleClick={() => {props.setSelectedSegment(segment)}}>
+      {/* <img className={styles.img} src={segment.media.thumbnail} alt={segment.media.file.name} /> */}
+      <div className={styles.div} style={divStyle}></div>
     </li>  
   )
 }
@@ -147,6 +193,7 @@ const onDrag = async (e: React.DragEvent<HTMLDivElement>) => {
       </div>
 
       {frames(props.videos)}
+      {/* {segmentThumbnails} */}
 
     </div>
   );

@@ -18,6 +18,8 @@ export default function PlaybackController(props: {
     renderer: WebGLRenderer,
     projectFrameRate: number,
     dragAndDrop: (timestamp: number, media: Media, trackNum: number) => void
+    selectedSegment: Segment|null,
+    setSelectedSegment: (segment: Segment) => void 
     }) {
         
     const [isPlaying, setIsPlaying] = useState<boolean>(false);

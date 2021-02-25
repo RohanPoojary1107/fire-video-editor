@@ -22,6 +22,7 @@ export default function MediaManager(props: {}) {
 
     const thumbnailCanvas = document.createElement("canvas");
     const thumbnailCanvasContext = thumbnailCanvas.getContext("2d") as CanvasRenderingContext2D;
+    console.log(selectedSegment);
 
     const addVideo = async (file: File) => {
         let elm = document.createElement("video") as HTMLVideoElement;
@@ -73,6 +74,23 @@ export default function MediaManager(props: {}) {
         setTrackList(trackList.map((track) => track.filter((item: Segment) => item.media !== media)));
     }
 
+    // const generateThumbnail = async (segment: Segment, time: number) => {
+    //     let elm = segment.media.element;
+
+    //     await new Promise<void>((resolve, reject) => {
+    //         elm.onloadeddata = () => resolve();
+    //         elm.src = URL.createObjectURL(segment.media.file);
+    //         elm.currentTime = time;
+    //     })
+
+    //     // Generate Thumbnail
+    //     thumbnailCanvas.width = elm.videoWidth;
+    //     thumbnailCanvas.height = elm.videoHeight;
+    //     thumbnailCanvasContext.drawImage(elm, 0, 0, elm.videoWidth, elm.videoHeight);
+
+    //     return thumbnailCanvas.toDataURL();
+    // }
+
     return (
         <PlaybackController {...props}
             canvasRef={canvasRef}
@@ -87,6 +105,8 @@ export default function MediaManager(props: {}) {
             renderer={renderer}
             projectFrameRate={projectFramerate}
             dragAndDrop={dragAndDrop}
+            selectedSegment={selectedSegment}
+            setSelectedSegment={setSelectedSegment}
         />
     );
 }

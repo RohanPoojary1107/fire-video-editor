@@ -41,7 +41,7 @@ export default function MediaPool(props:any) {
 
     const onClick = async () => {
         try {
-            const load = document.getElementById("lo") as HTMLElement;
+            // const load = document.getElementById("lo") as HTMLElement;
             //@ts-ignore
             const Handle = await window.showOpenFilePicker(options);
             setStatus('Loading...');
