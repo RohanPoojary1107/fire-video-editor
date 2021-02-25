@@ -7,11 +7,13 @@ import Timeline from "../components/timeline/timeline";
 import { Media } from "../model/types";
 import { useRef, useState } from 'react';
 
-export default function Editor() {
-  const [files, setTimelineFiles] = useState<Media[]>([]);
+export default function Editor({ files, setTimelineFiles }: {
+  files: Media[],
+  setTimelineFiles: Function
+}) {
   return (
     <div className={styles.container}>
-      <MediaPool handler={setTimelineFiles}/>
+      <MediaPool handler={setTimelineFiles} />
       <MediaPlayer></MediaPlayer>
       <Controls />
       <Timeline videos={files}></Timeline>
