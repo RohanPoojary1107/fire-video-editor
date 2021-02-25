@@ -1,18 +1,17 @@
 import styles from "./controls.module.css";
-import { useState } from "react";
-import model from "../../model/model";
 
-export default function Controls() {
-  const [playing, setPlaying] = useState(false);
+export default function Controls({playVideo, pauseVideo, isPlaying}: {playVideo:any, pauseVideo:any, isPlaying: boolean}) {
+  // const [playing, setPlaying] = useState(false);
   const togglePlaying = () => {
-    if (playing) {
-      model.pause();
+    if (isPlaying) {
+      // model.pause();
+      pauseVideo();
     } else {
-      model.play();
+      playVideo();
     }
 
-    setPlaying(model.playing);
-  }
+    // setPlaying(model.playing);
+  };
 
   return (
     <div className={styles.container}>
@@ -20,12 +19,20 @@ export default function Controls() {
         <span className="material-icons">skip_previous</span>
       </button>
       <button className={styles.button} onClick={togglePlaying}>
-        <span className="material-icons">{playing ? "pause" : "play_arrow"}</span>
+        <span className="material-icons">
+          {isPlaying ? "pause" : "play_arrow"}
+        </span>
       </button>
       <button className={styles.button}>
         <span className="material-icons">skip_next</span>
       </button>
-      <input className={styles.trackbar} type="range" min="0" max="1" step={0.001}></input>
+      <input
+        className={styles.trackbar}
+        type="range"
+        min="0"
+        max="1"
+        step={0.001}
+      ></input>
       <button className={styles.button}>
         <span className="material-icons">volume_up</span>
       </button>
@@ -34,6 +41,12 @@ export default function Controls() {
       </button>
       <button className={styles.button}>
         <span className="material-icons">remove</span>
+      </button>
+      <button className={styles.button}>
+        <span className="material-icons">arrow_back</span>
+      </button>
+      <button className={styles.button}>
+        <span className="material-icons">arrow_forward</span>
       </button>
       <button className={styles.button}>
         <span className="material-icons">undo</span>
@@ -47,6 +60,6 @@ export default function Controls() {
       <button className={styles.button}>
         <span className="material-icons">content_copy</span>
       </button>
-    </div >
+    </div>
   );
 }

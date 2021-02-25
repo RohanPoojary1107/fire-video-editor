@@ -6,6 +6,7 @@
   flex-direction: column;
   gap: var(--spacing);
   overflow-y: hidden;
+  z-index: 5;
 }
 
 .mediaList {

@@ -1,5 +1,4 @@
 import styles from "./actions.module.css";
-import model from "../../model/model";
 import { useHistory } from 'react-router-dom';
 
 export default function Actions() {
