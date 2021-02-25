@@ -9,6 +9,7 @@ export default function Controls() {
       model.pause();
     } else {
       model.play();
+      // model.project.segments[0].properties.x = -400;
     }
 
     setPlaying(model.playing);
@@ -42,12 +43,6 @@ export default function Controls() {
       </button>
       <button className={styles.button}>
         <span className="material-icons">remove</span>
-      </button>
-      <button className={styles.button}>
-        <span className="material-icons">arrow_back</span>
-      </button>
-      <button className={styles.button}>
-        <span className="material-icons">arrow_forward</span>
       </button>
       <button className={styles.button}>
         <span className="material-icons">undo</span>
