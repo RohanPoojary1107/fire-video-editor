@@ -1,21 +1,25 @@
-import styles from "./mediaPlayer.module.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import PlaybackController from "./playbackController";
 import { Media, Segment } from "./types";
-import { WebGLRenderer } from "./webgl";
+import {WebGLRenderer} from "./webgl";
 
 export default function MediaManager(props: {}) {
     const [mediaList, setMediaList] = useState<Media[]>([]);
-    const [segmentList, setSegmentList] = useState<Segment[]>([]);
+    const [trackList, setTrackList] = useState<Segment[][]>([[]]);
     const [projectName, setProjectName] = useState<string>("");
-    const [projectWidth, setProjectWidth] = useState<number>(0);
-    const [projectHeight, setProjectHeight] = useState<number>(0);
-    const [projectFramerate, setProjectFrameRate] = useState<number>(0);
+    const [projectWidth, setProjectWidth] = useState<number>(1920);
+    const [projectHeight, setProjectHeight] = useState<number>(1080);
+    const [projectFramerate, setProjectFrameRate] = useState<number>(30);
     const [projectDuration, setProjectDuration] = useState<number>(0);
     const [selectedSegment, setSelectedSegment] = useState<Segment | null>(null);
+    const [canvasRef, setCanvasRef] = useState<HTMLCanvasElement>(document.createElement("canvas"));
+    const [renderer, setRenderer] = useState<WebGLRenderer>(new WebGLRenderer(canvasRef, projectWidth, projectHeight));
 
-    const canvas = document.createElement("canvas");
-    const renderer = new WebGLRenderer(canvas);
+    useEffect(() => {
+        canvasRef.width = projectWidth;
+        canvasRef.height = projectHeight;
+      }, [canvasRef, projectHeight, projectWidth]);
+
     const thumbnailCanvas = document.createElement("canvas");
     const thumbnailCanvasContext = thumbnailCanvas.getContext("2d") as CanvasRenderingContext2D;
 
@@ -44,7 +48,8 @@ export default function MediaManager(props: {}) {
         console.log("Sucessfully Loaded Segment Thumbnail!");
     }
 
-    const dragAndDrop = (timestamp: number, media: Media) => {
+    const dragAndDrop = (timestamp: number, media: Media, trackNum: number) => {
+        if(renderer == null)return;
         let segment: Segment = {
             media: media,
             start: timestamp,
@@ -60,20 +65,28 @@ export default function MediaManager(props: {}) {
             }],
         }
 
-        setSegmentList([...segmentList, segment]);
+        setTrackList([...trackList.slice(0, trackNum), [...trackList[trackNum], segment], ...trackList.slice(trackNum+1)]);
     }
 
     const deleteVideo = (media: Media) => {
-        setMediaList(mediaList.filter(item => item !== media));
-        setSegmentList(segmentList.filter(item => item.media !== media));
+        setMediaList(mediaList.filter((item: Media) => item !== media));
+        setTrackList(trackList.map((track) => track.filter((item: Segment) => item.media !== media)));
     }
 
     return (
         <PlaybackController {...props}
+            canvasRef={canvasRef}
             mediaList={mediaList}
             setMediaList={setMediaList}
-            segmentList={segmentList}
-            setSegmentList={setSegmentList}
+            trackList={trackList}
+            setTrackList={setTrackList}
+            addVideo={addVideo}
+            deleteVideo={deleteVideo}
+            projectWidth={projectWidth}
+            projectHeight={projectHeight}
+            renderer={renderer}
+            projectFrameRate={projectFramerate}
+            dragAndDrop={dragAndDrop}
         />
     );
 }

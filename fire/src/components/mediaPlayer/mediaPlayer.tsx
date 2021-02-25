@@ -1,20 +1,20 @@
 import styles from "./mediaPlayer.module.css";
 import { useEffect, useRef } from "react";
-import model from "../../model/model";
 
-export default function MediaPlayer() {
+export default function MediaPlayer({canvasRef, projectWidth, projectHeight}: {canvasRef: HTMLCanvasElement, projectWidth: number, projectHeight: number}) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      model.canvas.style.maxWidth = "100%";
-      model.canvas.style.maxHeight = "100%";
+    // setTimeout(() => {
+      // canvasRef.style.maxWidth = "100%";
+      // canvasRef.style.maxHeight = "100%";
+      canvasRef.classList.add(styles.canvas);
       //@ts-ignore
-      model.canvas.style.aspectRatio = `${model.project.width / model.project.height}`;
-      model.canvas.style.background = "black";
-      console.log(model.canvas.style.width);
-      ref.current?.appendChild(model.canvas);
-    }, 0);
+      canvasRef.style.aspectRatio = `${projectWidth / projectHeight}`;
+      // canvasRef.style.background = "black";
+      console.log(canvasRef.style.width);
+      ref.current?.appendChild(canvasRef);
+    // }, 0);
   });
 
   return (
@@ -22,3 +22,11 @@ export default function MediaPlayer() {
     </div>
   );
 }
+
+// export default function MediaPlayer({canvasRef, projectWidth, projectHeight}: {canvasRef: (canvas: HTMLCanvasElement) => void, projectWidth: number, projectHeight: number}) {
+//   return (
+//     <div className={styles.container} >
+//       <canvas className={styles.canvas} style={{aspectRatio: `${projectWidth / projectHeight}`}} ref={canvasRef}></canvas>
+//     </div>
+//   );
+// }

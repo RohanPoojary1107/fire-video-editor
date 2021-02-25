@@ -1,6 +1,6 @@
 import { m4 } from "twgl.js";
 import { FRAGMENT_SHADER, VERTEX_SHADER } from "./shaders";
-import { Segment, Project } from "./types";
+import { Segment} from "./types";
 
 export class WebGLRenderer {
     context: WebGLRenderingContext;
@@ -16,9 +16,9 @@ export class WebGLRenderer {
     texcoordBuffer: WebGLBuffer;
 
 
-    constructor(public canvas: HTMLCanvasElement, public project: Project) {
-        canvas.width = this.project.width;
-        canvas.height = this.project.height;
+    constructor(public canvas: HTMLCanvasElement, public projectWidth: number, public projectHeight: number) {
+        // canvas.width = this.project.width;
+        // canvas.height = this.project.height;
         this.context = canvas.getContext("webgl") as WebGLRenderingContext;
         if (!this.context) console.error("Failed to get webgl context!");
 
@@ -76,12 +76,12 @@ export class WebGLRenderer {
         this.context.bufferData(this.context.ARRAY_BUFFER, new Float32Array(texcoords), this.context.STATIC_DRAW);
     }
 
-    public drawMedia(media: Segment[]) {
+    public drawSegments(segments: Segment[], timestamp: number) {
         // Tell WebGL how to convert from clip space to pixels
-        this.context.viewport(0, 0, this.project.width, this.project.height);
+        this.context.viewport(0, 0, this.projectWidth, this.projectHeight);
         this.context.clear(this.context.COLOR_BUFFER_BIT);
 
-        for (const med of media) {
+        for (const med of segments) {
             this.drawImage(med);
         }
 
@@ -142,7 +142,7 @@ export class WebGLRenderer {
     // Unlike images, textures do not have a width and height associated
     // with them so we'll pass in the width and height of the texture
     private drawImage(segment: Segment) {
-        this.context.bindTexture(this.context.TEXTURE_2D, segment.media.texture);
+        this.context.bindTexture(this.context.TEXTURE_2D, segment.texture);
         this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, segment.media.element);
 
         // Tell WebGL to use our shader program pair
@@ -160,11 +160,11 @@ export class WebGLRenderer {
         let matrix = m4.ortho(0, this.context.canvas.width, this.context.canvas.height, 0, -1, 1);
 
         // this matrix will translate our quad to dstX, dstY
-        matrix = m4.translate(matrix, [segment.properties.x, segment.properties.y, 0, 0]);
+        matrix = m4.translate(matrix, [segment.keyframes[0].x, segment.keyframes[0].y, 0, 0]);
 
         // this matrix will scale our 1 unit quad
         // from 1 unit to texWidth, texHeight units
-        matrix = m4.scale(matrix, [segment.properties.width, segment.properties.height, 0, 0]);
+        matrix = m4.scale(matrix, [segment.keyframes[0].width, segment.keyframes[0].height, 0, 0]);
 
         // Set the matrix.
         this.context.uniformMatrix4fv(this.matrixLocation, false, matrix);
