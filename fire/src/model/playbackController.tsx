@@ -6,6 +6,7 @@ import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import About from "../routes/about";
 
 export default function PlaybackController(props: {
+
   canvasRef: HTMLCanvasElement,
   mediaList: Media[],
   setMediaList: (mediaList: Media[]) => void,
@@ -36,9 +37,9 @@ export default function PlaybackController(props: {
     );
   };
 
-  const play = () => {
-    console.log(props.trackList);
-    if (props.trackList.length === 0 || props.trackList[0].length === 0) return;
+    const play = () => {
+        if (props.trackList.length === 0 || props.trackList[0].length === 0) return;
+
 
     setIsPlaying(true);
     clearTimeout(playbackTimeout);

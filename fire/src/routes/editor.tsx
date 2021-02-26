@@ -32,7 +32,11 @@ export default function Editor(props: any) {
         selectedSegment={props.selectedSegment}
         setSelectedSegment={props.setSelectedSegment}
       />
-      <Timeline videos={props.trackList[0]}></Timeline>
+      <Timeline 
+      videos={props.trackList[0]}
+      selectedSegment={props.selectedSegment}
+      setSelectedSegment={props.setSelectedSegment}
+      />
       <Actions></Actions>
     </div>
   );
