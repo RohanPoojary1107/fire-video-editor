@@ -2,9 +2,9 @@
   display: grid;
 
   grid-template-areas:
-    "mediaPool mediaPlayer elements actions"
-    "mediaPool controls controls controls"
-    "mediaPool timeline timeline timeline";
+    "mediaPool mediaPlayer elements elements actions"
+    "mediaPool controls controls controls controls"
+    "mediaPool timeline timeline timeline timeline";
 
   grid-template-columns: 300px minmax(0, 1fr) min-content;
   grid-template-rows: minmax(0, 1fr) min-content 300px;

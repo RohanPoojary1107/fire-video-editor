@@ -125,6 +125,7 @@ export default function Timeline(props: any) {
         className={`${styles.card}`}
         key={segment.media.file.name}
         style={{ width: duration * 5 }}
+        onDoubleClick={() => props.setSelectedSegment(segment)}
       >
         <img
           className={styles.img}

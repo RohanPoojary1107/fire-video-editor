@@ -16,6 +16,7 @@ export class WebGLRenderer {
     texcoordBuffer: WebGLBuffer;
 
 
+
     constructor(public canvas: HTMLCanvasElement, public projectWidth: number, public projectHeight: number) {
         // canvas.width = this.project.width;
         // canvas.height = this.project.height;
@@ -164,8 +165,7 @@ export class WebGLRenderer {
 
         // this matrix will scale our 1 unit quad
         // from 1 unit to texWidth, texHeight units
-        matrix = m4.scale(matrix, [segment.keyframes[0].width, segment.keyframes[0].height, 0, 0]);
-
+        matrix = m4.scale(matrix, [segment.media.element.videoWidth * segment.keyframes[0].scaleX, segment.media.element.videoHeight * segment.keyframes[0].scaleY, 0, 0]);
         // Set the matrix.
         this.context.uniformMatrix4fv(this.matrixLocation, false, matrix);
 
