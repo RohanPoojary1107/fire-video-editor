@@ -96,6 +96,7 @@ export default function MediaManager(props: {}) {
                     scaleY: 1.0,
                 },
             ],
+            track:  trackNum
         };
 
         setTrackList([
@@ -133,6 +134,85 @@ export default function MediaManager(props: {}) {
             setSelectedSegment(null);
         }
     }
+    const split = (timestamp: number) => {
+        if (selectedSegment !== null) {
+            let duration = selectedSegment.duration;
+            let track = selectedSegment.track;
+            // start & end is relative to timeline
+            let start = selectedSegment.start;
+            let end = start + duration;
+            let index = getSegement(timestamp, track);
+            // make sure to not split a segment that is not selected
+            if(!(start <= timestamp && end > timestamp)){
+                return;
+            }
+            if (index!==-1){
+                
+                // create and change new Segment properties to adjust to timestamp
+
+                // TODO: fix object copy???
+                // let newSegment = Object.assign({}, trackList[track][index]);
+                // newSegment.start = timestamp;
+                // newSegment.duration = end-timestamp;
+                // newSegment.mediaStart =  timestamp - start;
+
+                let newSegment: Segment = {
+                    media: selectedSegment.media,
+                    start: timestamp,
+                    duration: end-timestamp,
+                    mediaStart: timestamp - start,
+                    texture: selectedSegment.texture,
+                    // TODO: Deep copy keyframes adjusted to the split
+                    keyframes: selectedSegment.keyframes,
+                    track: selectedSegment.track
+                }
+                // update original Segment properties to prevent overlap
+                
+                // include new Segment to TrackList
+                let newTrackList = [];
+                for(let i=0; i<trackList.length; i++){
+                    if(i===track){
+                        let newSegmentList = [];
+                        for(let j=0; j<trackList[i].length; j++){
+                            // TODO: Deep copy keyframes adjusted to the split
+                            if(j===index){
+                                trackList[i][j].duration = timestamp - start;
+                                newSegmentList.push(trackList[i][j]);
+                                newSegmentList.push(newSegment);
+                            } else {
+                                newSegmentList.push(trackList[i][j]);
+                            }
+                        }
+                        newTrackList.push(newSegmentList);
+                    }
+                    else {
+                        newTrackList.push(trackList[i]);
+                    }
+                }
+                console.log('Old Track: ', trackList);
+                console.log('New Track: ', newTrackList);
+                setTrackList(newTrackList);
+            }
+        }
+      };
+    
+    // given specified trackNum, return the index of the segment given timestamp
+    // if no segement exists, return -1
+    const getSegement = (timestamp: number, trackNum: number) => {
+        var index = -1;
+    
+        for(let i=0; i<trackList[trackNum].length; i++){
+            let duration = trackList[trackNum][i].duration;
+            // start & end is relative to timeline
+            let start = trackList[trackNum][i].start;
+            let end = start + duration;
+            if(start <= timestamp && end > timestamp){
+                index = i;
+                break;
+            }
+        }
+        return index;
+      };
 
     const updateSegment = (oldSeg: Segment, newSegment: Segment) => {
         setTrackList(trackList.map((track) => track.map((segment: Segment) => {
@@ -162,32 +242,7 @@ export default function MediaManager(props: {}) {
             selectedSegment={selectedSegment}
             setSelectedSegment={setSelectedSegment}
             updateSegment={updateSegment}
+            splitVideo={split}
         />
     );
   };
-  const deleteSelectedSegment = () => {
-    if (selectedSegment !== null){
-        setTrackList(trackList.map((track) => track.filter((item: Segment) => item !== selectedSegment)));
-    }     
-}
-  return (
-    <PlaybackController
-      {...props}
-      canvasRef={canvasRef}
-      mediaList={mediaList}
-      setMediaList={setMediaList}
-      trackList={trackList}
-      setTrackList={setTrackList}
-      addVideo={addVideo}
-      deleteVideo={deleteVideo}
-      deleteSelectedSegment={deleteSelectedSegment}
-      projectWidth={projectWidth}
-      projectHeight={projectHeight}
-      renderer={renderer}
-      projectFrameRate={projectFramerate}
-      dragAndDrop={dragAndDrop}
-      selectedSegment={selectedSegment}
-      setSelectedSegment={setSelectedSegment}
-    />
-  );
-}

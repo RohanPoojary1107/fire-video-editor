@@ -22,6 +22,7 @@ export default function PlaybackController(props: {
     setSelectedSegment: (selected: Segment | null) => void,
     selectedSegment: Segment | null,
     updateSegment: (oldSeg: Segment, segment: Segment) => void,
+    splitVideo: (timestamp: number) => void,
     deleteSelectedSegment: () => void
 }) {
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -119,8 +120,6 @@ export default function PlaybackController(props: {
 
         renderFrame(true);
     }
-    renderFrame(props.trackList[0]);
-  };
 
     const pause = () => {
         setIsPlaying(false);

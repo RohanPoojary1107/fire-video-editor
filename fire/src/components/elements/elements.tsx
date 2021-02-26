@@ -25,6 +25,7 @@ export default function Elements(props: any) {
             scaleY: props.selectedSegment.keyframes[0].scaleY,
           },
         ],
+        track:  props.selectedSegment.track
       };
       console.log(segment.keyframes[0].x);
       console.log(props.selectedSegment);
@@ -49,6 +50,7 @@ export default function Elements(props: any) {
             scaleY: props.selectedSegment.keyframes[0].scaleY,
           },
         ],
+        track:  props.selectedSegment.track
       };
       props.setSelectedSegment(segment);
     }
@@ -71,6 +73,7 @@ export default function Elements(props: any) {
             scaleY: +event.target.value,
           },
         ],
+        track:  props.selectedSegment.track
       };
       console.log(segment.keyframes[0].scaleY);
       props.setSelectedSegment(segment);
@@ -94,6 +97,7 @@ export default function Elements(props: any) {
             scaleY: props.selectedSegment.keyframes[0].scaleY,
           },
         ],
+        track: props.selectedSegment.track
       };
       console.log(segment.keyframes[0].scaleX);
       console.log(props.selectedSegment);

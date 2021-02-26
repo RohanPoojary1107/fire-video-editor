@@ -30,6 +30,7 @@ export default function Editor(props: {
   selectedSegment: Segment | null,
   setSelectedSegment: (selected: Segment | null) => void,
   updateSegment: (oldSeg: Segment, segment: Segment) => void,
+  splitVideo: (timestamp: number) => void,
   deleteSelectedSegment: () => void
 }) {
   return (
@@ -55,6 +56,7 @@ export default function Editor(props: {
         projectDuration={props.projectDuration}
         setCurrentTime={props.setCurrentTime}
         deleteSelectedSegment={props.deleteSelectedSegment}
+        splitVideo={props.splitVideo}
       />
       {props.selectedSegment !== null ? <Properties
         selectedSegment={props.selectedSegment}

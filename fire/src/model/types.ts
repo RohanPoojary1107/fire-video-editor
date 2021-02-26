@@ -11,6 +11,7 @@ export interface Segment {
     mediaStart: number;
     keyframes: KeyFrame[];
     texture: WebGLTexture;
+    track: number;
 }
 
 export interface KeyFrame {

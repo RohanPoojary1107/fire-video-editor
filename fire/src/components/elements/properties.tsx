@@ -22,6 +22,7 @@ export default function Properties(props: {
                     scaleY: props.selectedSegment.keyframes[0].scaleY,
                 },
             ],
+            track: props.selectedSegment.track
         };
         props.updateSegment(props.selectedSegment, segment);
     };
@@ -42,6 +43,7 @@ export default function Properties(props: {
                     scaleY: props.selectedSegment.keyframes[0].scaleY,
                 },
             ],
+            track: props.selectedSegment.track
         };
         props.updateSegment(props.selectedSegment, segment);
     };
@@ -63,6 +65,7 @@ export default function Properties(props: {
                     scaleY: +event.target.value,
                 },
             ],
+            track: props.selectedSegment.track
         };
         props.updateSegment(props.selectedSegment, segment);
 
@@ -85,6 +88,7 @@ export default function Properties(props: {
                     scaleY: props.selectedSegment.keyframes[0].scaleY,
                 },
             ],
+            track: props.selectedSegment.track
         };
         props.updateSegment(props.selectedSegment, segment);
     };
