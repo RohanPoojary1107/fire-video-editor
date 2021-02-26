@@ -60,7 +60,7 @@ export default function Controls(
                 max="1"
                 step={0.001}
                 onChange={onSeek}
-                value={projectDuration == 0 ? 0 : currentTime / projectDuration}
+                value={projectDuration === 0 ? 0 : currentTime / projectDuration}
             ></input>
             <button className={styles.button}>
                 <span className="material-icons">volume_up</span>

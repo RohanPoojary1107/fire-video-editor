@@ -116,7 +116,7 @@ export default function MediaManager(props: {}) {
         let projectDuration = 0;
         setTrackList(trackList.map((track) => track.filter((segment: Segment) => {
             if (segment.media !== media) projectDuration = Math.max(projectDuration, segment.start + segment.duration);
-            if (segment == selectedSegment) setSelectedSegment(null);
+            if (segment === selectedSegment) setSelectedSegment(null);
             return segment.media !== media;
         })));
         setProjectDuration(projectDuration);
