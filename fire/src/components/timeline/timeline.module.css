@@ -34,11 +34,6 @@
   position: absolute;
   z-index: 4;
   background: red;
-  /* will-change: transform; */
-  /* display: block;
-  margin-top: 0px;
-  margin-left: 0px;
-  transition: 0s; */
   left: 0;
   top: 0;
   bottom: 0;
@@ -90,12 +85,8 @@
 }
 
 .s10 {
-  /* display: inline-block; */
-  /* padding: 7px 0px;  */
-  /* position: relative; */
   text-align: left;
   text-overflow: ellipsis;
-  /* width: 50px; */
 }
 
 .rulerCon {

@@ -11,7 +11,7 @@ export default function PlaybackController(props: {
     setMediaList: (mediaList: Media[]) => void,
     trackList: Segment[][],
     setTrackList: (segments: Segment[][]) => void,
-    addVideo: (file: File) => void,
+    addVideo: (file: File[]) => void,
     deleteVideo: (media: Media) => void,
     projectWidth: number,
     projectHeight: number,
@@ -19,8 +19,10 @@ export default function PlaybackController(props: {
     projectFrameRate: number,
     projectDuration: number,
     dragAndDrop: (timestamp: number, media: Media, trackNum: number) => void,
+    setSelectedSegment: (selected: Segment | null) => void,
     selectedSegment: Segment | null,
-    setSelectedSegment: (selected: Segment | null) => void
+    updateSegment: (oldSeg: Segment, segment: Segment) => void,
+    deleteSelectedSegment: () => void
 }) {
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [currentTime, _setCurrentTime] = useState<number>(0);
@@ -38,12 +40,20 @@ export default function PlaybackController(props: {
         lastPlaybackTimeRef.current = timestamp;
         playbackStartTimeRef.current = performance.now();
         _setCurrentTime(timestamp);
-
-        if (!isPlayingRef.current) renderFrame();
+        if (!isPlayingRef.current) renderFrame(false);
     };
 
-    const renderFrame = async () => {
+    useEffect(() => {
+        if (!isPlayingRef.current) renderFrame(false);
+    }, [props.trackList])
+
+    useEffect(() => {
+        if (currentTime > props.projectDuration) setCurrentTime(props.projectDuration);
+    }, [props.projectDuration])
+
+    const renderFrame = async (update: boolean) => {
         let curTime = performance.now() - playbackStartTimeRef.current + lastPlaybackTimeRef.current;
+        if (!update) curTime = lastPlaybackTimeRef.current;
         _setCurrentTime(curTime);
 
         if (curTime >= projectDurationRef.current) {
@@ -96,7 +106,7 @@ export default function PlaybackController(props: {
             return;
         }
 
-        setTimeout(() => { renderFrame(); }, 1 / props.projectFrameRate) as unknown as number;
+        setTimeout(() => { renderFrame(true); }, 1 / props.projectFrameRate) as unknown as number;
     }
 
     const play = async () => {
@@ -107,7 +117,7 @@ export default function PlaybackController(props: {
         playbackStartTimeRef.current = performance.now();
         isPlayingRef.current = true;
 
-        renderFrame();
+        renderFrame(true);
     }
 
     const pause = () => {
@@ -116,7 +126,7 @@ export default function PlaybackController(props: {
         for (const segment of props.trackList[0]) {
             segment.media.element.pause();
         }
-    }
+    };
 
     return (
         <Router>
