@@ -1,7 +1,7 @@
 import styles from "./timeline.module.css";
 import CSS from "csstype";
 import { Segment } from "../../model/types";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export default function Timeline(props: any) {
   const [pointerOffset, setPointer] = useState<number>(0);
@@ -120,7 +120,7 @@ export default function Timeline(props: any) {
 
   function frame(segment: Segment) {
     let duration = segment.duration;
-
+    
     const divStyle = {
       backgroundImage: "url(" + segment.media.thumbnail + ")",
       backgroundSize: "auto 100%",
