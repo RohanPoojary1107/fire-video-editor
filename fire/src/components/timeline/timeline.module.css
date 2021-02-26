@@ -43,11 +43,12 @@
 }
 .card {
   background: #ff000021;
-  /* border: 1px solid #ff0000; */
+  border: 1px solid #ff0000;
   border-radius: 5px;
   height: 55px;
   padding: 5px 0px;
   margin: 7px 0px;
+  overflow:hidden;
 }
 
 .cardActive{
@@ -56,51 +57,65 @@
   height: 55px;
   padding: 5px 0px;
   margin: 7px 0px;
+  overflow:hidden;
+}
+
+.card:nth-of-type(n) {
+  background: #ff000021;
+  border: 1px solid #ff0000;
+}
+.card:nth-of-type(2n) {
+  background: #3300ff21;
+  border: 1px solid #5200ff;
+}
+.card:nth-of-type(3n) {
+  background: #00ff5a21;
+  border: 1px solid #00ff0f;
+}
+.card:nth-of-type(4n) {
+  background: #ea00ff21;
+  border: 1px solid #ea00ff;
+}
+.card:nth-of-type(5n) {
+  background: #0400ff21;
+  border: 1px solid #1900ff;
+}
+.card:nth-of-type(6n) {
+  background: #d8ff0021;
+  border: 1px solid #ffe700;
 }
 
 .cardActive:nth-of-type(1) {
   background: #ff000021;
   border: 1px solid #ff0000;
+  box-shadow: 0px 0px 10px #ff0000;
 }
 .cardActive:nth-of-type(2) {
   background: #3300ff21;
   border: 1px solid #5200ff;
+  box-shadow: 0px 0px 10px #5200ff;
 }
 .cardActive:nth-of-type(3) {
   background: #00ff5a21;
   border: 1px solid #00ff0f;
+  box-shadow: 0px 0px 10px #00ff0f;
 }
 .cardActive:nth-of-type(4) {
   background: #ea00ff21;
   border: 1px solid #ea00ff;
+  box-shadow: 0px 0px 10px #ea00ff;
 }
 .cardActive:nth-of-type(5) {
   background: #0400ff21;
   border: 1px solid #1900ff;
+  box-shadow: 0px 0px 10px #1900ff;
 }
 .cardActive:nth-of-type(6) {
   background: #d8ff0021;
   border: 1px solid #ffe700;
+  box-shadow: 0px 0px 10px #ffe700;
 }
 
-.card:nth-of-type(1) {
-  background: #ff000021;
-}
-.card:nth-of-type(2) {
-  background: #3300ff21;
-}
-.card:nth-of-type(3) {
-  background: #00ff5a21;
-}
-.card:nth-of-type(4) {
-  background: #ea00ff21;
-}
-.card:nth-of-type(5) {
-  background: #0400ff21;
-}
-.card:nth-of-type(6) {
-  background: #d8ff0021;
-}
 
 .card .div, .cardActive .div {
   height: 100%;

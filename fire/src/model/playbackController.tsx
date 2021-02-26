@@ -11,7 +11,7 @@ export default function PlaybackController(props: {
     setMediaList: (mediaList: Media[]) => void,
     trackList: Segment[][],
     setTrackList: (segments: Segment[][]) => void,
-    addVideo: (file: File) => void,
+    addVideo: (files: File[]) => void,
     deleteVideo: (media: Media) => void,
     projectWidth: number,
     projectHeight: number,
@@ -33,7 +33,6 @@ export default function PlaybackController(props: {
     }
 
     const play = () => {
-        console.log(props.trackList);
         if (props.trackList.length === 0 || props.trackList[0].length === 0) return;
 
         setIsPlaying(true);

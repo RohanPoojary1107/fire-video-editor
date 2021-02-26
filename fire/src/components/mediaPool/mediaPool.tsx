@@ -41,24 +41,16 @@ export default function MediaPool(props:any) {
 
     const onClick = async () => {
         try {
-            // const load = document.getElementById("lo") as HTMLElement;
+            const files: File[] = [];
+            const load = document.getElementById("lo") as HTMLElement;
             //@ts-ignore
             const Handle = await window.showOpenFilePicker(options);
             setStatus('Loading...');
             for (const entry of Handle) {
                 let file = await entry.getFile();
-
-                let found = false;
-                for (let i = 0; i < props.mediaList; i++) {
-                    if (props.mediaList[i].file.name === file.name) {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (found) continue;
-                await props.addVideo(file);
+                files.push(file);
             }
+            await props.addVideo(files);
             setStatus('');
         } catch (error) {
             console.log(error);
