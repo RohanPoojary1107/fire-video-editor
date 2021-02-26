@@ -12,7 +12,7 @@ export default function PlaybackController(props: {
   setMediaList: (mediaList: Media[]) => void,
   trackList: Segment[][],
   setTrackList: (segments: Segment[][]) => void,
-  addVideo: (file: File) => void,
+  addVideo: (files: File[]) => void,
   deleteVideo: (media: Media) => void,
   deleteSelectedSegment: () => void,
   projectWidth: number,
