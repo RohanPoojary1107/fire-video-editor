@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PlaybackController from "./playbackController";
 import { Media, Segment } from "./types";
-import {WebGLRenderer} from "./webgl";
+import { WebGLRenderer } from "./webgl";
 
 export default function MediaManager(props: {}) {
     const [mediaList, setMediaList] = useState<Media[]>([]);
@@ -18,13 +18,14 @@ export default function MediaManager(props: {}) {
     useEffect(() => {
         canvasRef.width = projectWidth;
         canvasRef.height = projectHeight;
-      }, [canvasRef, projectHeight, projectWidth]);
+    }, [canvasRef, projectHeight, projectWidth]);
 
     const thumbnailCanvas = document.createElement("canvas");
     const thumbnailCanvasContext = thumbnailCanvas.getContext("2d") as CanvasRenderingContext2D;
 
     const addVideo = async (file: File) => {
         let elm = document.createElement("video") as HTMLVideoElement;
+        elm.preload = "auto";
 
         await new Promise<void>((resolve, reject) => {
             elm.onloadeddata = () => resolve();
@@ -44,20 +45,18 @@ export default function MediaManager(props: {}) {
         };
 
         setMediaList([...mediaList, media]);
-
         console.log("Sucessfully Loaded Segment Thumbnail!");
     }
 
     const dragAndDrop = (timestamp: number, media: Media, trackNum: number) => {
-        if(renderer == null)return;
         let segment: Segment = {
             media: media,
             start: timestamp,
-            duration: media.element.duration,
-            mediaStart: 0,
+            duration: media.element.duration * 1000 - 1000,
+            mediaStart: 1000,
             texture: renderer.createTexture(),
             keyframes: [{
-                start: 0,
+                start: 1000,
                 x: 0,
                 y: 0,
                 width: projectWidth,
@@ -65,12 +64,22 @@ export default function MediaManager(props: {}) {
             }],
         }
 
-        setTrackList([...trackList.slice(0, trackNum), [...trackList[trackNum], segment], ...trackList.slice(trackNum+1)]);
+        setTrackList([...trackList.slice(0, trackNum), [...trackList[trackNum], segment], ...trackList.slice(trackNum + 1)]);
+        setProjectDuration(Math.max(projectDuration, segment.start + segment.duration));
     }
 
     const deleteVideo = (media: Media) => {
-        setMediaList(mediaList.filter((item: Media) => item !== media));
-        setTrackList(trackList.map((track) => track.filter((item: Segment) => item.media !== media)));
+        setMediaList(mediaList.filter((item: Media) => {
+            if (item !== media) media.element.pause();
+            return item !== media;
+        }));
+
+        let projectDuration = 0;
+        setTrackList(trackList.map((track) => track.filter((segment: Segment) => {
+            if (segment.media !== media) projectDuration = Math.max(projectDuration, segment.start + segment.duration);
+            return segment.media !== media;
+        })));
+        setProjectDuration(projectDuration);
     }
 
     return (
@@ -87,6 +96,9 @@ export default function MediaManager(props: {}) {
             renderer={renderer}
             projectFrameRate={projectFramerate}
             dragAndDrop={dragAndDrop}
+            projectDuration={projectDuration}
+            selectedSegment={selectedSegment}
+            setSelectedSegment={setSelectedSegment}
         />
     );
 }

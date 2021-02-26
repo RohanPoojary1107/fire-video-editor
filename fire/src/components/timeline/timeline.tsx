@@ -1,153 +1,103 @@
 import styles from "./timeline.module.css";
-import CSS from 'csstype';
 import { Segment } from "../../model/types";
-import { useRef, useState } from 'react';
 
-export default function Timeline(props:any) {
+export default function Timeline(props: {
+    trackList: Segment[][],
+    projectDuration: number,
+    selectedSegment: Segment | null,
+    setSelectedSegment: (selected: Segment | null) => void,
+    currentTime: number,
+    setCurrentTime: (timestamp: number) => void
+}) {
+    const SCALE_FACTOR = 0.05;
+    const COLORS = [[255, 0, 0], [82, 0, 255], [0, 255, 15], [234, 0, 255], [25, 0, 255], [255, 231, 0]];
+    const COLOR_MULTIPLER = 0.5;
 
-  const [pointerOffset, setPointer] = useState<number>(0);
-  const [mouseOffset, setMouse] = useState<number>(0);
-  const [scrollX, setScrollX] = useState<number>(0);
-  const [screenOffset, setScreenOffset] = useState<number>(0);
-  const [draggedOn, setDraggedOn] = useState<String>("");
-  const setTimeLine = useRef<HTMLDivElement>(null);
-  const setFirstLine = useRef<HTMLDivElement>(null);
-
-  const DEFAULT_SECONDS_RULER = 60;
-  const RULER_EXTRA_PIXEL = 10;
-  const SECONDS_LENGTH = 5;
-  const SECONDS_CHUNKS = 10;
-
-  //@ts-ignore
-  const handleOnScoll = async(e) => {
-    if(setFirstLine.current){
-      setScrollX(setFirstLine.current.getBoundingClientRect().left);
-      if (screenOffset===0){
-        setScreenOffset(scrollX);
-      }
+    const formatTime = (time: number) => {
+        let s = (time / 1000).toFixed(2) + "s";
+        // while (s.length < (2 || 2)) { s = "0" + s; }
+        return s;
     }
-  };
 
-  function padNumber(number:number, size:number) {
-    var s = String(number);
-    while (s.length < (size || 2)) {s = "0" + s;}
-    return s;
-}
-  
-  function ruler(seconds:number) {
-
-    let secondsLength = seconds>0 ? seconds : DEFAULT_SECONDS_RULER;
-    let rows = [];
-    let second = 10;
-    do{
-      let currentMinute = Math.floor(second/60);
-      let currentSecond = (second - (currentMinute*60));
-      rows.push(`${padNumber(currentMinute,2)}:${padNumber(currentSecond,2)}`);
-      second = second + 10;
+    const lerp = (start: number, end: number, t: number) => {
+        return (end - start) * t + start;
     }
-    while(second<=seconds);
+
+    const ruler = () => {
+        let rows: any[] = [];
+
+        if (props.projectDuration > 0) {
+            let divisions = 10;
+            for (let i = 0; i < divisions; i++) {
+                let time = props.projectDuration / divisions * i;
+                rows.push(
+                    <div className={styles.s10} key={time}
+                        style={{ flex: `0 0 ${props.projectDuration / divisions * SCALE_FACTOR}px` }}
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            props.setCurrentTime(lerp(time, props.projectDuration / divisions * (i + 1), event.nativeEvent.offsetX / ((props.projectDuration / divisions) * SCALE_FACTOR)));
+                        }} >
+                        <p className={styles.time}>{formatTime(time)}</p>
+                        {/* <div className={styles.sec}></div>
+                    <div className={styles.sec}></div>
+                    <div className={styles.sec}></div>
+                    <div className={styles.sec}></div>
+                    <div className={styles.sec}></div> */}
+                        {/* {index === 0 ? <div ref={setFirstLine} className={styles.sec} style={{ height: 12 }}></div> : ''} */}
+                    </div>
+                )
+            }
+        }
+
+        return <div className={styles.track}>{rows}</div>;
+    }
+
+    const genTrack = (segments: Segment[]) => {
+        let segmentDivs = [];
+
+        for (let i = 0; i < segments.length; i++) {
+            const segment = segments[i];
+            const color = COLORS[i % COLORS.length];
+            let space = segment.start - (i == 0 ? 0 : (segments[i - 1].start + segments[i - 1].duration));
+            segmentDivs.push(<div style={{ flex: `0 0 ${space * SCALE_FACTOR}px` }}></div>);
+
+            segmentDivs.push(
+                <div
+                    className={`${styles.card} ${props.selectedSegment === segment ? styles.cardActive : ""}`}
+                    style={{
+                        flex: `0 0 ${segment.duration * SCALE_FACTOR - 4}px`,
+                        backgroundImage: `url(${segment.media.thumbnail})`,
+                        backgroundSize: "auto 100%",
+                        backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+                        border: `2px solid rgb(${color[0] * COLOR_MULTIPLER}, ${color[1] * COLOR_MULTIPLER}, ${color[2] * COLOR_MULTIPLER})`,
+                        boxShadow: props.selectedSegment === segment ? `rgb(${color[0]}, ${color[1]}, ${color[2]}) 4px 0px 10px` : ""
+                    }}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        props.setSelectedSegment(segment)
+                    }}
+                >
+                </div>
+            );
+        }
+
+        return <div className={styles.track}>{segmentDivs}</div>;
+    }
+
     return (
-      <div className={styles.rulerCon}>
-      <div className={styles.ruler}
-          style={{width:(rows.length*SECONDS_CHUNKS*SECONDS_LENGTH)+RULER_EXTRA_PIXEL}}>
-          {rows.map((second, index)=>
-              <div className={styles.s10} key={second} onDoubleClick={() => {setPointer(index*50); setMouse(-1)}}>
- 
-                  <span className={styles.time}>{second}</span>
-                  <div className={styles.sec}></div>
-                  
-                  <div className={styles.sec}></div>
-                  <div className={styles.sec}></div>
-                  <div className={styles.sec}></div>
-                  <div className={styles.sec}></div>
-                  {index===0?<div ref={setFirstLine} className={styles.sec} style={{height:12}}></div>:''}
-              </div>
-          )}
-      </div>
-      </div>
-  );
-}
-
-function pointer() {
-  let height = 240;
-  let width = 1620;
-  let offset = 0;
-  if(setTimeLine.current){
-    height = setTimeLine.current?.clientHeight;
-    width = setTimeLine.current?.clientWidth;
-  }
-  if(mouseOffset===-1){
-    if(pointerOffset===0){
-      offset = 1;
-    }
-    else{
-      offset = pointerOffset;
-    }
-  }
-  else{
-    offset = mouseOffset;
-  }
-  
-  const pointerStyle: CSS.Properties = {
-    height: 'calc(' + height +'px + 30px)',
-    transform: 'translateX('+ (offset + scrollX - screenOffset - 1) +'px)'
-  }
-  return(
-    <div style={pointerStyle} className={styles.pointer}>
-    <div className={styles.highlight}></div>
-    <div className={styles.indicator}></div>
-    </div>
-  )
-}
-
-function frame(segment: Segment){
-  let duration = segment.duration;
-  return(
-    <li className={`${styles.card}`} key={segment.media.file.name} style={{width:duration*5}}>
-      <img className={styles.img} src={segment.media.thumbnail} alt={segment.media.file.name} />
-    </li>  
-  )
-}
-
-function frames(segmentList: Segment[]){
-  return(
-    <ul className={styles.frames}>
-      {segmentList.map((segment)=>{
-        return(frame(segment));
-        })}
-    </ul>
-  )
-}
-
-const onDrag = async (e: React.DragEvent<HTMLDivElement>) => {
-  e.preventDefault();
-  e.stopPropagation();
-  setDraggedOn("");
-
-  console.log(props.videos);
-
-  if (!e.dataTransfer) return;
-
-  for (const item of Object.values(e.dataTransfer.items)) {
-    console.log(item);
-  }
-}
-
-  return (
-    <div ref={setTimeLine} className={styles.container}
-    onDragOver={(e) => { e.stopPropagation(); e.preventDefault(); setDraggedOn('draggedOn');}}
-    onDragEnter={(e) => { e.stopPropagation(); e.preventDefault(); setDraggedOn('draggedOn');}}
-    onDragLeave={(e) => { e.stopPropagation(); e.preventDefault(); setDraggedOn("");}}
-    onDrop={onDrag}
-    onScroll={handleOnScoll}
-    >
-      <div className={styles.timebar}>
-        {ruler(360)}
-        {pointer()}
-      </div>
-
-      {frames(props.videos)}
-
-    </div>
-  );
+        <div className={styles.container}
+            onClick={() => props.setSelectedSegment(null)}
+        >
+            <div style={{
+                transform: `translateX(${props.currentTime * SCALE_FACTOR}px)`
+            }} className={styles.pointer}>
+                <div className={styles.highlight}></div>
+                <div className={styles.indicator}></div>
+            </div>
+            <div className={styles.tracks}>
+                {ruler()}
+                {props.trackList.map(track => genTrack(track))}
+            </div>
+        </div >
+    );
 }

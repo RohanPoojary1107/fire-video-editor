@@ -1,17 +1,35 @@
+import { ChangeEvent } from "react";
 import styles from "./controls.module.css";
 
-export default function Controls({playVideo, pauseVideo, isPlaying}: {playVideo:any, pauseVideo:any, isPlaying: boolean}) {
-  // const [playing, setPlaying] = useState(false);
+export default function Controls(
+  {
+    playVideo,
+    pauseVideo,
+    isPlaying,
+    currentTime,
+    projectDuration,
+    setCurrentTime
+  }:
+    {
+      playVideo: any,
+      pauseVideo: any,
+      isPlaying: boolean,
+      currentTime: number,
+      projectDuration: number,
+      setCurrentTime: (timestamp: number) => void
+    }
+) {
   const togglePlaying = () => {
     if (isPlaying) {
-      // model.pause();
       pauseVideo();
     } else {
       playVideo();
     }
-
-    // setPlaying(model.playing);
   };
+
+  const onSeek = (event: ChangeEvent<HTMLInputElement>) => {
+    setCurrentTime(+event.target.value * projectDuration);
+  }
 
   return (
     <div className={styles.container}>
@@ -32,6 +50,8 @@ export default function Controls({playVideo, pauseVideo, isPlaying}: {playVideo:
         min="0"
         max="1"
         step={0.001}
+        onChange={onSeek}
+        value={projectDuration == 0 ? 0 : currentTime / projectDuration}
       ></input>
       <button className={styles.button}>
         <span className="material-icons">volume_up</span>
