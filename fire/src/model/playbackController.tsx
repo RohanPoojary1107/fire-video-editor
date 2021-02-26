@@ -63,9 +63,10 @@ export default function PlaybackController(props: {
 
         let segments = [];
         let needsSeek = false;
+        let toStop: Media[] = [];
         for (const segment of trackListRef.current[0]) {
             if (!(curTime >= segment.start && curTime < segment.start + segment.duration)) {
-                segment.media.element.pause();
+                toStop.push(segment.media);
                 continue;
             }
 
@@ -77,8 +78,13 @@ export default function PlaybackController(props: {
             segments.push(segment);
         }
 
+        for (const media of toStop) {
+            if (segments.findIndex(item => item.media === media) === -1) media.element.pause();
+        }
+
         if (needsSeek) {
             for (const segment of segments) {
+                segment.media.element.pause();
                 let mediaTime = (curTime - segment.start + segment.mediaStart) / 1000;
 
                 if (segment.media.element.currentTime !== mediaTime) {
