@@ -97,8 +97,8 @@ export default function MediaManager(props: {}) {
           start: 0,
           x: 0,
           y: 0,
-          width: projectWidth,
-          height: projectHeight,
+          scaleX: 1.0,
+          scaleY: 1.0,
         },
       ],
     };
