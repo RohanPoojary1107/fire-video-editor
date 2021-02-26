@@ -63,8 +63,9 @@ export default function MediaManager(props: {}) {
                 width: projectWidth,
                 height: projectHeight,
             }],
+            track: trackNum
         }
-
+        
         setTrackList([...trackList.slice(0, trackNum), [...trackList[trackNum], segment], ...trackList.slice(trackNum+1)]);
     }
 
@@ -73,50 +74,78 @@ export default function MediaManager(props: {}) {
         setTrackList(trackList.map((track) => track.filter((item: Segment) => item.media !== media)));
     }
 
-    const split = (timestamp: number, trackNum: number) => {
-        var index = getSegement(timestamp, trackNum);
-        
-        if (index !== -1) {
-            let duration = trackList[trackNum][index].duration;
+    const split = (timestamp: number) => {
+        if (selectedSegment !== null) {
+            console.log('split reached!', timestamp);
+            let duration = selectedSegment.duration;
+            let track = selectedSegment.track;
             // start & end is relative to timeline
-            let start = trackList[trackNum][index].start;
+            let start = selectedSegment.start;
             let end = start + duration;
+            let index = getSegement(timestamp, track);
+            console.log("index, track", index, track);
+            if (index!==-1){
+                
+                // create and change new Segment properties to adjust to timestamp
+                let newSegment: Segment = {
+                    media: selectedSegment.media,
+                    start: timestamp,
+                    duration: end-timestamp,
+                    mediaStart: timestamp - start,
+                    texture: selectedSegment.texture,
+                    // TODO: Deep copy keyframes adjusted to the split
+                    keyframes: selectedSegment.keyframes,
+                    track: selectedSegment.track
+                }
 
-            // create and change new Segment properties to adjust to timestamp
-            let newSegment: Segment = {
-                media: trackList[trackNum][index].media,
-                start: timestamp,
-                duration: end-timestamp,
-                mediaStart: timestamp - start,
-                texture: trackList[trackNum][index].texture,
-                // TODO: Deep copy keyframes adjusted to the split
-                keyframes: trackList[trackNum][index].keyframes
+                // update original Segment properties to prevent overlap
+                
+                // include new Segment to TrackList
+                let newTrackList = [];
+                for(let i=0; i<trackList.length; i++){
+                    console.log('i', i)
+                    if(i===track){
+                        let newSegmentList = [];
+                        for(let j=0; j<trackList[i].length; j++){
+                            console.log('j', i)
+                            // TODO: Deep copy keyframes adjusted to the split
+                            if(j===index){
+                                trackList[i][j].duration = timestamp - start;
+                                newSegmentList.push(trackList[i][j]);
+                                newSegmentList.push(newSegment);
+                            } else {
+                                newSegmentList.push(trackList[i][j]);
+                            }
+                        }
+                        newTrackList.push(newSegmentList);
+                    }
+                    else {
+                        newTrackList.push(trackList[i]);
+                    }
+                }
+                setTrackList(newTrackList);
+                // setTrackList([...trackList.slice(0, track), [...trackList[track].splice(index+1), newSegment], ...trackList.slice(track+1)]);
             }
-
-            // update original Segment properties to prevent overlap
-            trackList[trackNum][index].duration = timestamp - start;
-            // TODO: Deep copy keyframes adjusted to the split
-
-            // include new Segment to TrackList
-            setTrackList([...trackList.slice(0, trackNum), [...trackList[trackNum].splice(index+1), newSegment], ...trackList.slice(trackNum+1)]);
-
         }
     }
-    
+
     // given specified trackNum, return the index of the segment given timestamp
     // if no segement exists, return -1
     const getSegement = (timestamp: number, trackNum: number) => {
         var index = -1;
+        if (selectedSegment !== null) {
 
-        for(let i=0; i<trackList.length; i++){
-            let duration = trackList[trackNum][i].duration;
-            // start & end is relative to timeline
-            let start = trackList[trackNum][i].start;
-            let end = start + duration;
-
-            if(start <= timestamp && end > timestamp){
-                index = i;
-                break;
+            for(let i=0; i<trackList.length; i++){
+                console.log('looping' ,i)
+                let duration = trackList[trackNum][i].duration;
+                // start & end is relative to timeline
+                let start = trackList[trackNum][i].start;
+                let end = start + duration;
+                console.log(start, timestamp, end);
+                if(start <= timestamp && end > timestamp){
+                    index = i;
+                    break;
+                }
             }
         }
         return index;
@@ -136,6 +165,7 @@ export default function MediaManager(props: {}) {
             renderer={renderer}
             projectFrameRate={projectFramerate}
             dragAndDrop={dragAndDrop}
+            splitVideo={split}
         />
     );
 }
