@@ -26,13 +26,17 @@ export default function Editor(props: any) {
         playVideo={props.playVideo}
         pauseVideo={props.pauseVideo}
         isPlaying={props.isPlaying}
+        deleteSelectedSegment={props.deleteSelectedSegment}
       />
       <Element
         selectedSegment={props.selectedSegment}
         setSelectedSegment={props.setSelectedSegment}
       />
-      <Timeline videos={props.trackList[0]}
-      setSelectedSegment={props.setSelectedSegment}></Timeline>
+      <Timeline 
+      videos={props.trackList[0]}
+      selectedSegment={props.selectedSegment}
+      setSelectedSegment={props.setSelectedSegment}
+      />
       <Actions></Actions>
     </div>
   );

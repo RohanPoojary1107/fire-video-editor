@@ -108,7 +108,7 @@ export default function Timeline(props: any) {
 
     const pointerStyle: CSS.Properties = {
       height: "calc(" + height + "px + 30px)",
-      transform: "translateX(" + (offset + scrollX - screenOffset - 1) + "px)",
+      transform: "translateX(" + (offset + scrollX - screenOffset) + "px)",
     };
     return (
       <div style={pointerStyle} className={styles.pointer}>
@@ -120,18 +120,23 @@ export default function Timeline(props: any) {
 
   function frame(segment: Segment) {
     let duration = segment.duration;
+    
+    const divStyle = {
+      backgroundImage: "url(" + segment.media.thumbnail + ")",
+      backgroundSize: "auto 100%",
+    };
     return (
       <li
-        className={`${styles.card}`}
+        className={`${
+          props.selectedSegment === segment ? styles.cardActive : styles.card
+        }`}
         key={segment.media.file.name}
         style={{ width: duration * 5 }}
-        onDoubleClick={() => props.setSelectedSegment(segment)}
+        onDoubleClick={() => {
+          props.setSelectedSegment(segment);
+        }}
       >
-        <img
-          className={styles.img}
-          src={segment.media.thumbnail}
-          alt={segment.media.file.name}
-        />
+        <div className={styles.div} style={divStyle}></div>
       </li>
     );
   }
@@ -186,7 +191,6 @@ export default function Timeline(props: any) {
         {ruler(360)}
         {pointer()}
       </div>
-
       {frames(props.videos)}
     </div>
   );

@@ -29,7 +29,33 @@ export default function MediaManager(props: {}) {
     "2d"
   ) as CanvasRenderingContext2D;
 
-  const addVideo = async (file: File) => {
+  const addVideo = async (files: File[]) => {
+    let uniqueFiles: File[] = [];
+    let found = false;
+    for (let file of files) {
+      for (let i = 0; i < mediaList.length; i++) {
+        if (mediaList[i].file.name === file.name) {
+          found = true;
+          break;
+        }
+      }
+      if (found) continue;
+      uniqueFiles.push(file);
+    }
+
+    let filesList: Media[] = [];
+
+    for (let file of uniqueFiles) {
+      filesList.push(await generateThumbnail(file));
+    }
+
+    setMediaList([...mediaList, ...filesList]);
+
+    console.log("Sucessfully Loaded Segment Thumbnail!");
+    return;
+  };
+
+  const generateThumbnail = async (file: File) => {
     let elm = document.createElement("video") as HTMLVideoElement;
 
     await new Promise<void>((resolve, reject) => {
@@ -55,9 +81,7 @@ export default function MediaManager(props: {}) {
       thumbnail: thumbnailCanvas.toDataURL(),
     };
 
-    setMediaList([...mediaList, media]);
-
-    console.log("Sucessfully Loaded Segment Thumbnail!");
+    return media;
   };
 
   const dragAndDrop = (timestamp: number, media: Media, trackNum: number) => {
@@ -94,7 +118,11 @@ export default function MediaManager(props: {}) {
       )
     );
   };
-
+  const deleteSelectedSegment = () => {
+    if (selectedSegment !== null){
+        setTrackList(trackList.map((track) => track.filter((item: Segment) => item !== selectedSegment)));
+    }     
+}
   return (
     <PlaybackController
       {...props}
@@ -105,6 +133,7 @@ export default function MediaManager(props: {}) {
       setTrackList={setTrackList}
       addVideo={addVideo}
       deleteVideo={deleteVideo}
+      deleteSelectedSegment={deleteSelectedSegment}
       projectWidth={projectWidth}
       projectHeight={projectHeight}
       renderer={renderer}

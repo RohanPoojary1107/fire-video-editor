@@ -4,10 +4,12 @@ export default function Controls({
   playVideo,
   pauseVideo,
   isPlaying,
+  deleteSelectedSegment
 }: {
   playVideo: any;
   pauseVideo: any;
   isPlaying: boolean;
+  deleteSelectedSegment:any
 }) {
   // const [playing, setPlaying] = useState(false);
   const togglePlaying = () => {
@@ -56,7 +58,7 @@ export default function Controls({
       <button className={styles.button}>
         <span className="material-icons">content_cut</span>
       </button>
-      <button className={styles.button}>
+      <button className={styles.button} onClick={deleteSelectedSegment}>
         <span className="material-icons">delete</span>
       </button>
       <button className={styles.button}>
