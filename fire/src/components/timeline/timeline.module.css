@@ -94,3 +94,7 @@
   table-layout: fixed;
   width: 100%;
 }
+
+.move {
+  cursor: move !important;
+}

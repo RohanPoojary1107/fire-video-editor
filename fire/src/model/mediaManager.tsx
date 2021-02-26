@@ -96,7 +96,7 @@ export default function MediaManager(props: {}) {
                     scaleY: 1.0,
                 },
             ],
-            track:  trackNum
+            track: trackNum
         };
 
         setTrackList([
@@ -143,11 +143,11 @@ export default function MediaManager(props: {}) {
             let end = start + duration;
             let index = getSegement(timestamp, track);
             // make sure to not split a segment that is not selected
-            if(!(start <= timestamp && end > timestamp)){
+            if (!(start <= timestamp && end > timestamp)) {
                 return;
             }
-            if (index!==-1){
-                
+            if (index !== -1) {
+
                 // create and change new Segment properties to adjust to timestamp
 
                 // TODO: fix object copy???
@@ -159,7 +159,7 @@ export default function MediaManager(props: {}) {
                 let newSegment: Segment = {
                     media: selectedSegment.media,
                     start: timestamp,
-                    duration: end-timestamp,
+                    duration: end - timestamp,
                     mediaStart: timestamp - start,
                     texture: selectedSegment.texture,
                     // TODO: Deep copy keyframes adjusted to the split
@@ -167,15 +167,15 @@ export default function MediaManager(props: {}) {
                     track: selectedSegment.track
                 }
                 // update original Segment properties to prevent overlap
-                
+
                 // include new Segment to TrackList
                 let newTrackList = [];
-                for(let i=0; i<trackList.length; i++){
-                    if(i===track){
+                for (let i = 0; i < trackList.length; i++) {
+                    if (i === track) {
                         let newSegmentList = [];
-                        for(let j=0; j<trackList[i].length; j++){
+                        for (let j = 0; j < trackList[i].length; j++) {
                             // TODO: Deep copy keyframes adjusted to the split
-                            if(j===index){
+                            if (j === index) {
                                 trackList[i][j].duration = timestamp - start;
                                 newSegmentList.push(trackList[i][j]);
                                 newSegmentList.push(newSegment);
@@ -194,32 +194,35 @@ export default function MediaManager(props: {}) {
                 setTrackList(newTrackList);
             }
         }
-      };
-    
+    };
+
     // given specified trackNum, return the index of the segment given timestamp
     // if no segement exists, return -1
     const getSegement = (timestamp: number, trackNum: number) => {
         var index = -1;
-    
-        for(let i=0; i<trackList[trackNum].length; i++){
+
+        for (let i = 0; i < trackList[trackNum].length; i++) {
             let duration = trackList[trackNum][i].duration;
             // start & end is relative to timeline
             let start = trackList[trackNum][i].start;
             let end = start + duration;
-            if(start <= timestamp && end > timestamp){
+            if (start <= timestamp && end > timestamp) {
                 index = i;
                 break;
             }
         }
         return index;
-      };
+    };
 
     const updateSegment = (oldSeg: Segment, newSegment: Segment) => {
+        let projectDuration = 0;
         setTrackList(trackList.map((track) => track.map((segment: Segment) => {
+            projectDuration = Math.max(projectDuration, (segment === oldSeg ? (newSegment.start + newSegment.duration) : (segment.start + segment.duration)));
             return segment === oldSeg ? newSegment : segment;
         })));
 
         if (oldSeg === selectedSegment) setSelectedSegment(newSegment);
+        setProjectDuration(projectDuration);
     }
 
     return (
@@ -245,4 +248,4 @@ export default function MediaManager(props: {}) {
             splitVideo={split}
         />
     );
-  };
+}
