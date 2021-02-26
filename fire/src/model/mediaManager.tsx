@@ -135,11 +135,14 @@ export default function MediaManager(props: {}) {
     }
 
     const updateSegment = (oldSeg: Segment, newSegment: Segment) => {
+        let projectDuration = 0;
         setTrackList(trackList.map((track) => track.map((segment: Segment) => {
+            projectDuration = Math.max(projectDuration, (segment === oldSeg ? (newSegment.start + newSegment.duration) : (segment.start + segment.duration)));
             return segment === oldSeg ? newSegment : segment;
         })));
 
         if (oldSeg === selectedSegment) setSelectedSegment(newSegment);
+        setProjectDuration(projectDuration);
     }
 
     return (
@@ -164,30 +167,4 @@ export default function MediaManager(props: {}) {
             updateSegment={updateSegment}
         />
     );
-  };
-  const deleteSelectedSegment = () => {
-    if (selectedSegment !== null){
-        setTrackList(trackList.map((track) => track.filter((item: Segment) => item !== selectedSegment)));
-    }     
-}
-  return (
-    <PlaybackController
-      {...props}
-      canvasRef={canvasRef}
-      mediaList={mediaList}
-      setMediaList={setMediaList}
-      trackList={trackList}
-      setTrackList={setTrackList}
-      addVideo={addVideo}
-      deleteVideo={deleteVideo}
-      deleteSelectedSegment={deleteSelectedSegment}
-      projectWidth={projectWidth}
-      projectHeight={projectHeight}
-      renderer={renderer}
-      projectFrameRate={projectFramerate}
-      dragAndDrop={dragAndDrop}
-      selectedSegment={selectedSegment}
-      setSelectedSegment={setSelectedSegment}
-    />
-  );
 }

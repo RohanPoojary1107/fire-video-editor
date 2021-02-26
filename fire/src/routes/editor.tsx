@@ -67,6 +67,7 @@ export default function Editor(props: {
         setSelectedSegment={props.setSelectedSegment}
         currentTime={props.currentTime}
         setCurrentTime={props.setCurrentTime}
+        updateSegment={props.updateSegment}
       />
       <Actions></Actions>
     </div>

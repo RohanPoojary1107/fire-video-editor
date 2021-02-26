@@ -119,8 +119,6 @@ export default function PlaybackController(props: {
 
         renderFrame(true);
     }
-    renderFrame(props.trackList[0]);
-  };
 
     const pause = () => {
         setIsPlaying(false);
