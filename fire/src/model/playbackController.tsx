@@ -17,14 +17,15 @@ export default function PlaybackController(props: {
     projectHeight: number,
     renderer: WebGLRenderer,
     projectFrameRate: number,
-    dragAndDrop: (timestamp: number, media: Media, trackNum: number) => void
+    dragAndDrop: (timestamp: number, media: Media, trackNum: number) => void,
+    splitVideo: (timestamp: number) => void
     }) {
         
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [playbackTimeout, setPlaybackTimeout] = useState<number>(0);
     const [currentSegment, setCurrentSegment] = useState<Segment>();
     const [currentTime, setCurrentTime] = useState<number>(0);
-
+    
     const renderFrame = (segment: Segment[]) =>{
         props.renderer.drawSegments(segment, currentTime);
         setPlaybackTimeout(setTimeout(() => { renderFrame(segment); }, 1 / props.projectFrameRate) as unknown as number);
@@ -73,6 +74,7 @@ export default function PlaybackController(props: {
             playVideo={play} 
             pauseVideo={pause} 
             isPlaying={isPlaying}
+            currentTime={currentTime}
             />
           </Route>
         </Switch>

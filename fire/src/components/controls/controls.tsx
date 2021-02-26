@@ -1,6 +1,6 @@
 import styles from "./controls.module.css";
 
-export default function Controls({playVideo, pauseVideo, isPlaying}: {playVideo:any, pauseVideo:any, isPlaying: boolean}) {
+export default function Controls({playVideo, pauseVideo, isPlaying, splitVideo, currentTime}: {playVideo:any, pauseVideo:any, isPlaying: boolean, splitVideo:any, currentTime: number}) {
   // const [playing, setPlaying] = useState(false);
   const togglePlaying = () => {
     if (isPlaying) {
@@ -13,6 +13,10 @@ export default function Controls({playVideo, pauseVideo, isPlaying}: {playVideo:
     // setPlaying(model.playing);
   };
 
+  const createSplit = () => {
+    splitVideo(currentTime);
+  };
+  
   return (
     <div className={styles.container}>
       <button className={styles.button}>
@@ -51,7 +55,7 @@ export default function Controls({playVideo, pauseVideo, isPlaying}: {playVideo:
       <button className={styles.button}>
         <span className="material-icons">undo</span>
       </button>
-      <button className={styles.button}>
+      <button className={styles.button} onClick={createSplit}>
         <span className="material-icons">content_cut</span>
       </button>
       <button className={styles.button}>
