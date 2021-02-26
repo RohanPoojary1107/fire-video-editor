@@ -1,0 +1,19 @@
+.container {
+  grid-area: elements;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing);
+  padding-left: 0;
+  gap: 10px;
+}
+
+.pos {
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: row;
+    padding-left: var(--spacing);
+  }
+}
