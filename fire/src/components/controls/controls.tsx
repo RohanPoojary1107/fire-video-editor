@@ -9,6 +9,7 @@ export default function Controls(
         currentTime,
         projectDuration,
         setCurrentTime,
+        splitVideo,
         deleteSelectedSegment
     }:
         {
@@ -17,6 +18,7 @@ export default function Controls(
             isPlaying: boolean,
             currentTime: number,
             projectDuration: number,
+            splitVideo: any;
             setCurrentTime: (timestamp: number) => void,
             deleteSelectedSegment: any
         }
@@ -33,6 +35,10 @@ export default function Controls(
     const onSeek = (event: ChangeEvent<HTMLInputElement>) => {
         setCurrentTime(+event.target.value * projectDuration);
     }
+
+    const createSplit = () => {
+      splitVideo(currentTime);
+    };
 
     return (
         <div className={styles.container}>
@@ -68,7 +74,7 @@ export default function Controls(
             <button className={styles.button}>
                 <span className="material-icons">undo</span>
             </button>
-            <button className={styles.button}>
+            <button className={styles.button} onClick={createSplit}>
                 <span className="material-icons">content_cut</span>
             </button>
             <button className={styles.button} onClick={deleteSelectedSegment}>

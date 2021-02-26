@@ -22,6 +22,7 @@ export default function PlaybackController(props: {
     setSelectedSegment: (selected: Segment | null) => void,
     selectedSegment: Segment | null,
     updateSegment: (oldSeg: Segment, segment: Segment) => void,
+    splitVideo: (timestamp: number) => void,
     deleteSelectedSegment: () => void
 }) {
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
