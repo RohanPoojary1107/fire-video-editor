@@ -23,6 +23,7 @@ export default function Elements(props: any) {
             height: props.selectedSegment.keyframes[0].height,
           },
         ],
+        track:  props.selectedSegment.track
       };
       console.log(segment.keyframes[0].x);
       console.log(props.selectedSegment);
@@ -47,6 +48,7 @@ export default function Elements(props: any) {
             height: props.selectedSegment.keyframes[0].height,
           },
         ],
+        track:  props.selectedSegment.track
       };
       props.setSelectedSegment(segment);
     }
