@@ -29,6 +29,7 @@ export default function Controls(
         }
     };
 
+
     const onSeek = (event: ChangeEvent<HTMLInputElement>) => {
         setCurrentTime(+event.target.value * projectDuration);
     }

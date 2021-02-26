@@ -164,4 +164,30 @@ export default function MediaManager(props: {}) {
             updateSegment={updateSegment}
         />
     );
+  };
+  const deleteSelectedSegment = () => {
+    if (selectedSegment !== null){
+        setTrackList(trackList.map((track) => track.filter((item: Segment) => item !== selectedSegment)));
+    }     
+}
+  return (
+    <PlaybackController
+      {...props}
+      canvasRef={canvasRef}
+      mediaList={mediaList}
+      setMediaList={setMediaList}
+      trackList={trackList}
+      setTrackList={setTrackList}
+      addVideo={addVideo}
+      deleteVideo={deleteVideo}
+      deleteSelectedSegment={deleteSelectedSegment}
+      projectWidth={projectWidth}
+      projectHeight={projectHeight}
+      renderer={renderer}
+      projectFrameRate={projectFramerate}
+      dragAndDrop={dragAndDrop}
+      selectedSegment={selectedSegment}
+      setSelectedSegment={setSelectedSegment}
+    />
+  );
 }

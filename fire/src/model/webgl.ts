@@ -171,6 +171,7 @@ export class WebGLRenderer {
         // this matrix will scale our 1 unit quad
         // from 1 unit to texWidth, texHeight units
         matrix = m4.scale(matrix, [newWidth, newHeight, 0, 0]);
+      
         // Set the matrix.
         this.context.uniformMatrix4fv(this.matrixLocation, false, matrix);
 
