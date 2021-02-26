@@ -16,7 +16,7 @@ const options = {
     excludeAcceptAllOption: true
 };
 
-export default function MediaPool(props:any) {
+export default function MediaPool(props: any) {
     const [status, setStatus] = useState<string>('');
     const [draggedOn, setDraggedOn] = useState<String>("");
 
@@ -24,16 +24,16 @@ export default function MediaPool(props:any) {
         return (
             <Draggable key={item.file.name} draggableId={item.file.name} index={index}>
                 {(provided) => (
-                    <li className={`${styles.card}`} 
-                    key={item.file.name} 
-                    ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} 
-                    onDoubleClick={() => {props.previewVideo(item)}}>
+                    <li className={`${styles.card}`}
+                        key={item.file.name}
+                        ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}
+                    >
                         <img className={styles.img} src={item.thumbnail} alt={item.file.name} />
                         <p className={styles.cardCaption}>{item.file.name}</p>
                         <button className={styles.button} onClick={() => props.deleteVideo(item)}>
                             <span className="material-icons">delete</span>
                         </button>
-                    </li>  
+                    </li>
                 )}
             </Draggable>
         );
@@ -74,24 +74,24 @@ export default function MediaPool(props:any) {
 
     //@ts-ignore
     function handleOnDragEnd(result) {
-        if (result.destination){
+        if (result.destination) {
             const items = props.mediaList.slice();
             const [reorderedItem] = items.splice(result.source.index, 1);
             items.splice(result.destination.index, 0, reorderedItem);
             props.setMediaList(items);
         }
-        else{
-            props.dragAndDrop(0, props.mediaList[result.source.index], 0);  // currently only adding to track 0. 
+        else {
+            props.dragAndDrop(props.projectDuration, props.mediaList[result.source.index], 0);  // currently only adding to track 0. 
         }
     }
 
     return (
         <div
-        onDragOver={(e) => { e.stopPropagation(); e.preventDefault(); setDraggedOn('draggedOn');}}
-        onDragEnter={(e) => { e.stopPropagation(); e.preventDefault(); setDraggedOn('draggedOn');}}
-        onDragLeave={(e) => { e.stopPropagation(); e.preventDefault(); setDraggedOn("");}}
-        onDrop={onDrag}
-        className={`${styles.container} ${draggedOn}`}
+            onDragOver={(e) => { e.stopPropagation(); e.preventDefault(); setDraggedOn('draggedOn'); }}
+            onDragEnter={(e) => { e.stopPropagation(); e.preventDefault(); setDraggedOn('draggedOn'); }}
+            onDragLeave={(e) => { e.stopPropagation(); e.preventDefault(); setDraggedOn(""); }}
+            onDrop={onDrag}
+            className={`${styles.container} ${draggedOn}`}
         >
             <div className={styles.hbox}>
                 <h2 className={styles.title}>Project Files</h2>

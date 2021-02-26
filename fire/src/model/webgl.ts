@@ -1,6 +1,6 @@
 import { m4 } from "twgl.js";
 import { FRAGMENT_SHADER, VERTEX_SHADER } from "./shaders";
-import { Segment} from "./types";
+import { Segment } from "./types";
 
 export class WebGLRenderer {
     context: WebGLRenderingContext;
@@ -160,12 +160,18 @@ export class WebGLRenderer {
         // this matirx will convert from pixels to clip space
         let matrix = m4.ortho(0, this.context.canvas.width, this.context.canvas.height, 0, -1, 1);
 
+        let newWidth = segment.media.element.videoWidth * segment.keyframes[0].scaleX;
+        let newHeight = segment.media.element.videoHeight * segment.keyframes[0].scaleY;
+
         // this matrix will translate our quad to dstX, dstY
-        matrix = m4.translate(matrix, [segment.keyframes[0].x, segment.keyframes[0].y, 0, 0]);
+        matrix = m4.translate(matrix, [
+            (this.projectWidth / 2) + (segment.keyframes[0].x - (newWidth / 2)),
+            (this.projectHeight / 2) + (segment.keyframes[0].y - (newHeight / 2)), 0, 0]);
 
         // this matrix will scale our 1 unit quad
         // from 1 unit to texWidth, texHeight units
-        matrix = m4.scale(matrix, [segment.media.element.videoWidth * segment.keyframes[0].scaleX, segment.media.element.videoHeight * segment.keyframes[0].scaleY, 0, 0]);
+        matrix = m4.scale(matrix, [newWidth, newHeight, 0, 0]);
+      
         // Set the matrix.
         this.context.uniformMatrix4fv(this.matrixLocation, false, matrix);
 
