@@ -1,0 +1,14 @@
+Marking Rubric for the Sprint 2 class demo
+==========================================
+Team name: The Nerds
+
+Attendance: 2 marks full team is attending, 1 mark if at least one member not present, 0 marks the whole team not present
+Your mark: 2
+
+Working software: 8 marks if at least 4 features work flawlessly, take away 1 mark for each error or missing records on Jira.
+Your mark: 8
+
+Notes: Keep up the great work!! I'm always impressed each demo :)
+
+Total demo mark: 10/10
+
