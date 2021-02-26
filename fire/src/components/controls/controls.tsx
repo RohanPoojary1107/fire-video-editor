@@ -1,6 +1,20 @@
 import styles from "./controls.module.css";
 
-export default function Controls({playVideo, pauseVideo, isPlaying, splitVideo, currentTime}: {playVideo:any, pauseVideo:any, isPlaying: boolean, splitVideo:any, currentTime: number}) {
+export default function Controls({
+  playVideo,
+  pauseVideo,
+  isPlaying,
+  deleteSelectedSegment,
+  splitVideo,
+  currentTime
+}: {
+  playVideo: any;
+  pauseVideo: any;
+  isPlaying: boolean;
+  deleteSelectedSegment:any;
+  splitVideo: any;
+  currentTime: number;
+}) {
   // const [playing, setPlaying] = useState(false);
   const togglePlaying = () => {
     if (isPlaying) {
@@ -47,18 +61,12 @@ export default function Controls({playVideo, pauseVideo, isPlaying, splitVideo, 
         <span className="material-icons">remove</span>
       </button>
       <button className={styles.button}>
-        <span className="material-icons">arrow_back</span>
-      </button>
-      <button className={styles.button}>
-        <span className="material-icons">arrow_forward</span>
-      </button>
-      <button className={styles.button}>
         <span className="material-icons">undo</span>
       </button>
       <button className={styles.button} onClick={createSplit}>
         <span className="material-icons">content_cut</span>
       </button>
-      <button className={styles.button}>
+      <button className={styles.button} onClick={deleteSelectedSegment}>
         <span className="material-icons">delete</span>
       </button>
       <button className={styles.button}>

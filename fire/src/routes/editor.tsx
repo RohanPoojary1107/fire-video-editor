@@ -4,31 +4,41 @@ import Controls from "../components/controls/controls";
 import MediaPlayer from "../components/mediaPlayer/mediaPlayer";
 import Actions from "../components/actions/actions";
 import Timeline from "../components/timeline/timeline";
+import Element from "../components/elements/elements";
 
 export default function Editor(props: any) {
   return (
     <div className={styles.container}>
-      <MediaPool 
-      mediaList={props.mediaList} 
-      setMediaList={props.setMediaList} 
-      addVideo={props.addVideo} 
-      deleteVideo={props.deleteVideo}
-      previewVideo={props.previewVideo}
-      dragAndDrop={props.dragAndDrop}
+      <MediaPool
+        mediaList={props.mediaList}
+        setMediaList={props.setMediaList}
+        addVideo={props.addVideo}
+        deleteVideo={props.deleteVideo}
+        previewVideo={props.previewVideo}
+        dragAndDrop={props.dragAndDrop}
       />
       <MediaPlayer
-      canvasRef={props.canvasRef}
-      projectWidth={props.projectWidth}
-      projectHeight={props.projectHeight}
+        canvasRef={props.canvasRef}
+        projectWidth={props.projectWidth}
+        projectHeight={props.projectHeight}
       />
-      <Controls 
-      playVideo={props.playVideo}
-      pauseVideo={props.pauseVideo}
-      isPlaying={props.isPlaying}
-      splitVideo={props.splitVideo}
-      currentTime={props.currentTime}
+      <Controls
+        playVideo={props.playVideo}
+        pauseVideo={props.pauseVideo}
+        isPlaying={props.isPlaying}
+        deleteSelectedSegment={props.deleteSelectedSegment}
+        splitVideo={props.splitVideo}
+        currentTime={props.currentTime}
       />
-      <Timeline videos={props.trackList[0]}></Timeline>
+      <Element
+        selectedSegment={props.selectedSegment}
+        setSelectedSegment={props.setSelectedSegment}
+      />
+      <Timeline 
+      videos={props.trackList[0]}
+      selectedSegment={props.selectedSegment}
+      setSelectedSegment={props.setSelectedSegment}
+      />
       <Actions></Actions>
     </div>
   );
