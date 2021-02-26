@@ -71,12 +71,12 @@ export default function Timeline(props: {
         for (let i = 0; i < segments.length; i++) {
             const segment = segments[i];
             const color = COLORS[i % COLORS.length];
-            let space = segment.start - (i == 0 ? 0 : (segments[i - 1].start + segments[i - 1].duration));
+            let space = segment.start - (i === 0 ? 0 : (segments[i - 1].start + segments[i - 1].duration));
             segmentDivs.push(<div style={{ flex: `0 0 ${space * SCALE_FACTOR}px` }}></div>);
 
             segmentDivs.push(
                 <div
-                    className={`${styles.card} ${(props.selectedSegment === segment && dragMode === DragMode.MOVE) ? styles.move : ""}`}
+                    className={`${styles.card}`}
                     style={{
                         flex: `0 0 ${segment.duration * SCALE_FACTOR - 4}px`,
                         backgroundImage: `url(${segment.media.thumbnail})`,
@@ -115,7 +115,19 @@ export default function Timeline(props: {
 
     useEffect(() => {
         setTrackDivs(props.trackList.map(track => <div className={styles.track}>{genTrack(track)}</div>));
-    }, [props.trackList, props.selectedSegment, dragMode]);
+    }, [props.trackList, props.selectedSegment]);
+
+    useEffect(() => {
+        if (dragMode == DragMode.MOVE) {
+            document.body.style.cursor = "move";
+        } else if (dragMode == DragMode.TRIM_LEFT) {
+            document.body.style.cursor = "ew-resize";
+        } else if (dragMode == DragMode.TRIM_RIGHT) {
+            document.body.style.cursor = "ew-resize";
+        } else {
+            document.body.style.cursor = "";
+        }
+    }, [dragMode]);
 
     const clamp = (value: number, min: number, max: number) => {
         return Math.max(min, Math.min(max, value));
@@ -132,7 +144,20 @@ export default function Timeline(props: {
         if (dragMode === DragMode.MOVE) {
             props.updateSegment(props.selectedSegment, { ...props.selectedSegment, start: clamp(props.selectedSegment.start + change, 0, Infinity) });
         } else if (dragMode === DragMode.TRIM_LEFT) {
+            let newStart = clamp(props.selectedSegment.mediaStart + change, 0, props.selectedSegment.duration);
+            let mediaChange = newStart - props.selectedSegment.mediaStart;
+
+            props.updateSegment(props.selectedSegment, {
+                ...props.selectedSegment,
+                mediaStart: newStart,
+                // start: props.selectedSegment.start + mediaChange,
+                duration: props.selectedSegment.duration - mediaChange
+            });
         } else if (dragMode === DragMode.TRIM_RIGHT) {
+            props.updateSegment(props.selectedSegment, {
+                ...props.selectedSegment,
+                duration: clamp(props.selectedSegment.duration + change, 0, props.selectedSegment.media.element.duration * 1000)
+            });
         }
     }
 
