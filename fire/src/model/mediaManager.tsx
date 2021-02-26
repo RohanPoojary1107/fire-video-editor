@@ -118,7 +118,11 @@ export default function MediaManager(props: {}) {
       )
     );
   };
-
+  const deleteSelectedSegment = () => {
+    if (selectedSegment !== null){
+        setTrackList(trackList.map((track) => track.filter((item: Segment) => item !== selectedSegment)));
+    }     
+}
   return (
     <PlaybackController
       {...props}
@@ -129,6 +133,7 @@ export default function MediaManager(props: {}) {
       setTrackList={setTrackList}
       addVideo={addVideo}
       deleteVideo={deleteVideo}
+      deleteSelectedSegment={deleteSelectedSegment}
       projectWidth={projectWidth}
       projectHeight={projectHeight}
       renderer={renderer}
