@@ -4,6 +4,7 @@ import { Segment } from "../../model/types";
 
 export default function Properties(props: {
     selectedSegment: Segment,
+    currentTime: number,
     updateSegment: (oldSeg: Segment, segment: Segment) => void
 }) {
     const changeX = (event: ChangeEvent<HTMLInputElement>) => {
@@ -15,7 +16,8 @@ export default function Properties(props: {
             texture: props.selectedSegment.texture,
             keyframes: [
                 {
-                    start: props.selectedSegment.keyframes[0].start,
+                    //start: props.selectedSegment.keyframes[0].start,
+                    start: props.currentTime,
                     x: +event.target.value,
                     y: props.selectedSegment.keyframes[0].y,
                     scaleX: props.selectedSegment.keyframes[0].scaleX,
@@ -36,7 +38,8 @@ export default function Properties(props: {
             texture: props.selectedSegment.texture,
             keyframes: [
                 {
-                    start: props.selectedSegment.keyframes[0].start,
+                    //start: props.selectedSegment.keyframes[0].start,
+                    start: props.currentTime,
                     x: props.selectedSegment.keyframes[0].x,
                     y: +event.target.value,
                     scaleX: props.selectedSegment.keyframes[0].scaleX,
@@ -58,7 +61,8 @@ export default function Properties(props: {
             texture: props.selectedSegment.texture,
             keyframes: [
                 {
-                    start: props.selectedSegment.keyframes[0].start,
+                    //start: props.selectedSegment.keyframes[0].start,
+                    start: props.currentTime,
                     x: props.selectedSegment.keyframes[0].x,
                     y: props.selectedSegment.keyframes[0].y,
                     scaleX: props.selectedSegment.keyframes[0].scaleX,
@@ -81,7 +85,8 @@ export default function Properties(props: {
             texture: props.selectedSegment.texture,
             keyframes: [
                 {
-                    start: props.selectedSegment.keyframes[0].start,
+                    // start: props.selectedSegment.keyframes[0].start,
+                    start: props.currentTime,
                     x: props.selectedSegment.keyframes[0].x,
                     y: props.selectedSegment.keyframes[0].y,
                     scaleX: +event.target.value,
