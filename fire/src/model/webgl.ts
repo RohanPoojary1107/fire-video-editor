@@ -1,7 +1,13 @@
 import { m4 } from "twgl.js";
 import { FRAGMENT_SHADER, VERTEX_SHADER } from "./shaders";
-import { Segment } from "./types";
+import { KeyFrame, Segment } from "./types";
 
+interface Property {
+    start: number;
+    startTime: number;
+    end: number;
+    endTime: number;
+}
 export class WebGLRenderer {
     context: WebGLRenderingContext;
     program: WebGLProgram;
@@ -82,8 +88,8 @@ export class WebGLRenderer {
         this.context.viewport(0, 0, this.projectWidth, this.projectHeight);
         this.context.clear(this.context.COLOR_BUFFER_BIT);
 
-        for (const med of segments) {
-            this.drawImage(med);
+        for (const segment of segments) {
+            this.drawImage(segment, this.calculateProperties(segment, timestamp));
         }
 
         this.context.flush();
@@ -140,9 +146,75 @@ export class WebGLRenderer {
         return tex;
     }
 
+    private lerp(start: number, end: number, t: number) {
+        return (end - start) * t + start;
+    }
+
+    private inverseLerp(value: number, start: number, end: number) {
+        return Math.min(Math.max((value - start) / (end - start), 0), 1);
+    }
+
+    private updateProperty(obj: Property, value: number | undefined, timestamp: number) {
+        if (value !== undefined) {
+            obj.start = obj.end;
+            obj.startTime = obj.endTime;
+            obj.end = value;
+            obj.endTime = timestamp;
+        }
+    }
+
+    private calculateProperties(segment: Segment, timestamp: number): KeyFrame {
+        timestamp -= segment.start;
+
+        let x: Property = {
+            start: segment.keyframes[0].x ?? 0,
+            startTime: 0,
+            end: segment.keyframes[0].x ?? 0,
+            endTime: 0
+        }
+
+        let y: Property = {
+            start: segment.keyframes[0].y ?? 0,
+            startTime: 0,
+            end: segment.keyframes[0].y ?? 0,
+            endTime: 0
+        }
+
+        let scaleX: Property = {
+            start: segment.keyframes[0].scaleX ?? 1,
+            startTime: 0,
+            end: segment.keyframes[0].scaleX ?? 1,
+            endTime: 0
+        }
+
+        let scaleY: Property = {
+            start: segment.keyframes[0].scaleY ?? 1,
+            startTime: 0,
+            end: segment.keyframes[0].scaleY ?? 1,
+            endTime: 0
+        }
+
+        for (let i = 0; i < segment.keyframes.length; i++) {
+            const frame = segment.keyframes[i];
+            this.updateProperty(x, frame.x, frame.start);
+            this.updateProperty(y, frame.y, frame.start);
+            this.updateProperty(scaleX, frame.scaleX, frame.start);
+            this.updateProperty(scaleY, frame.scaleY, frame.start);
+            if (frame.start > timestamp) break;
+        }
+
+        return {
+            start: 0,
+            x: this.lerp(x.start, x.end, this.inverseLerp(timestamp, x.startTime, x.endTime)),
+            y: this.lerp(y.start, y.end, this.inverseLerp(timestamp, y.startTime, y.endTime)),
+            scaleX: this.lerp(scaleX.start, scaleX.end, this.inverseLerp(timestamp, scaleX.startTime, scaleX.endTime)),
+            scaleY: this.lerp(scaleY.start, scaleY.end, this.inverseLerp(timestamp, scaleY.startTime, scaleY.endTime)),
+        };
+    }
+
     // Unlike images, textures do not have a width and height associated
     // with them so we'll pass in the width and height of the texture
-    private drawImage(segment: Segment) {
+    private drawImage(segment: Segment, properties: KeyFrame) {
         this.context.bindTexture(this.context.TEXTURE_2D, segment.texture);
         this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, segment.media.element);
 
@@ -160,18 +232,18 @@ export class WebGLRenderer {
         // this matirx will convert from pixels to clip space
         let matrix = m4.ortho(0, this.context.canvas.width, this.context.canvas.height, 0, -1, 1);
 
-        let newWidth = segment.media.element.videoWidth * segment.keyframes[0].scaleX;
-        let newHeight = segment.media.element.videoHeight * segment.keyframes[0].scaleY;
+        let newWidth = segment.media.element.videoWidth * (properties.scaleX as number);
+        let newHeight = segment.media.element.videoHeight * (properties.scaleY as number);
 
         // this matrix will translate our quad to dstX, dstY
         matrix = m4.translate(matrix, [
-            (this.projectWidth / 2) + (segment.keyframes[0].x - (newWidth / 2)),
-            (this.projectHeight / 2) + (segment.keyframes[0].y - (newHeight / 2)), 0, 0]);
+            (this.projectWidth / 2) + ((properties.x as number) - (newWidth / 2)),
+            (this.projectHeight / 2) + ((properties.y as number) - (newHeight / 2)), 0, 0]);
 
         // this matrix will scale our 1 unit quad
         // from 1 unit to texWidth, texHeight units
         matrix = m4.scale(matrix, [newWidth, newHeight, 0, 0]);
-      
+
         // Set the matrix.
         this.context.uniformMatrix4fv(this.matrixLocation, false, matrix);
 

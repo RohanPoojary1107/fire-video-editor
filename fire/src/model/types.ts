@@ -6,7 +6,7 @@ export interface Media {
 
 export interface Segment {
     media: Media;
-    start: number;
+    start: number; // Global start
     duration: number;
     mediaStart: number;
     keyframes: KeyFrame[];
@@ -15,10 +15,15 @@ export interface Segment {
 }
 
 export interface KeyFrame {
-    start: number;
-    x: number;
-    y: number;
-    scaleX: number;
-    scaleY: number;
+    start: number; // Offset from segment start
+    x?: number;
+    y?: number;
+    scaleX?: number;
+    scaleY?: number;
+}
+
+export interface SegmentID {
+    index: number;
+    track: number;
 }
 

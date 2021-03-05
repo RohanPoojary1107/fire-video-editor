@@ -1,5 +1,5 @@
 import Editor from "../routes/editor";
-import { Media, Segment } from "./types";
+import { Media, Segment, SegmentID } from "./types";
 import React, { useEffect, useRef, useState } from "react";
 import { WebGLRenderer } from "./webgl";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
@@ -19,9 +19,9 @@ export default function PlaybackController(props: {
     projectFrameRate: number,
     projectDuration: number,
     dragAndDrop: (timestamp: number, media: Media, trackNum: number) => void,
-    setSelectedSegment: (selected: Segment | null) => void,
-    selectedSegment: Segment | null,
-    updateSegment: (oldSeg: Segment, segment: Segment) => void,
+    setSelectedSegment: (selected: SegmentID | null) => void,
+    selectedSegment: SegmentID | null,
+    updateSegment: (id: SegmentID, segment: Segment) => void,
     splitVideo: (timestamp: number) => void,
     deleteSelectedSegment: () => void
 }) {
@@ -55,11 +55,8 @@ export default function PlaybackController(props: {
     const renderFrame = async (update: boolean) => {
         let curTime = performance.now() - playbackStartTimeRef.current + lastPlaybackTimeRef.current;
         if (!update) curTime = lastPlaybackTimeRef.current;
+        if (curTime >= projectDurationRef.current) curTime = projectDurationRef.current;
         _setCurrentTime(curTime);
-
-        if (curTime >= projectDurationRef.current) {
-            curTime = projectDurationRef.current;
-        }
 
         let segments = [];
         let needsSeek = false;
@@ -71,20 +68,17 @@ export default function PlaybackController(props: {
             }
 
             let mediaTime = (curTime - segment.start + segment.mediaStart);
-            if (Math.abs(segment.media.element.currentTime * 1000 - mediaTime) > SKIP_THREASHOLD || segment.media.element.paused) {
-                needsSeek = true;
-            }
-
+            if (Math.abs(segment.media.element.currentTime * 1000 - mediaTime) > SKIP_THREASHOLD || segment.media.element.paused) needsSeek = true;
             segments.push(segment);
         }
 
         for (const media of toStop) {
-            if (segments.findIndex(item => item.media === media) === -1) media.element.pause();
+            if (segments.findIndex(item => item.media === media) === -1) try { media.element.pause(); } catch (error) { };
         }
 
         if (needsSeek) {
             for (const segment of segments) {
-                segment.media.element.pause();
+                try { segment.media.element.pause(); } catch (error) { }
                 let mediaTime = (curTime - segment.start + segment.mediaStart) / 1000;
 
                 if (segment.media.element.currentTime !== mediaTime) {
@@ -101,9 +95,10 @@ export default function PlaybackController(props: {
 
         props.renderer.drawSegments(segments, curTime);
 
+
         if (!isPlayingRef.current) {
             for (const segment of trackListRef.current[0]) {
-                segment.media.element.pause();
+                try { segment.media.element.pause(); } catch (error) { }
             }
             return;
         }
