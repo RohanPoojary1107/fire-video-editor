@@ -6,7 +6,9 @@ export default function Properties({
     trackList,
     selectedSegment,
     updateSegment,
+    currentTime,
 }: {
+    currentTime: number,
     trackList: Segment[][],
     selectedSegment: SegmentID,
     updateSegment: (id: SegmentID, segment: Segment) => void

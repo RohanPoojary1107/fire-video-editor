@@ -62,6 +62,7 @@ export default function Editor(props: {
         <Properties
           trackList={props.trackList}
           selectedSegment={props.selectedSegment}
+          currentTime={props.currentTime}
           updateSegment={props.updateSegment}
         /> : ""}
       <Timeline

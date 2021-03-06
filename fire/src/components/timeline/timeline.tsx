@@ -33,6 +33,7 @@ export default function Timeline({
     const containerRef = useRef<HTMLDivElement>(null);
     const [trackDivs, setTrackDivs] = useState<JSX.Element[]>([]);
     const dragStartRef = useRef<number>(0);
+    const divisions = 200;
 
     const formatTime = (time: number) => {
         let s = (time / 1000).toFixed(2) + "s";
@@ -48,7 +49,6 @@ export default function Timeline({
         let rows: any[] = [];
 
         if (projectDuration > 0) {
-            let divisions = 10;
             for (let i = 0; i < divisions; i++) {
                 let time = projectDuration / divisions * i;
                 rows.push(
@@ -83,15 +83,40 @@ export default function Timeline({
             segmentDivs.push(<div style={{ flex: `0 0 ${space * SCALE_FACTOR}px` }}></div>);
 
             segmentDivs.push(
+                <div className={`${styles.fullCard}`}
+                style={{
+                    flex: `0 0 ${segment.duration * SCALE_FACTOR - 4}px`
+                }}
+                onClick={(event) => {
+                    event.stopPropagation();
+                }}
+                onMouseDown={(event) => {
+                    if (containerRef.current === null) return;
+                    event.stopPropagation();
+                    event.preventDefault();
+                    // setSelectedSegment({ track: 0, index: i });
+
+                    dragStartRef.current = (event.nativeEvent.clientX - containerRef.current.getBoundingClientRect().left + containerRef.current.scrollLeft);
+
+                    if (event.nativeEvent.offsetX < 50) {
+                        setDragMode(DragMode.TRIM_LEFT);
+                    } else if (event.nativeEvent.offsetX > (event.nativeEvent.target as HTMLDivElement).clientWidth - 50) {
+                        setDragMode(DragMode.TRIM_RIGHT);
+                    } else {
+                        setDragMode(DragMode.MOVE);
+                    }
+                }} 
+                >
                 <div
                     className={`${styles.card}`}
                     style={{
-                        flex: `0 0 ${segment.duration * SCALE_FACTOR - 4}px`,
                         backgroundImage: `url(${segment.media.thumbnail})`,
                         backgroundSize: "auto 100%",
                         backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
                         border: `2px solid rgb(${color[0] * COLOR_MULTIPLER}, ${color[1] * COLOR_MULTIPLER}, ${color[2] * COLOR_MULTIPLER})`,
-                        boxShadow: selectedSegment?.index === i ? `rgb(${color[0]}, ${color[1]}, ${color[2]}) 4px 0px 10px` : ""
+                        borderRadius: "10px",
+                        boxShadow: selectedSegment?.index === i ? `rgb(${color[0]}, ${color[1]}, ${color[2]}) 4px 0px 10px` : "",
+                        height: "60px"
                     }}
                     onClick={(event) => {
                         event.stopPropagation();
@@ -114,6 +139,23 @@ export default function Timeline({
                         }
                     }}
                 >
+                </div>
+                {selectedSegment !== null ? <div className={`${styles.keyframeCard}`}>
+                    {segment.keyframes.map((keyframe)=>{
+                        return(
+                        <button 
+                        style={{
+                            transform: `translateX(${currentTime * SCALE_FACTOR}px) rotate(45deg)`
+                        }} 
+                        className={styles.keyframeBtn} 
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            setCurrentTime(currentTime+segment.start);
+                        }}
+                        ></button>
+                        )
+                    })}
+                </div> : ""}
                 </div>
             );
         }
