@@ -1,15 +1,23 @@
 import styles from "./timeline.module.css";
-import { Segment } from "../../model/types";
+import { Segment, SegmentID } from "../../model/types";
 import { useState, MouseEvent, useRef, useEffect } from "react";
 
-export default function Timeline(props: {
+export default function Timeline({
+    trackList,
+    projectDuration,
+    selectedSegment,
+    setSelectedSegment,
+    currentTime,
+    setCurrentTime,
+    updateSegment
+}: {
     trackList: Segment[][],
     projectDuration: number,
-    selectedSegment: Segment | null,
-    setSelectedSegment: (selected: Segment | null) => void,
+    selectedSegment: SegmentID | null,
+    setSelectedSegment: (selected: SegmentID | null) => void,
     currentTime: number,
     setCurrentTime: (timestamp: number) => void,
-    updateSegment: (oldSeg: Segment, segment: Segment) => void
+    updateSegment: (id: SegmentID, segment: Segment) => void
 }) {
     enum DragMode {
         NONE,
@@ -40,15 +48,15 @@ export default function Timeline(props: {
     const ruler = () => {
         let rows: any[] = [];
 
-        if (props.projectDuration > 0) {
+        if (projectDuration > 0) {
             for (let i = 0; i < divisions; i++) {
-                let time = props.projectDuration / divisions * i;
+                let time = projectDuration / divisions * i;
                 rows.push(
                     <div className={styles.s10} key={time}
-                        style={{ flex: `0 0 ${props.projectDuration / divisions * SCALE_FACTOR}px` }}
+                        style={{ flex: `0 0 ${projectDuration / divisions * SCALE_FACTOR}px` }}
                         onClick={(event) => {
                             event.stopPropagation();
-                            props.setCurrentTime(lerp(time, props.projectDuration / divisions * (i + 1), event.nativeEvent.offsetX / ((props.projectDuration / divisions) * SCALE_FACTOR)));
+                            setCurrentTime(lerp(time, projectDuration / divisions * (i + 1), event.nativeEvent.offsetX / ((projectDuration / divisions) * SCALE_FACTOR)));
                         }} >
                         <p className={styles.time}>{formatTime(time)}</p>
                         {/* <div className={styles.sec}></div>
@@ -86,7 +94,7 @@ export default function Timeline(props: {
                     if (containerRef.current === null) return;
                     event.stopPropagation();
                     event.preventDefault();
-                    props.setSelectedSegment(segment);
+                    // setSelectedSegment({ track: 0, index: i });
 
                     dragStartRef.current = (event.nativeEvent.clientX - containerRef.current.getBoundingClientRect().left + containerRef.current.scrollLeft);
 
@@ -107,25 +115,42 @@ export default function Timeline(props: {
                         backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
                         border: `2px solid rgb(${color[0] * COLOR_MULTIPLER}, ${color[1] * COLOR_MULTIPLER}, ${color[2] * COLOR_MULTIPLER})`,
                         borderRadius: "10px",
-                        boxShadow: props.selectedSegment === segment ? `rgb(${color[0]}, ${color[1]}, ${color[2]}) 4px 0px 10px` : "",
+                        boxShadow: selectedSegment?.index === i ? `rgb(${color[0]}, ${color[1]}, ${color[2]}) 4px 0px 10px` : "",
                         height: "60px"
                     }}
                     onClick={(event) => {
                         event.stopPropagation();
                     }}
+
+                    onMouseDown={(event) => {
+                        if (containerRef.current === null) return;
+                        event.stopPropagation();
+                        event.preventDefault();
+                        setSelectedSegment({ track: 0, index: i });
+
+                        dragStartRef.current = (event.nativeEvent.clientX - containerRef.current.getBoundingClientRect().left + containerRef.current.scrollLeft);
+
+                        if (event.nativeEvent.offsetX < 50) {
+                            setDragMode(DragMode.TRIM_LEFT);
+                        } else if (event.nativeEvent.offsetX > (event.nativeEvent.target as HTMLDivElement).clientWidth - 50) {
+                            setDragMode(DragMode.TRIM_RIGHT);
+                        } else {
+                            setDragMode(DragMode.MOVE);
+                        }
+                    }}
                 >
                 </div>
-                {props.selectedSegment !== null ? <div className={`${styles.keyframeCard}`}>
+                {selectedSegment !== null ? <div className={`${styles.keyframeCard}`}>
                     {segment.keyframes.map((keyframe)=>{
                         return(
                         <button 
                         style={{
-                            transform: `translateX(${props.currentTime * SCALE_FACTOR}px) rotate(45deg)`
+                            transform: `translateX(${currentTime * SCALE_FACTOR}px) rotate(45deg)`
                         }} 
                         className={styles.keyframeBtn} 
                         onClick={(event) => {
                             event.stopPropagation();
-                            props.setCurrentTime(props.currentTime);
+                            setCurrentTime(currentTime+segment.start);
                         }}
                         ></button>
                         )
@@ -139,8 +164,8 @@ export default function Timeline(props: {
     }
 
     useEffect(() => {
-        setTrackDivs(props.trackList.map(track => <div className={styles.track}>{genTrack(track)}</div>));
-    }, [props.trackList, props.selectedSegment]);
+        setTrackDivs(trackList.map(track => <div className={styles.track}>{genTrack(track)}</div>));
+    }, [trackList, selectedSegment]);
 
     useEffect(() => {
         if (dragMode == DragMode.MOVE) {
@@ -160,36 +185,29 @@ export default function Timeline(props: {
 
     const handleMove = (event: MouseEvent) => {
         timeout.current = 0;
-        if (props.selectedSegment === null || containerRef.current == null) return;
+        if (selectedSegment === null || containerRef.current == null) return;
 
+        const segment = trackList[selectedSegment.track][selectedSegment.index];
         let end = (event.nativeEvent.clientX - containerRef.current.getBoundingClientRect().left + containerRef.current.scrollLeft);
         let change = (end - dragStartRef.current) / SCALE_FACTOR;
         dragStartRef.current = end;
 
         if (dragMode === DragMode.MOVE) {
-            props.updateSegment(props.selectedSegment, { ...props.selectedSegment, start: clamp(props.selectedSegment.start + change, 0, Infinity) });
+            updateSegment(selectedSegment, { ...segment, start: clamp(segment.start + change, 0, Infinity) });
         } else if (dragMode === DragMode.TRIM_LEFT) {
-            let newStart = clamp(props.selectedSegment.mediaStart + change, 0, props.selectedSegment.duration);
-            let mediaChange = newStart - props.selectedSegment.mediaStart;
+            let newStart = clamp(segment.mediaStart + change, 0, segment.duration);
+            let mediaChange = newStart - segment.mediaStart;
 
-            props.updateSegment(props.selectedSegment, {
-                ...props.selectedSegment,
-                mediaStart: newStart,
-                // start: props.selectedSegment.start + mediaChange,
-                duration: props.selectedSegment.duration - mediaChange
-            });
+            updateSegment(selectedSegment, { ...segment, mediaStart: newStart, duration: segment.duration - mediaChange });
         } else if (dragMode === DragMode.TRIM_RIGHT) {
-            props.updateSegment(props.selectedSegment, {
-                ...props.selectedSegment,
-                duration: clamp(props.selectedSegment.duration + change, 0, props.selectedSegment.media.element.duration * 1000)
-            });
+            updateSegment(selectedSegment, { ...segment, duration: clamp(segment.duration + change, 0, segment.media.element.duration * 1000) });
         }
     }
 
     const onMouseMove = (event: MouseEvent) => {
         event.stopPropagation();
         event.preventDefault();
-        if (timeout.current === 0) timeout.current = setTimeout(() => { handleMove(event); }, 100) as unknown as number;
+        if (timeout.current === 0) timeout.current = setTimeout(() => { handleMove(event); }, 0) as unknown as number;
     }
 
     const dragEnd = (event: MouseEvent) => {
@@ -200,14 +218,14 @@ export default function Timeline(props: {
 
     return (
         <div className={styles.container}
-            onClick={() => props.setSelectedSegment(null)}
+            onClick={() => setSelectedSegment(null)}
             onMouseMove={onMouseMove}
             ref={containerRef}
             onMouseLeave={dragEnd}
             onMouseUp={dragEnd}
         >
             <div style={{
-                transform: `translateX(${props.currentTime * SCALE_FACTOR}px)`
+                transform: `translateX(${currentTime * SCALE_FACTOR}px)`
             }} className={styles.pointer}>
                 <div className={styles.highlight}></div>
                 <div className={styles.indicator}></div>

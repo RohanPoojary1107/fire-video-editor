@@ -1,101 +1,34 @@
 import styles from "./properties.module.css";
 import { ChangeEvent } from "react";
-import { Segment } from "../../model/types";
+import { Segment, SegmentID } from "../../model/types";
 
-export default function Properties(props: {
-    selectedSegment: Segment,
+export default function Properties({
+    trackList,
+    selectedSegment,
+    updateSegment,
+    currentTime,
+}: {
     currentTime: number,
-    updateSegment: (oldSeg: Segment, segment: Segment) => void
+    trackList: Segment[][],
+    selectedSegment: SegmentID,
+    updateSegment: (id: SegmentID, segment: Segment) => void
 }) {
+    const segment = trackList[selectedSegment.track][selectedSegment.index];
+
     const changeX = (event: ChangeEvent<HTMLInputElement>) => {
-        let segment: Segment = {
-            media: props.selectedSegment.media,
-            start: props.selectedSegment.start,
-            duration: props.selectedSegment.duration,
-            mediaStart: props.selectedSegment.mediaStart,
-            texture: props.selectedSegment.texture,
-            keyframes: [
-                {
-                    //start: props.selectedSegment.keyframes[0].start,
-                    start: props.currentTime,
-                    x: +event.target.value,
-                    y: props.selectedSegment.keyframes[0].y,
-                    scaleX: props.selectedSegment.keyframes[0].scaleX,
-                    scaleY: props.selectedSegment.keyframes[0].scaleY,
-                },
-            ],
-            track: props.selectedSegment.track
-        };
-        props.updateSegment(props.selectedSegment, segment);
-    };
+        updateSegment(selectedSegment, { ...segment, keyframes: [{ ...segment.keyframes[0], x: +event.target.value, }] });
+    }
 
     const changeY = (event: ChangeEvent<HTMLInputElement>) => {
-        let segment: Segment = {
-            media: props.selectedSegment.media,
-            start: props.selectedSegment.start,
-            duration: props.selectedSegment.duration,
-            mediaStart: props.selectedSegment.mediaStart,
-            texture: props.selectedSegment.texture,
-            keyframes: [
-                {
-                    //start: props.selectedSegment.keyframes[0].start,
-                    start: props.currentTime,
-                    x: props.selectedSegment.keyframes[0].x,
-                    y: +event.target.value,
-                    scaleX: props.selectedSegment.keyframes[0].scaleX,
-                    scaleY: props.selectedSegment.keyframes[0].scaleY,
-                },
-            ],
-            track: props.selectedSegment.track
-        };
-        props.updateSegment(props.selectedSegment, segment);
+        updateSegment(selectedSegment, { ...segment, keyframes: [{ ...segment.keyframes[0], y: +event.target.value, }] });
     };
 
     const zoomHeight = (event: ChangeEvent<HTMLInputElement>) => {
-
-        let segment: Segment = {
-            media: props.selectedSegment.media,
-            start: props.selectedSegment.start,
-            duration: props.selectedSegment.duration,
-            mediaStart: props.selectedSegment.mediaStart,
-            texture: props.selectedSegment.texture,
-            keyframes: [
-                {
-                    //start: props.selectedSegment.keyframes[0].start,
-                    start: props.currentTime,
-                    x: props.selectedSegment.keyframes[0].x,
-                    y: props.selectedSegment.keyframes[0].y,
-                    scaleX: props.selectedSegment.keyframes[0].scaleX,
-                    scaleY: +event.target.value,
-                },
-            ],
-            track: props.selectedSegment.track
-        };
-        props.updateSegment(props.selectedSegment, segment);
-
+        updateSegment(selectedSegment, { ...segment, keyframes: [{ ...segment.keyframes[0], scaleY: +event.target.value, }] });
     };
 
     const zoomWidth = (event: ChangeEvent<HTMLInputElement>) => {
-
-        let segment: Segment = {
-            media: props.selectedSegment.media,
-            start: props.selectedSegment.start,
-            duration: props.selectedSegment.duration,
-            mediaStart: props.selectedSegment.mediaStart,
-            texture: props.selectedSegment.texture,
-            keyframes: [
-                {
-                    // start: props.selectedSegment.keyframes[0].start,
-                    start: props.currentTime,
-                    x: props.selectedSegment.keyframes[0].x,
-                    y: props.selectedSegment.keyframes[0].y,
-                    scaleX: +event.target.value,
-                    scaleY: props.selectedSegment.keyframes[0].scaleY,
-                },
-            ],
-            track: props.selectedSegment.track
-        };
-        props.updateSegment(props.selectedSegment, segment);
+        updateSegment(selectedSegment, { ...segment, keyframes: [{ ...segment.keyframes[0], scaleX: +event.target.value, }] });
     };
 
     return (
@@ -115,7 +48,7 @@ export default function Properties(props: {
                     step="10"
                     placeholder="0"
                     onChange={changeX}
-                    value={props.selectedSegment.keyframes[0].x}
+                    value={segment.keyframes[0].x}
                 />
             </span>
             <span>
@@ -127,7 +60,7 @@ export default function Properties(props: {
                     step="10"
                     placeholder="0"
                     onChange={changeY}
-                    value={props.selectedSegment.keyframes[0].y}
+                    value={segment.keyframes[0].y}
                 />
             </span>
 
@@ -144,7 +77,7 @@ export default function Properties(props: {
                     min="0.1"
                     max="100.0"
                     onChange={zoomWidth}
-                    value={props.selectedSegment.keyframes[0].scaleX}
+                    value={segment.keyframes[0].scaleX}
                 />
             </span>
             <span>
@@ -157,7 +90,7 @@ export default function Properties(props: {
                     min="0.1"
                     max="100.0"
                     onChange={zoomHeight}
-                    value={props.selectedSegment.keyframes[0].scaleY}
+                    value={segment.keyframes[0].scaleY}
                 />
             </span>
         </div>

@@ -4,7 +4,7 @@ import Controls from "../components/controls/controls";
 import MediaPlayer from "../components/mediaPlayer/mediaPlayer";
 import Actions from "../components/actions/actions";
 import Timeline from "../components/timeline/timeline";
-import { Media, Segment } from "../model/types";
+import { Media, Segment, SegmentID } from "../model/types";
 import { WebGLRenderer } from "../model/webgl";
 import Properties from "../components/elements/properties";
 
@@ -27,9 +27,9 @@ export default function Editor(props: {
   currentTime: number,
   setCurrentTime: (timestamp: number) => void,
   dragAndDrop: (timestamp: number, media: Media, trackNum: number) => void,
-  selectedSegment: Segment | null,
-  setSelectedSegment: (selected: Segment | null) => void,
-  updateSegment: (oldSeg: Segment, segment: Segment) => void,
+  selectedSegment: SegmentID | null,
+  setSelectedSegment: (selected: SegmentID | null) => void,
+  updateSegment: (id: SegmentID, segment: Segment) => void,
   splitVideo: (timestamp: number) => void,
   deleteSelectedSegment: () => void
 }) {
@@ -58,11 +58,13 @@ export default function Editor(props: {
         deleteSelectedSegment={props.deleteSelectedSegment}
         splitVideo={props.splitVideo}
       />
-      {props.selectedSegment !== null ? <Properties
-        selectedSegment={props.selectedSegment}
-        currentTime={props.currentTime}
-        updateSegment={props.updateSegment}
-      /> : ""}
+      {props.selectedSegment !== null ?
+        <Properties
+          trackList={props.trackList}
+          selectedSegment={props.selectedSegment}
+          currentTime={props.currentTime}
+          updateSegment={props.updateSegment}
+        /> : ""}
       <Timeline
         trackList={props.trackList}
         projectDuration={props.projectDuration}
