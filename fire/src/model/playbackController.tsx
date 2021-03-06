@@ -27,6 +27,7 @@ export default function PlaybackController(props: {
 }) {
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [currentTime, _setCurrentTime] = useState<number>(0);
+    const [currentKeyFrame, _setCurrentKey] = useState<number>(0);
     const trackListRef = useRef(props.trackList);
     const playbackStartTimeRef = useRef(0);
     const lastPlaybackTimeRef = useRef(0);
@@ -43,6 +44,10 @@ export default function PlaybackController(props: {
         _setCurrentTime(timestamp);
         if (!isPlayingRef.current) renderFrame(false);
     };
+
+    const setCurrentKey = (index: number) => {
+        _setCurrentKey(index);
+    }
 
     useEffect(() => {
         if (!isPlayingRef.current) renderFrame(false);
@@ -142,6 +147,8 @@ export default function PlaybackController(props: {
                         pauseVideo={pause}
                         isPlaying={isPlaying}
                         currentTime={currentTime}
+                        setCurrentKey={setCurrentKey}
+                        selectedKeyframe={currentKeyFrame}
                         projectDuration={props.projectDuration}
                         setCurrentTime={setCurrentTime}
                     />
