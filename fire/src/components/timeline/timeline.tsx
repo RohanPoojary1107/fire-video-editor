@@ -9,6 +9,7 @@ export default function Timeline({
     setSelectedSegment,
     currentTime,
     setCurrentTime,
+    setCurrentKey,
     updateSegment
 }: {
     trackList: Segment[][],
@@ -17,6 +18,7 @@ export default function Timeline({
     setSelectedSegment: (selected: SegmentID | null) => void,
     currentTime: number,
     setCurrentTime: (timestamp: number) => void,
+    setCurrentKey: (index: number) => void,
     updateSegment: (id: SegmentID, segment: Segment) => void
 }) {
     enum DragMode {
@@ -141,7 +143,7 @@ export default function Timeline({
                 >
                 </div>
                 {selectedSegment !== null ? <div className={`${styles.keyframeCard}`}>
-                    {segment.keyframes.map((keyframe)=>{
+                    {segment.keyframes.map((keyframe, index)=>{
                         return(
                         <button 
                         style={{
@@ -151,6 +153,7 @@ export default function Timeline({
                         onClick={(event) => {
                             event.stopPropagation();
                             setCurrentTime(currentTime+segment.start);
+                            setCurrentKey(index);
                         }}
                         ></button>
                         )
