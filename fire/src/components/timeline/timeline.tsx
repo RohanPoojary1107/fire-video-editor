@@ -36,9 +36,17 @@ export default function Timeline({
     const divisions = 200;
 
     const formatTime = (time: number) => {
-        let s = (time / 1000).toFixed(2) + "s";
-        // while (s.length < (2 || 2)) { s = "0" + s; }
-        return s;
+        //let s = (time / 1000).toFixed(2) + "s";
+        let s = parseFloat((time / 1000).toFixed(2));
+
+        let currentMinute = Math.floor(s/60);
+        let currentSecond = Math.floor(s/1) - currentMinute*60;
+        let minute = String(currentMinute);
+        while (minute.length < (2 || 2)) { minute = "0" + minute; }
+        let second = String(currentSecond);
+        while (second.length < (2 || 2)) { second = "0" + second; }
+
+        return minute+":"+second;
     }
 
     const lerp = (start: number, end: number, t: number) => {
@@ -59,12 +67,6 @@ export default function Timeline({
                             setCurrentTime(lerp(time, projectDuration / divisions * (i + 1), event.nativeEvent.offsetX / ((projectDuration / divisions) * SCALE_FACTOR)));
                         }} >
                         <p className={styles.time}>{formatTime(time)}</p>
-                        {/* <div className={styles.sec}></div>
-                    <div className={styles.sec}></div>
-                    <div className={styles.sec}></div>
-                    <div className={styles.sec}></div>
-                    <div className={styles.sec}></div> */}
-                        {/* {index === 0 ? <div ref={setFirstLine} className={styles.sec} style={{ height: 12 }}></div> : ''} */}
                     </div>
                 )
             }

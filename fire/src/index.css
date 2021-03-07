@@ -15,14 +15,14 @@ body {
   --spacing: 15px;
   --border-radius: 5px;
   --timeline-background-color: #0c0c0c;
-  --media-pool-background-color: #070707;
-  --media-pool-card-background-color: #101010;
+  --media-pool-background-color: #030303;
+  --media-pool-card-background-color: #0c0c0c;
   --media-player-background-color: #181818;
   --font-color: #838383;
-  --background-color: #030303;
+  --background-color: #050505;
   --icon-background-color: #101010;
   --icon-color: #838383;
-  --icon-background-hover-color: #090909;
+  --icon-background-hover-color: #030303;
   --scrollbar-color: #838383;
   overflow-x: hidden;
 }
@@ -83,7 +83,7 @@ button:hover {
 .draggedOn {
   outline: 2px dashed #313131;
   outline-offset: -10px;
-  transition: 0.5s;
+  transition: 0s;
 }
 
 ul li {
