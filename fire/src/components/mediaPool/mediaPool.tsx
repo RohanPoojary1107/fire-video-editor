@@ -62,14 +62,16 @@ export default function MediaPool(props: any) {
         e.stopPropagation();
         setDraggedOn("");
         if (!e.dataTransfer) return;
-
+        const files: File[] = [];
+        
         for (const item of Object.values(e.dataTransfer.items)) {
-            if (item.kind === 'file' && (item.type.includes('video'))) {
-                //@ts-ignore
-                const entry = await item.getAsFileSystemHandle();
-                await props.addVideo(await entry.getFile());
-            }
+            const file = item.getAsFile();
+
+            if(file !== null && (file.type.includes('video/') || file.type.includes('image/'))) files.push(file);
+            else alert(`Could not upload file: ${file?.name}. Only upload videos or images.`);
         }
+        await props.addVideo(files);
+        setStatus('');
     }
 
     //@ts-ignore
