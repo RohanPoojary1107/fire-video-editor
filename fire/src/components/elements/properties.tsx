@@ -100,6 +100,22 @@ export default function Properties({
         return false;
     }
 
+    const trimLeft = (event: ChangeEvent<HTMLInputElement>) => {
+        updateSegment(selectedSegment, { ...segment, keyframes: [{ ...segment.keyframes[selectedKeyframe], trimLeft: +event.target.value, }] });
+    }
+
+    const trimRight = (event: ChangeEvent<HTMLInputElement>) => {
+        updateSegment(selectedSegment, { ...segment, keyframes: [{ ...segment.keyframes[selectedKeyframe], trimRight: +event.target.value, }] });
+    }
+
+    const trimTop = (event: ChangeEvent<HTMLInputElement>) => {
+        updateSegment(selectedSegment, { ...segment, keyframes: [{ ...segment.keyframes[selectedKeyframe], trimTop: +event.target.value, }] });
+    }
+
+    const trimBottom = (event: ChangeEvent<HTMLInputElement>) => {
+        updateSegment(selectedSegment, { ...segment, keyframes: [{ ...segment.keyframes[selectedKeyframe], trimBottom: +event.target.value, }] });
+    }
+
     return (
         <div className={styles.container}>
             <label className={styles.pos}>
@@ -191,6 +207,75 @@ export default function Properties({
                     max="100.0"
                     onChange={zoomHeight}
                     value={segment.keyframes[selectedKeyframe].scaleY}
+                />
+            </span>
+            
+
+            <label className={styles.tags}>
+                Crop:
+                <button className={styles.keyframeNext}><span className="material-icons">keyboard_arrow_right</span></button>
+                <button className={styles.keyframeBtn}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        // let newKey = segment.keyframes.length+1;
+                        // console.log(segment.keyframes.length);
+                        // console.log(newKey);
+                        // updateSegment(selectedSegment, { ...segment, keyframes: [{ ...segment.keyframes[newKey]}] });
+                        // setCurrentKey(newKey);
+                    }}
+                ><span className="material-icons">circle</span></button>
+                <button className={styles.keyframePrev}><span className="material-icons">keyboard_arrow_left</span></button>
+            </label>
+            <span>
+                <label className={styles.tags}>Left:</label>
+                <input
+                    name="Left"
+                    className={styles.inputTag}
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="1.0"
+                    onChange={trimLeft}
+                    value={segment.keyframes[selectedKeyframe].trimLeft}
+                />
+            </span>
+            <span>
+                <label className={styles.tags}>Right:</label>
+                <input
+                    name="Right"
+                    className={styles.inputTag}
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="1.0"
+                    onChange={trimRight}
+                    value={segment.keyframes[selectedKeyframe].trimRight}
+                />
+            </span>
+            <span>
+                <label className={styles.tags}>Top:</label>
+                <input
+                    name="Top"
+                    className={styles.inputTag}
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="1.0"
+                    onChange={trimTop}
+                    value={segment.keyframes[selectedKeyframe].trimTop}
+                />
+            </span>
+            <span>
+                <label className={styles.tags}>Bottom:</label>
+                <input
+                    name="Bottom"
+                    className={styles.inputTag}
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="1.0"
+                    onChange={trimBottom}
+                    value={segment.keyframes[selectedKeyframe].trimBottom}
                 />
             </span>
         </div>

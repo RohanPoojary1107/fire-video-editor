@@ -20,6 +20,10 @@ export interface KeyFrame {
     y?: number;
     scaleX?: number;
     scaleY?: number;
+    trimLeft?: number;
+    trimRight?: number
+    trimTop?: number;
+    trimBottom?: number;
 }
 
 export interface SegmentID {

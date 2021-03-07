@@ -59,9 +59,9 @@ export class WebGLRenderer {
         // Put a unit quad in the buffer
         let positions = [
             0, 0,
-            0, 1,
+            1, 1,
             1, 0,
-            1, 0,
+            0, 0,
             0, 1,
             1, 1,
         ]
@@ -74,9 +74,9 @@ export class WebGLRenderer {
         // Put texcoords in the buffer
         let texcoords = [
             0, 0,
-            0, 1,
+            1, 1,
             1, 0,
-            1, 0,
+            0, 0,
             0, 1,
             1, 1,
         ]
@@ -166,55 +166,51 @@ export class WebGLRenderer {
     private calculateProperties(segment: Segment, timestamp: number): KeyFrame {
         timestamp -= segment.start;
 
-        let x: Property = {
-            start: segment.keyframes[0].x ?? 0,
-            startTime: 0,
-            end: segment.keyframes[0].x ?? 0,
-            endTime: 0
-        }
-
-        let y: Property = {
-            start: segment.keyframes[0].y ?? 0,
-            startTime: 0,
-            end: segment.keyframes[0].y ?? 0,
-            endTime: 0
-        }
-
-        let scaleX: Property = {
-            start: segment.keyframes[0].scaleX ?? 1,
-            startTime: 0,
-            end: segment.keyframes[0].scaleX ?? 1,
-            endTime: 0
-        }
-
-        let scaleY: Property = {
-            start: segment.keyframes[0].scaleY ?? 1,
-            startTime: 0,
-            end: segment.keyframes[0].scaleY ?? 1,
-            endTime: 0
+        const PROPERTY_NAMES = ['x', 'y', 'scaleX', 'scaleY', 'trimLeft', 'trimRight', 'trimBottom', 'trimTop'];
+        let properties = [];
+        for (const property of PROPERTY_NAMES) {
+            properties.push(
+                {
+                    //@ts-ignore
+                    start: segment.keyframes[0][property] ?? 0,
+                    startTime: 0,
+                    //@ts-ignore
+                    end: segment.keyframes[0][property] ?? 0,
+                    endTime: 0
+                }
+            )
         }
 
         for (let i = 0; i < segment.keyframes.length; i++) {
             const frame = segment.keyframes[i];
-            this.updateProperty(x, frame.x, frame.start);
-            this.updateProperty(y, frame.y, frame.start);
-            this.updateProperty(scaleX, frame.scaleX, frame.start);
-            this.updateProperty(scaleY, frame.scaleY, frame.start);
+
+            for (let j = 0; j < PROPERTY_NAMES.length; j++) {
+                //@ts-ignore
+                this.updateProperty(properties[j], frame[PROPERTY_NAMES[j]], frame.start);
+
+            }
             if (frame.start > timestamp) break;
         }
-
-        return {
+        let output = {
             start: 0,
-            x: this.lerp(x.start, x.end, this.inverseLerp(timestamp, x.startTime, x.endTime)),
-            y: this.lerp(y.start, y.end, this.inverseLerp(timestamp, y.startTime, y.endTime)),
-            scaleX: this.lerp(scaleX.start, scaleX.end, this.inverseLerp(timestamp, scaleX.startTime, scaleX.endTime)),
-            scaleY: this.lerp(scaleY.start, scaleY.end, this.inverseLerp(timestamp, scaleY.startTime, scaleY.endTime)),
-        };
+        }
+        for (let i = 0; i < PROPERTY_NAMES.length; i++) {
+            //@ts-ignore
+            output[PROPERTY_NAMES[i]] = this.lerp(properties[i].start, properties[i].end, this.inverseLerp(timestamp, properties[i].startTime, properties[i].endTime));
+
+        }
+        return output;
     }
 
     // Unlike images, textures do not have a width and height associated
     // with them so we'll pass in the width and height of the texture
     private drawImage(segment: Segment, properties: KeyFrame) {
+        if (properties.scaleX as number <= 0 ||
+            properties.scaleY as number <= 0 ||
+            (properties.trimLeft as number) + (properties.trimRight as number) >= 1 ||
+            (properties.trimTop as number) + (properties.trimBottom as number) >= 1) {
+            return;
+        }
         this.context.bindTexture(this.context.TEXTURE_2D, segment.texture);
         this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, segment.media.element);
 
@@ -225,7 +221,22 @@ export class WebGLRenderer {
         this.context.bindBuffer(this.context.ARRAY_BUFFER, this.positionBuffer);
         this.context.enableVertexAttribArray(this.positionLocation);
         this.context.vertexAttribPointer(this.positionLocation, 2, this.context.FLOAT, false, 0, 0);
+
+        // Begin Crop
         this.context.bindBuffer(this.context.ARRAY_BUFFER, this.texcoordBuffer);
+
+        // Put texcoords in the buffer
+        let texcoords = [
+            0 + (properties.trimLeft as number), 0 + (properties.trimTop as number),
+            1 - (properties.trimRight as number), 1 - (properties.trimBottom as number),
+            1 - (properties.trimRight as number), 0 + (properties.trimTop as number),
+            0 + (properties.trimLeft as number), 0 + (properties.trimTop as number),
+            0 + (properties.trimLeft as number), 1 - (properties.trimBottom as number),
+            1 - (properties.trimRight as number), 1 - (properties.trimBottom as number),
+        ]
+        this.context.bufferData(this.context.ARRAY_BUFFER, new Float32Array(texcoords), this.context.STATIC_DRAW);
+        // End Crop
+
         this.context.enableVertexAttribArray(this.texcoordLocation);
         this.context.vertexAttribPointer(this.texcoordLocation, 2, this.context.FLOAT, false, 0, 0);
 
@@ -236,13 +247,15 @@ export class WebGLRenderer {
         let newHeight = segment.media.element.videoHeight * (properties.scaleY as number);
 
         // this matrix will translate our quad to dstX, dstY
+
         matrix = m4.translate(matrix, [
-            (this.projectWidth / 2) + ((properties.x as number) - (newWidth / 2)),
-            (this.projectHeight / 2) + ((properties.y as number) - (newHeight / 2)), 0, 0]);
+            (this.projectWidth / 2) + ((properties.x as number) - (newWidth / 2)) + newWidth * (properties.trimLeft as number),
+            (this.projectHeight / 2) + ((properties.y as number) - (newHeight / 2)) + newHeight * (properties.trimTop as number), 0, 0]);
 
         // this matrix will scale our 1 unit quad
         // from 1 unit to texWidth, texHeight units
-        matrix = m4.scale(matrix, [newWidth, newHeight, 0, 0]);
+        matrix = m4.scale(matrix, [newWidth * (1 - (properties.trimRight as number) - (properties.trimLeft as number)),
+        newHeight * (1 - (properties.trimTop as number) - (properties.trimBottom as number)), 0, 0]);
 
         // Set the matrix.
         this.context.uniformMatrix4fv(this.matrixLocation, false, matrix);
