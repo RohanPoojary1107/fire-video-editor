@@ -144,11 +144,13 @@ export default function Timeline({
                         return(
                         <button 
                         style={{
-                            transform: `translateX(${(keyframe.start + segment.start) * SCALE_FACTOR}px) rotate(45deg)`
+                            transform: `translateX(${(keyframe.start) * SCALE_FACTOR}px) rotate(45deg)`
                         }} 
                         className={styles.keyframeBtn} 
                         onClick={(event) => {
                             event.stopPropagation();
+                            console.log(segment.start);
+                            console.log(keyframe.start);
                             setCurrentTime(segment.start + keyframe.start); 
                         }}
 

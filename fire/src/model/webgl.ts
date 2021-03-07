@@ -3,12 +3,7 @@ import { calculateProperties } from "../utils/interpolation";
 import { FRAGMENT_SHADER, VERTEX_SHADER } from "./shaders";
 import { KeyFrame, Segment } from "./types";
 
-interface Property {
-    start: number;
-    startTime: number;
-    end: number;
-    endTime: number;
-}
+
 export class WebGLRenderer {
     context: WebGLRenderingContext;
     program: WebGLProgram;

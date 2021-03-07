@@ -25,9 +25,7 @@ export default function Editor(props: {
   projectDuration: number,
   isPlaying: boolean,
   currentTime: number,
-  //selectedKeyframe: number,
   setCurrentTime: (timestamp: number) => void,
-  //setCurrentKey: (index: number) => void,
   dragAndDrop: (timestamp: number, media: Media, trackNum: number) => void,
   selectedSegment: SegmentID | null,
   setSelectedSegment: (selected: SegmentID | null) => void,
@@ -66,8 +64,6 @@ export default function Editor(props: {
           selectedSegment={props.selectedSegment}
           currentTime={props.currentTime}
           setCurrentTime={props.setCurrentTime}
-          //setCurrentKey={props.setCurrentKey}
-          //selectedKeyframe={props.selectedKeyframe}
           updateSegment={props.updateSegment}
         /> : ""}
       <Timeline
@@ -76,7 +72,6 @@ export default function Editor(props: {
         selectedSegment={props.selectedSegment}
         setSelectedSegment={props.setSelectedSegment}
         currentTime={props.currentTime}
-        //setCurrentKey={props.setCurrentKey}
         setCurrentTime={props.setCurrentTime}
         updateSegment={props.updateSegment}
       />

@@ -1,5 +1,12 @@
 import { KeyFrame, Segment } from "../model/types";
 
+interface Property {
+    start: number;
+    startTime: number;
+    end: number;
+    endTime: number;
+}
+
 const lerp = (start: number, end: number, t: number) => {
     return (end - start) * t + start;
 }
@@ -13,7 +20,7 @@ export const calculateProperties = (segment: Segment, timestamp: number): KeyFra
     timestamp -= segment.start;
 
     const PROPERTY_NAMES = ['x', 'y', 'scaleX', 'scaleY', 'trimLeft', 'trimRight', 'trimBottom', 'trimTop'];
-    let properties = [];
+    let properties: Property[] = [];
     for (const property of PROPERTY_NAMES) {
         properties.push(
             {
@@ -32,7 +39,6 @@ export const calculateProperties = (segment: Segment, timestamp: number): KeyFra
 
         for (let j = 0; j < PROPERTY_NAMES.length; j++) {
             //@ts-ignore
-            // this.updateProperty(properties[j], frame[PROPERTY_NAMES[j]], frame.start);
             if (frame[PROPERTY_NAMES[j]] !== undefined) {
                 properties[j].start = properties[j].end;
                 properties[j].startTime = properties[j].endTime;
