@@ -1,13 +1,9 @@
 import { m4 } from "twgl.js";
+import { calculateProperties } from "../utils/interpolation";
 import { FRAGMENT_SHADER, VERTEX_SHADER } from "./shaders";
 import { KeyFrame, Segment } from "./types";
 
-interface Property {
-    start: number;
-    startTime: number;
-    end: number;
-    endTime: number;
-}
+
 export class WebGLRenderer {
     context: WebGLRenderingContext;
     program: WebGLProgram;
@@ -89,7 +85,7 @@ export class WebGLRenderer {
         this.context.clear(this.context.COLOR_BUFFER_BIT);
 
         for (const segment of segments) {
-            this.drawImage(segment, this.calculateProperties(segment, timestamp));
+            this.drawImage(segment, calculateProperties(segment, timestamp));
         }
 
         this.context.flush();
@@ -146,61 +142,61 @@ export class WebGLRenderer {
         return tex;
     }
 
-    private lerp(start: number, end: number, t: number) {
-        return (end - start) * t + start;
-    }
+    // private lerp(start: number, end: number, t: number) {
+    //     return (end - start) * t + start;
+    // }
 
-    private inverseLerp(value: number, start: number, end: number) {
-        return Math.min(Math.max((value - start) / (end - start), 0), 1);
-    }
+    // private inverseLerp(value: number, start: number, end: number) {
+    //     return Math.min(Math.max((value - start) / (end - start), 0), 1);
+    // }
 
-    private updateProperty(obj: Property, value: number | undefined, timestamp: number) {
-        if (value !== undefined) {
-            obj.start = obj.end;
-            obj.startTime = obj.endTime;
-            obj.end = value;
-            obj.endTime = timestamp;
-        }
-    }
+    // private updateProperty(obj: Property, value: number | undefined, timestamp: number) {
+    //     if (value !== undefined) {
+    //         obj.start = obj.end;
+    //         obj.startTime = obj.endTime;
+    //         obj.end = value;
+    //         obj.endTime = timestamp;
+    //     }
+    // }
 
-    private calculateProperties(segment: Segment, timestamp: number): KeyFrame {
-        timestamp -= segment.start;
+    // private calculateProperties(segment: Segment, timestamp: number): KeyFrame {
+    //     timestamp -= segment.start;
 
-        const PROPERTY_NAMES = ['x', 'y', 'scaleX', 'scaleY', 'trimLeft', 'trimRight', 'trimBottom', 'trimTop'];
-        let properties = [];
-        for (const property of PROPERTY_NAMES) {
-            properties.push(
-                {
-                    //@ts-ignore
-                    start: segment.keyframes[0][property] ?? 0,
-                    startTime: 0,
-                    //@ts-ignore
-                    end: segment.keyframes[0][property] ?? 0,
-                    endTime: 0
-                }
-            )
-        }
+    //     const PROPERTY_NAMES = ['x', 'y', 'scaleX', 'scaleY', 'trimLeft', 'trimRight', 'trimBottom', 'trimTop'];
+    //     let properties = [];
+    //     for (const property of PROPERTY_NAMES) {
+    //         properties.push(
+    //             {
+    //                 //@ts-ignore
+    //                 start: segment.keyframes[0][property] ?? 0,
+    //                 startTime: 0,
+    //                 //@ts-ignore
+    //                 end: segment.keyframes[0][property] ?? 0,
+    //                 endTime: 0
+    //             }
+    //         )
+    //     }
 
-        for (let i = 0; i < segment.keyframes.length; i++) {
-            const frame = segment.keyframes[i];
+    //     for (let i = 0; i < segment.keyframes.length; i++) {
+    //         const frame = segment.keyframes[i];
 
-            for (let j = 0; j < PROPERTY_NAMES.length; j++) {
-                //@ts-ignore
-                this.updateProperty(properties[j], frame[PROPERTY_NAMES[j]], frame.start);
+    //         for (let j = 0; j < PROPERTY_NAMES.length; j++) {
+    //             //@ts-ignore
+    //             this.updateProperty(properties[j], frame[PROPERTY_NAMES[j]], frame.start);
 
-            }
-            if (frame.start > timestamp) break;
-        }
-        let output = {
-            start: 0,
-        }
-        for (let i = 0; i < PROPERTY_NAMES.length; i++) {
-            //@ts-ignore
-            output[PROPERTY_NAMES[i]] = this.lerp(properties[i].start, properties[i].end, this.inverseLerp(timestamp, properties[i].startTime, properties[i].endTime));
+    //         }
+    //         if (frame.start > timestamp) break;
+    //     }
+    //     let output = {
+    //         start: 0,
+    //     }
+    //     for (let i = 0; i < PROPERTY_NAMES.length; i++) {
+    //         //@ts-ignore
+    //         output[PROPERTY_NAMES[i]] = this.lerp(properties[i].start, properties[i].end, this.inverseLerp(timestamp, properties[i].startTime, properties[i].endTime));
 
-        }
-        return output;
-    }
+    //     }
+    //     return output;
+    // }
 
     // Unlike images, textures do not have a width and height associated
     // with them so we'll pass in the width and height of the texture

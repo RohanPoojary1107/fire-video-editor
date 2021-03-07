@@ -9,7 +9,6 @@ export default function Timeline({
     setSelectedSegment,
     currentTime,
     setCurrentTime,
-    setCurrentKey,
     updateSegment
 }: {
     trackList: Segment[][],
@@ -18,7 +17,6 @@ export default function Timeline({
     setSelectedSegment: (selected: SegmentID | null) => void,
     currentTime: number,
     setCurrentTime: (timestamp: number) => void,
-    setCurrentKey: (index: number) => void,
     updateSegment: (id: SegmentID, segment: Segment) => void
 }) {
     enum DragMode {
@@ -96,7 +94,6 @@ export default function Timeline({
                     if (containerRef.current === null) return;
                     event.stopPropagation();
                     event.preventDefault();
-                    // setSelectedSegment({ track: 0, index: i });
 
                     dragStartRef.current = (event.nativeEvent.clientX - containerRef.current.getBoundingClientRect().left + containerRef.current.scrollLeft);
 
@@ -147,13 +144,18 @@ export default function Timeline({
                         return(
                         <button 
                         style={{
-                            transform: `translateX(${currentTime * SCALE_FACTOR}px) rotate(45deg)`
+                            transform: `translateX(${(keyframe.start) * SCALE_FACTOR}px) rotate(45deg)`
                         }} 
                         className={styles.keyframeBtn} 
                         onClick={(event) => {
                             event.stopPropagation();
-                            setCurrentTime(currentTime+segment.start);
-                            setCurrentKey(index);
+                            console.log(segment.start);
+                            console.log(keyframe.start);
+                            setCurrentTime(segment.start + keyframe.start); 
+                        }}
+
+                        onDoubleClick={(event) => {
+                            event.stopPropagation();
                         }}
                         ></button>
                         )
@@ -171,11 +173,11 @@ export default function Timeline({
     }, [trackList, selectedSegment]);
 
     useEffect(() => {
-        if (dragMode == DragMode.MOVE) {
+        if (dragMode === DragMode.MOVE) {
             document.body.style.cursor = "move";
-        } else if (dragMode == DragMode.TRIM_LEFT) {
+        } else if (dragMode === DragMode.TRIM_LEFT) {
             document.body.style.cursor = "ew-resize";
-        } else if (dragMode == DragMode.TRIM_RIGHT) {
+        } else if (dragMode === DragMode.TRIM_RIGHT) {
             document.body.style.cursor = "ew-resize";
         } else {
             document.body.style.cursor = "";
