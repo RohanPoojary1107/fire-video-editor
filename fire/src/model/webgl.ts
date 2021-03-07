@@ -170,14 +170,14 @@ export class WebGLRenderer {
         let properties = [];
         for (const property of PROPERTY_NAMES) {
             properties.push(
-            {
-                //@ts-ignore
-                start: segment.keyframes[0][property] ?? 0,
-                startTime: 0,
-                //@ts-ignore
-                end: segment.keyframes[0][property] ?? 0,
-                endTime: 0
-            }
+                {
+                    //@ts-ignore
+                    start: segment.keyframes[0][property] ?? 0,
+                    startTime: 0,
+                    //@ts-ignore
+                    end: segment.keyframes[0][property] ?? 0,
+                    endTime: 0
+                }
             )
         }
 
@@ -187,17 +187,17 @@ export class WebGLRenderer {
             for (let j = 0; j < PROPERTY_NAMES.length; j++) {
                 //@ts-ignore
                 this.updateProperty(properties[j], frame[PROPERTY_NAMES[j]], frame.start);
-                
+
             }
             if (frame.start > timestamp) break;
         }
         let output = {
-            start: 0,   
+            start: 0,
         }
         for (let i = 0; i < PROPERTY_NAMES.length; i++) {
             //@ts-ignore
             output[PROPERTY_NAMES[i]] = this.lerp(properties[i].start, properties[i].end, this.inverseLerp(timestamp, properties[i].startTime, properties[i].endTime));
-            
+
         }
         return output;
     }
@@ -205,6 +205,12 @@ export class WebGLRenderer {
     // Unlike images, textures do not have a width and height associated
     // with them so we'll pass in the width and height of the texture
     private drawImage(segment: Segment, properties: KeyFrame) {
+        if (properties.scaleX as number <= 0 ||
+            properties.scaleY as number <= 0 ||
+            (properties.trimLeft as number) + (properties.trimRight as number) >= 1 ||
+            (properties.trimTop as number) + (properties.trimBottom as number) >= 1) {
+            return;
+        }
         this.context.bindTexture(this.context.TEXTURE_2D, segment.texture);
         this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, segment.media.element);
 
@@ -241,15 +247,15 @@ export class WebGLRenderer {
         let newHeight = segment.media.element.videoHeight * (properties.scaleY as number);
 
         // this matrix will translate our quad to dstX, dstY
-        
+
         matrix = m4.translate(matrix, [
-            (this.projectWidth / 2) + ((properties.x as number) - (newWidth / 2)) + newWidth*(properties.trimLeft as number),
-            (this.projectHeight / 2) + ((properties.y as number) - (newHeight / 2)) + newHeight*(properties.trimTop as number), 0, 0]);
+            (this.projectWidth / 2) + ((properties.x as number) - (newWidth / 2)) + newWidth * (properties.trimLeft as number),
+            (this.projectHeight / 2) + ((properties.y as number) - (newHeight / 2)) + newHeight * (properties.trimTop as number), 0, 0]);
 
         // this matrix will scale our 1 unit quad
         // from 1 unit to texWidth, texHeight units
-        matrix = m4.scale(matrix, [newWidth*( 1 - (properties.trimRight as number) - (properties.trimLeft as number)),
-             newHeight*( 1 - (properties.trimTop as number) - (properties.trimBottom as number)), 0, 0]);
+        matrix = m4.scale(matrix, [newWidth * (1 - (properties.trimRight as number) - (properties.trimLeft as number)),
+        newHeight * (1 - (properties.trimTop as number) - (properties.trimBottom as number)), 0, 0]);
 
         // Set the matrix.
         this.context.uniformMatrix4fv(this.matrixLocation, false, matrix);
