@@ -147,13 +147,17 @@ export default function Timeline({
                         return(
                         <button 
                         style={{
-                            transform: `translateX(${currentTime * SCALE_FACTOR}px) rotate(45deg)`
+                            transform: `translateX(${(keyframe.start + segment.start) * SCALE_FACTOR}px) rotate(45deg)`
                         }} 
                         className={styles.keyframeBtn} 
                         onClick={(event) => {
                             event.stopPropagation();
-                            setCurrentTime(currentTime+segment.start);
+                            setCurrentTime(keyframe.start + segment.start); 
                             setCurrentKey(index);
+                        }}
+
+                        onDoubleClick={(event) => {
+                            event.stopPropagation();
                         }}
                         ></button>
                         )
@@ -171,11 +175,11 @@ export default function Timeline({
     }, [trackList, selectedSegment]);
 
     useEffect(() => {
-        if (dragMode == DragMode.MOVE) {
+        if (dragMode === DragMode.MOVE) {
             document.body.style.cursor = "move";
-        } else if (dragMode == DragMode.TRIM_LEFT) {
+        } else if (dragMode === DragMode.TRIM_LEFT) {
             document.body.style.cursor = "ew-resize";
-        } else if (dragMode == DragMode.TRIM_RIGHT) {
+        } else if (dragMode === DragMode.TRIM_RIGHT) {
             document.body.style.cursor = "ew-resize";
         } else {
             document.body.style.cursor = "";

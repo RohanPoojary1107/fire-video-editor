@@ -51,9 +51,31 @@
   transition: box-shadow 0.25s;
 }
 
-.fullCard{display:inline-block;width:auto;height:auto;}
-.keyframeCard {width:100%;background:#202020;border-radius:10px;margin-top:5px;margin-bottom:10px;height:30px;}
-.keyframeBtn {width:6px;height:6px;background:#fff;border-radius:0px;margin-left:-3px;padding:0px;}
+.fullCard {
+  display: inline-block;
+  width: auto;
+  height: auto;
+}
+
+.keyframeCard {
+  width: 100%;
+  background: #202020;
+  border-radius: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  height: 20px;
+}
+.keyframeBtn {
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 0px;
+  margin-left: -2.55px;
+  margin-top: 6px;
+  padding: 0px;
+  transition: 0s;
+  position: absolute;
+}
 
 .ruler {
   min-width: 100%;
