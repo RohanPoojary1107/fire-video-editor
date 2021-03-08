@@ -5,10 +5,17 @@
   padding: var(--spacing);
   padding-left: 0;
   gap: 10px;
+  position: absolute;
+  right: 0px;
 }
 
-@media (max-width: 768px) {
+.logo {
+  width: calc(100% - 10px);
+}
+
+@media (max-width: 1100px) {
   .container {
+    position: relative;
     flex-direction: row;
     padding-left: var(--spacing);
   }
