@@ -14,16 +14,18 @@ body {
   background: var(--background-color);
   --spacing: 15px;
   --border-radius: 5px;
-  --timeline-background-color: #0c0c0c;
-  --media-pool-background-color: #030303;
-  --media-pool-card-background-color: #0c0c0c;
-  --media-player-background-color: #181818;
+  --timeline-background-color: #0a0a0a;
+  --media-pool-background-color: #161618;
+  --media-pool-card-background-color: #0a0a0a;
+  --media-player-background-color: #111111;
   --font-color: #838383;
-  --background-color: #050505;
-  --icon-background-color: #101010;
+  --background-color: #101011;
+  --icon-background-color: #0a0a0a;
   --icon-color: #838383;
   --icon-background-hover-color: #030303;
   --scrollbar-color: #838383;
+  --highlight-color: #fff;
+  --black-color: #000;
   overflow-x: hidden;
 }
 
@@ -41,6 +43,11 @@ button {
 button:hover {
   background: var(--icon-background-hover-color);
   transition: 1s;
+}
+
+button:focus {
+  box-shadow: 0px 0px 5px 0px #cacaca;
+  border-radius: 100px;
 }
 
 ::-webkit-scrollbar-corner {
@@ -88,4 +95,20 @@ button:hover {
 
 ul li {
   transition: 0s;
+}
+
+@media (max-width: 1100px) {
+  button {
+    height: 25px;
+    width: 25px;
+    background: var(--icon-background-color);
+    border-radius: 100%;
+    padding: 5px;
+    border: none;
+    cursor: pointer;
+    transition: 1s;
+  }
+  button .material-icons {
+    font-size: 14px;
+  }
 }

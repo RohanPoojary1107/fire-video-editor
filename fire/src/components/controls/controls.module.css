@@ -6,6 +6,7 @@
   align-items: center;
   background: transparent;
   gap: var(--spacing);
+  z-index:4;
 }
 
 .trackbar {
@@ -13,7 +14,7 @@
   -webkit-appearance: none;
   height: 5px;
   border-radius: var(--border-radius);
-  background: var(--icon-background-hover-color);
+  background: var(--black-color);
   outline: none;
   transition: opacity 0.2s;
 }
@@ -37,4 +38,18 @@
   height: 20px;
   border-radius: 50%;
   background: var(--font-color);
+}
+
+@media (max-width: 1100px) {
+  .container {
+    grid-area: controls;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: var(--spacing);
+    align-items: center;
+    background: transparent;
+    gap: var(--spacing);
+    z-index:4;
+  }
 }

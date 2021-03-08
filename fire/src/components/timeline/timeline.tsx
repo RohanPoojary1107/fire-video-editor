@@ -36,7 +36,6 @@ export default function Timeline({
     const divisions = 200;
 
     const formatTime = (time: number) => {
-        //let s = (time / 1000).toFixed(2) + "s";
         let s = parseFloat((time / 1000).toFixed(2));
 
         let currentMinute = Math.floor(s/60);
@@ -67,6 +66,12 @@ export default function Timeline({
                             setCurrentTime(lerp(time, projectDuration / divisions * (i + 1), event.nativeEvent.offsetX / ((projectDuration / divisions) * SCALE_FACTOR)));
                         }} >
                         <p className={styles.time}>{formatTime(time)}</p>
+                        <div className={styles.sec}></div>
+                        <div className={styles.sec}></div>
+                        <div className={styles.sec}></div>
+                        <div className={styles.sec}></div>
+                        <div className={styles.sec}></div>
+                        {i==0?<div className={styles.sec} style={{height:14}}></div>:''}
                     </div>
                 )
             }
@@ -115,8 +120,8 @@ export default function Timeline({
                         backgroundSize: "auto 100%",
                         backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
                         border: `2px solid rgb(${color[0] * COLOR_MULTIPLER}, ${color[1] * COLOR_MULTIPLER}, ${color[2] * COLOR_MULTIPLER})`,
-                        borderRadius: "10px",
-                        boxShadow: selectedSegment?.index === i ? `rgb(${color[0]}, ${color[1]}, ${color[2]}) 4px 0px 10px` : "",
+                        borderRadius: "2px",
+                        boxShadow: selectedSegment?.index === i ? `rgb(${color[0]}, ${color[1]}, ${color[2]}, 0.5) 0px 0px 10px` : "",
                         height: "60px"
                     }}
                     onClick={(event) => {
@@ -143,24 +148,27 @@ export default function Timeline({
                 </div>
                 {selectedSegment !== null ? <div className={`${styles.keyframeCard}`}>
                     {segment.keyframes.map((keyframe, index)=>{
-                        return(
-                        <button 
-                        style={{
-                            transform: `translateX(${(keyframe.start) * SCALE_FACTOR}px) rotate(45deg)`
-                        }} 
-                        className={styles.keyframeBtn} 
-                        onClick={(event) => {
-                            event.stopPropagation();
-                            console.log(segment.start);
-                            console.log(keyframe.start);
-                            setCurrentTime(segment.start + keyframe.start); 
-                        }}
-
-                        onDoubleClick={(event) => {
-                            event.stopPropagation();
-                        }}
-                        ></button>
-                        )
+                        if (segment.keyframes.length>1){
+                            return(
+                                <button 
+                                style={{
+                                    transform: `translateX(${(keyframe.start) * SCALE_FACTOR}px) rotate(45deg)`
+                                }} 
+                                className={styles.keyframeBtn} 
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    setCurrentTime(segment.start + keyframe.start); 
+                                }}
+        
+                                onDoubleClick={(event) => {
+                                    event.stopPropagation();
+                                }}
+                                ></button>
+                                );
+                        }
+                        else{
+                            return("");
+                        }
                     })}
                 </div> : ""}
                 </div>
@@ -192,7 +200,7 @@ export default function Timeline({
 
     const handleMove = (event: MouseEvent) => {
         timeout.current = 0;
-        if (selectedSegment === null || containerRef.current == null) return;
+        if (selectedSegment === null || containerRef.current === null) return;
 
         const segment = trackList[selectedSegment.track][selectedSegment.index];
         let end = (event.nativeEvent.clientX - containerRef.current.getBoundingClientRect().left + containerRef.current.scrollLeft);

@@ -6,6 +6,9 @@ export default function Actions() {
   return (
     <div className={styles.container}>
       <button className={styles.button}>
+        <img className={styles.logo} src="/logo192.png"/>
+        </button>
+      <button className={styles.button}>
         <span className="material-icons">save_alt</span>
       </button>
       <button className={styles.button}>
@@ -19,6 +22,9 @@ export default function Actions() {
       </button>
       <button className={styles.button} onClick={() => history.push("/about")}>
         <span className="material-icons">help_outline</span>
+      </button>
+      <button className={styles.button}>
+        <span className="material-icons">tonality</span>
       </button>
     </div>
   );

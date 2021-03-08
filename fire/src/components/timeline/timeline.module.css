@@ -1,7 +1,7 @@
 .container {
   grid-area: timeline;
   background: var(--timeline-background-color);
-  padding: 0;
+  padding: 0px 0px 0px 0px;
   overflow-x: auto;
   position: relative;
 }
@@ -12,7 +12,6 @@
 }
 
 .time {
-  height: 100%;
   color: var(--font-color);
   font-size: 14px;
   -moz-user-select: none;
@@ -40,14 +39,14 @@
 }
 
 .track {
-  height: 55px;
+  height: 40px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
 }
 
 .card {
-  border-radius: 5px;
+  border-radius: 2px;
   transition: box-shadow 0.25s;
 }
 
@@ -60,18 +59,19 @@
 .keyframeCard {
   width: 100%;
   background: #202020;
-  border-radius: 10px;
+  border-radius: 2px;
   margin-top: 5px;
   margin-bottom: 10px;
   height: 20px;
 }
-.keyframeBtn {
+.keyframeBtn,
+.keyframeBtn:hover {
   width: 6px;
   height: 6px;
   background: #fff;
   border-radius: 0px;
   margin-left: -2.55px;
-  margin-top: 6px;
+  margin-top: 7px;
   padding: 0px;
   transition: 0s;
   position: absolute;
@@ -82,6 +82,12 @@
   height: 1.5em;
 }
 
+.s10 {
+  text-align: center;
+  position: relative;
+  padding-top: 10px;
+}
+
 .sec {
   border-right: 1px solid #383838;
   top: 0;
@@ -90,29 +96,24 @@
 }
 
 .sec:nth-of-type(1) {
-  left: 10px;
+  left: 20%;
 }
 
 .sec:nth-of-type(2) {
-  left: 20px;
+  left: 40%;
 }
 
 .sec:nth-of-type(3) {
-  left: 30px;
+  left: 60%;
 }
 
 .sec:nth-of-type(4) {
-  left: 40px;
+  left: 80%;
 }
 
 .sec:nth-of-type(5) {
-  height: 12px;
+  height: 14px;
   right: 0px;
-}
-
-.s10 {
-  text-align: left;
-  text-overflow: ellipsis;
 }
 
 .rulerCon {

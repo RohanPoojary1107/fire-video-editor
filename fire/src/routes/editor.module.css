@@ -12,7 +12,7 @@
   height: 100vh;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
   .container {
     grid-template-areas:
       "mediaPool"
@@ -24,10 +24,11 @@
 
     grid-template-columns: 1fr;
     grid-template-rows:
-      300px
       min-content
-      auto
       min-content
-      200px;
+      min-content
+      min-content
+      min-content;
+    height: auto;
   }
 }
