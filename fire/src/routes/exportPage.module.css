@@ -1,0 +1,17 @@
+.container {
+  padding: 25px;
+  font-size: larger;
+  color: var(--font-color);
+  background-color: --media-player-background-color;
+}
+
+.logo {
+  float: left;
+  width: 100px;
+}
+
+.downloadButton {
+  position: absolute;
+  right: 50px;
+  bottom: 100px;
+}
