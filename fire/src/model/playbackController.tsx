@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { WebGLRenderer } from "./webgl";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import About from "../routes/about";
+import ExportPage from "../routes/exportPage";
 
 export default function PlaybackController(props: {
     canvasRef: HTMLCanvasElement,
@@ -133,6 +134,9 @@ export default function PlaybackController(props: {
     return (
         <Router>
             <Switch>
+                <Route path="/exportpage">
+                    <ExportPage></ExportPage>
+                </Route>
                 <Route path="/about">
                     <About></About>
                 </Route>

@@ -12,7 +12,7 @@ export default function Actions() {
         <span className="material-icons">save_alt</span>
       </button>
       <button className={styles.button}>
-        <span className="material-icons">logout</span>
+        <span className="material-icons" onClick={() => history.push("/exportPage")}>login</span>
       </button>
       <button className={styles.button}>
         <span className="material-icons">layers</span>
