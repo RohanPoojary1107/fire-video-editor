@@ -1,0 +1,174 @@
+Team Name:
+
+(Convention: N=sprint number, ex: sprintN.md means sprint2.md for sprint 2, and SR(N-1)md means SR1.md for sprint 2, that is Sprint Retrospective for Sprint 1, to be hold during planning meeting for Sprint 2)
+
+Planning Meetings (SR1.md, sprint2.md) (Max 4 marks)
+
+-SR1.md (Sprint Retrospective) 
+ [2 marks=Meeting is documented, participants are recorded, everyone has participated, analysis of good practices/bad practices wad made.]
+ [1 mark=Meeting is documented, participants are not recorded or the majority has not participated, not enough analysis has been done]
+ [0 marks=No meeting document submitted or the submitted document contains no relevant information]
+
+2/2
+ 
+-Sprint Planning meeting (sprint2.md)
+ [2 marks=Meeting and sprint goal is documented, all spikes clearly identified, team capacity recorded, participants are recorded, everyone has participated, 
+ decisions about user stories to be completed this sprint are clear, tasks breakdown is done.]
+ [1 mark=Meeting and sprint goal is documented, some spikes not clearly identified, one or more members of team's capacity not recorded, participants are not recorded or the majority has not participated, decisions are unclear,
+ there is no clear evidence which user story will be completed or task breakdown is unclear or incomplete]
+ [0 marks=No meeting document submitted or the submitted document contains no relevant information to the sprint 1]
+
+2/2
+ 
+Daily Stand-ups (on Discord 301 server within your team category called #standup) (Max 10 marks, 2 marks per daily standup)
+- Team updates each other on what they have done in their #standup Microsoft Teams channel
+- 5 standups per sprint required
+ [2 marks=all teams members have sent their updates in the channel]
+ [1 mark=atleast 1 group member has not sent their update]
+ [0 marks=atleast 2 group members or more have not sent their updates]
+
+10/10
+	
+User Stories (Tracked in Jira) (Max 10 marks) 
+-Correctly formulated user stories 
+ [2 marks=all stories in Jira Backlog follow the User Story template]
+ [1 mark=two or more stories in Jira Backlog do not follow the template]
+ [0 marks=the majority of stories in Jira Backlog do not follow the template or no stories at all]
+-Broken down into tasks 
+ [2 marks=all Sprint 1 stories estimated, broken into tasks, tasks assigned to all team members]
+ [1 mark=one or more Sprint 1 stories are not recorded Jira, or not estimated, or nor broken into tasks, or at least one task not assigned, or at least one team member unassigned a task]
+ [0 marks=the majority of Sprint 1 stories not recorded in Jira or not estimated, or nor broken into tasks, or tasks not assigned, or team members unassigned a task ]
+-Estimated
+ [2 marks=all stories in Jira Backlog are point estimated and the point value is recorded in Jira]
+ [1 mark=two or more stories in Jira Backlog are not point estimated or the point value is not recorded in Jira]
+ [0 marks=the majority of stories in Jira Backlog are not point estimated or the point value is not recorded in Jira]
+-Prioritized	
+ [2 marks=all stories in Jira Backlog are prioritized in the order which matches the priority of their associated milestones]
+ [1 mark=two or more stories in Jira Backlog not are prioritized in the order which matches the priority of their associated milestones]
+ [0 marks=the majority of stories in Jira Backlog appear to be not prioritized in the order which matches the priority of their associated milestones]
+-Clearly Defined Acceptance Criteria
+ [2 marks=all Sprint 1 stories have clearly defined and testable acceptance criteria]
+ [1 mark=one or more Sprint 1 stories do not have clearly defined or testable acceptance criteria]
+ [0 marks=the majority of the Sprint1 stories do not have clearly defined or testable acceptance criteria]
+
+10/10
+
+
+Tracking on Jira:  (Max 24 marks) 
+- Are all your stories and tasks being worked in this sprint tracked on Active Sprint Board? 
+  [0=no stories on Active Sprint Board]
+  [1=part of the stories missing]
+  [2=all stories recorded]
+
+2/2
+
+- Did you start all stories for sprint one? 
+  [0=no story started]
+  [1=part of the stories not started and explanation why not provided]
+  [2=all stories started or some stories not started, but logical explanation provided as a story comment]
+
+2/2
+
+- Do the pull request on GitHub match the tasks listed on Jira Active Sprint Board? 
+  [0=no tasks or tasks do not match at all]
+  [1=two or more tasks are missing]
+  [2=no tasks are missing]
+
+2/2
+
+- Is the pull request done by the person to whom the task has been assigned to? 
+  [0=no task was completed by anyone]
+  [1=two or more tasks were not completed as assigned]
+  [2=all assigned tasks are completed]
+
+2/2
+
+- Is each pull request made from a separate branch for each individual task?
+  [0=pull request for the majority of tasks not made from own separate branch]
+  [1=pull request for 4 or more tasks not made from own separate branch]
+  [2=pull request for 3 or more tasks not made from own separate branch]
+  [3=pull request for 2 or more tasks not made from own separate branch]
+  [4=pull request for 1 or more tasks not made from own separate branch]
+  [5=pull request for each task made from own separate branch]
+
+5/5
+
+- Is the git commit message clear?
+  [0=majority of commit message do not begin with the ticket number of the task followed by a short description of commit changes]
+  [1=one or more commit messages do not begin with the ticket number of the task followed by a short description of commit changes]
+  [2=all commit message begin with the ticket number of the task followed by a short description of commit changes]
+
+2/2
+
+- Tasks Distribution
+  [0=most of team members have no tasks assigned and/or completed]
+  [1=at least one team member did not complete any task or did not have any task assigned]
+  [2=every team member had at least one task assigned and made a pull request]
+  [3=every team member had at least one task assigned and completed]
+
+3/3
+
+- Branch Naming
+  [0=most branch names are not named after the associated single ticket number]
+  [1=at least one branch is not named after the associated single ticket number]
+  [2=every team branch is named after the associated single ticket number]
+
+2/2
+
+-Burndown chart
+  [0=document not available or not containing a valid burndown chart]
+  [1=burndown chart present, matches Jira chart, but no explanations provided, or explanations are not adequate.]
+  [2=burndown chart present, matched jira chart, and explantions are adequate.
+
+2/2
+
+TA FEEDBACK: So i noticed that the burndown flatlined quite a bit, just want you all
+to reflect on why? Because Burndowns are typically supposed follow as close as you can
+to the grey line, in order to keep you all on track.
+
+ -Schedule
+  [0=document not available or not containing a valid diagram]
+  [1=diagram present, but no critical path or explanations provided, or explanations are not adequate.]
+  [2=diagram present, critical path computed, and explantions are adequate.]
+
+2/2
+
+Sprint Completion: (Max 20 marks) 
+- With A Minimum Of 5 Stories
+  [x = Percentage of story points completed * 20]
+
+20/20
+
+System Design - (PDF or MD file or another suitable format) (Max 10 marks) 
+- Cover Page and Table of Contents 
+  [2 marks: both are present]
+  [1 mark: at least one is present]
+  [0 marks: None present]
+
+2/2
+  
+- CRC Cards [or equivalent, if the team is not using CRC)
+  [4 marks: Class names and Collaborators have matching names and responsibilities are stated clearly]
+  [3 marks: At least one of the class names does not match the collaborator names or the responsibilities for at least one class are unclear]
+  [2 marks: Two class names do not match the collaborator names or the responsibilities of two or more classes are not stated or are unclear]
+  [1 mark: The majority of class names do not match the collaborator names or the responsibilities of the majority of the classes are not stated or are unclear]
+  [0 marks: No CRC provided or the provided document does not match the CRC model]
+
+4/4
+
+- Software Architecture Diagram 
+  [4 marks: The Architecture Diagram is present, it is formatted using proper graphic symbols, and it follows a known Architecture diagram.
+  If the system architecture does not follow the MVC (studied in class), a web link or reference has been provided to support the used architecture]
+  [3 marks: The Architecture Diagram is present, it is not formatted well, and it follows somewhat a known Architecture diagram.
+  If the system architecture does not follow the MVC (studied in class), a web link or reference has been provided to support the used architecture]
+  [2 marks: The Architecture Diagram is present, it is not formatted well, or it does not follow a known Architecture diagram.
+  A web link or reference has been provided, but it does not support the used architecture]
+  [1 mark: The Architecture Diagram is present, it is not formatted well, and it is unclear what Architecture it follows.
+  There is no web link or other reference lending support to the presented diagram.
+  [0 marks: No diagram present or the presented document does not look like a software architecture diagram]
+
+4/4
+
+10/10
+
+FINAL MARK: 78/78, nice job team!
