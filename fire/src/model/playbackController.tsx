@@ -37,7 +37,7 @@ export default function PlaybackController(props: {
   const mediaListRef = useRef<Media[]>([]);
   const isPlayingRef = useRef(false);
   const SKIP_THREASHOLD = 100;
-  var recordedChunks: Array<any>;
+  let recordedChunks: Array<any>;
   let mediaRecorder: MediaRecorder;
 
   trackListRef.current = props.trackList;
@@ -138,10 +138,10 @@ export default function PlaybackController(props: {
       } catch (error) {}
       lastPlaybackTimeRef.current = curTime;
       playbackStartTimeRef.current = performance.now();
-    }
-    if (isRecordingRef.current) {
-      console.log("Recording Started Again");
-      mediaRecorder.resume();
+      if (isRecordingRef.current) {
+        console.log("Recording Started Again");
+        mediaRecorder.resume();
+      }
     }
 
     props.renderer.drawSegments(segments, elements, curTime);
@@ -184,21 +184,22 @@ export default function PlaybackController(props: {
   };
 
   function Render() {
-    var canvas: HTMLCanvasElement | null = props.canvasRef;
+    let canvas: HTMLCanvasElement | null = props.canvasRef;
 
     // Optional frames per second argument.
     if (canvas != null) {
-      var stream = canvas.captureStream(props.projectFrameRate);
+      let stream = canvas.captureStream(props.projectFrameRate);
       recordedChunks = [];
 
       console.log(stream);
-      var options = { mimeType: "video/webm; codecs=vp9" };
+      let options = { mimeType: "video/webm; codecs=vp9" };
       mediaRecorder = new MediaRecorder(stream, options);
 
       mediaRecorder.ondataavailable = handleDataAvailable;
       setCurrentTime(0);
       isRecordingRef.current = true;
       mediaRecorder.start();
+      console.log("Recording Started");
       play();
       console.log(props.projectDuration);
     }
