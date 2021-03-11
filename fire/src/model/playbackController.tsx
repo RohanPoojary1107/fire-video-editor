@@ -1,5 +1,5 @@
 import Editor from "../routes/editor";
-import { Media, Segment, SegmentID } from "./types";
+import { Media, Segment, SegmentID, Source } from "./types";
 import React, { useEffect, useRef, useState } from "react";
 import { WebGLRenderer } from "./webgl";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
@@ -18,7 +18,7 @@ export default function PlaybackController(props: {
     renderer: WebGLRenderer,
     projectFrameRate: number,
     projectDuration: number,
-    dragAndDrop: (timestamp: number, media: Media, trackNum: number) => void,
+    dragAndDrop: (media: Media) => void,
     setSelectedSegment: (selected: SegmentID | null) => void,
     selectedSegment: SegmentID | null,
     updateSegment: (id: SegmentID, segment: Segment) => void,
@@ -31,11 +31,14 @@ export default function PlaybackController(props: {
     const playbackStartTimeRef = useRef(0);
     const lastPlaybackTimeRef = useRef(0);
     const projectDurationRef = useRef(0);
+    const mediaListRef = useRef<Media[]>([]);
     const isPlayingRef = useRef(false);
+    const SKIP_THREASHOLD = 100;
+
     trackListRef.current = props.trackList;
     projectDurationRef.current = props.projectDuration;
+    mediaListRef.current = props.mediaList;
     isPlayingRef.current = isPlaying;
-    const SKIP_THREASHOLD = 100;
 
     const setCurrentTime = (timestamp: number) => {
         lastPlaybackTimeRef.current = timestamp;
@@ -58,47 +61,63 @@ export default function PlaybackController(props: {
         if (curTime >= projectDurationRef.current) curTime = projectDurationRef.current;
         _setCurrentTime(curTime);
 
-        let segments = [];
-        let needsSeek = false;
-        let toStop: Media[] = [];
-        for (const segment of trackListRef.current[0]) {
-            if (!(curTime >= segment.start && curTime < segment.start + segment.duration)) {
-                toStop.push(segment.media);
-                continue;
+        for (const media of mediaListRef.current) {
+            for (const source of media.sources) {
+                source.inUse = false;
             }
-
-            let mediaTime = (curTime - segment.start + segment.mediaStart);
-            if (Math.abs(segment.media.element.currentTime * 1000 - mediaTime) > SKIP_THREASHOLD || segment.media.element.paused) needsSeek = true;
-            segments.push(segment);
         }
 
-        for (const media of toStop) {
-            if (segments.findIndex(item => item.media === media) === -1) try { media.element.pause(); } catch (error) { };
+        let segments: Segment[] = [];
+        let elements: HTMLVideoElement[] = [];
+        let needsSeek = false;
+
+        for (let i = trackListRef.current.length - 1; i >= 0; i--) {
+            for (let j = 0; j < trackListRef.current[i].length; j++) {
+                const segment = trackListRef.current[i][j];
+                if ((curTime >= segment.start && curTime < segment.start + segment.duration)) {
+                    let source = (segment.media.sources.find(source => source.track === i) as Source);
+                    source.inUse = true;
+                    let mediaTime = (curTime - segment.start + segment.mediaStart);
+                    if (Math.abs(source.element.currentTime * 1000 - mediaTime) > SKIP_THREASHOLD || source.element.paused) needsSeek = true;
+                    segments.push(segment);
+                    elements.push(source.element);
+                }
+            }
+        }
+
+        for (const media of mediaListRef.current) {
+            for (const source of media.sources) {
+                if (!source.inUse) {
+                    source.element.pause();
+                    source.inUse = true;
+                }
+            }
         }
 
         if (needsSeek) {
-            for (const segment of segments) {
-                try { segment.media.element.pause(); } catch (error) { }
+            for (let i = 0; i < segments.length; i++) {
+                const segment = segments[i];
+
+                elements[i].pause();
                 let mediaTime = (curTime - segment.start + segment.mediaStart) / 1000;
 
-                if (segment.media.element.currentTime !== mediaTime) {
+                if (elements[i].currentTime !== mediaTime) {
                     await new Promise<void>((resolve, reject) => {
-                        segment.media.element.onseeked = () => resolve();
-                        segment.media.element.currentTime = mediaTime;
+                        elements[i].onseeked = () => resolve();
+                        elements[i].currentTime = mediaTime;
                     });
                 }
             }
-            await Promise.all(segments.map(segment => segment.media.element.play()));
+            try { await Promise.allSettled(elements.map(element => element.play())); } catch (error) { }
             lastPlaybackTimeRef.current = curTime;
             playbackStartTimeRef.current = performance.now();
         }
 
-        props.renderer.drawSegments(segments, curTime);
-
+        props.renderer.drawSegments(segments, elements, curTime);
 
         if (!isPlayingRef.current) {
-            for (const segment of trackListRef.current[0]) {
-                try { segment.media.element.pause(); } catch (error) { }
+            for (const element of elements) {
+                element.pause();
             }
             return;
         }
@@ -107,6 +126,7 @@ export default function PlaybackController(props: {
             pause();
             return;
         }
+
 
         setTimeout(() => { renderFrame(true); }, 1 / props.projectFrameRate) as unknown as number;
     }
@@ -124,11 +144,7 @@ export default function PlaybackController(props: {
 
     const pause = () => {
         setIsPlaying(false);
-
-        for (const segment of props.trackList[0]) {
-            segment.media.element.pause();
-        }
-    };
+    }
 
     return (
         <Router>
