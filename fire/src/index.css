@@ -5,7 +5,6 @@
 
 body {
   margin: 0;
-  transition: 0s;
   font-family: "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI",
     "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
     sans-serif;
@@ -27,6 +26,7 @@ body {
   --highlight-color: #fff;
   --black-color: #000;
   overflow-x: hidden;
+  user-select: none;
 }
 
 button {
@@ -37,17 +37,17 @@ button {
   padding: 5px;
   border: none;
   cursor: pointer;
-  transition: 1s;
+  transition: 0.25s;
 }
 
 button:hover {
   background: var(--icon-background-hover-color);
-  transition: 1s;
 }
 
 button:focus {
-  box-shadow: 0px 0px 5px 0px #cacaca;
+  box-shadow: 0px 0px 5px 2px #cacaca;
   border-radius: 100px;
+  outline: none;
 }
 
 ::-webkit-scrollbar-corner {
@@ -90,11 +90,6 @@ button:focus {
 .draggedOn {
   outline: 2px dashed #313131;
   outline-offset: -10px;
-  transition: 0s;
-}
-
-ul li {
-  transition: 0s;
 }
 
 @media (max-width: 1100px) {
@@ -106,7 +101,6 @@ ul li {
     padding: 5px;
     border: none;
     cursor: pointer;
-    transition: 1s;
   }
   button .material-icons {
     font-size: 14px;

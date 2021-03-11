@@ -1,5 +1,5 @@
 import { m4 } from "twgl.js";
-import { calculateProperties } from "../utils/interpolation";
+import { calculateProperties } from "../utils/utils";
 import { FRAGMENT_SHADER, VERTEX_SHADER } from "./shaders";
 import { KeyFrame, Segment } from "./types";
 
@@ -17,11 +17,7 @@ export class WebGLRenderer {
     positionBuffer: WebGLBuffer;
     texcoordBuffer: WebGLBuffer;
 
-
-
     constructor(public canvas: HTMLCanvasElement, public projectWidth: number, public projectHeight: number) {
-        // canvas.width = this.project.width;
-        // canvas.height = this.project.height;
         this.context = canvas.getContext("webgl") as WebGLRenderingContext;
         if (!this.context) console.error("Failed to get webgl context!");
 
@@ -79,13 +75,13 @@ export class WebGLRenderer {
         this.context.bufferData(this.context.ARRAY_BUFFER, new Float32Array(texcoords), this.context.STATIC_DRAW);
     }
 
-    public drawSegments(segments: Segment[], timestamp: number) {
+    public drawSegments(segments: Segment[], elements: HTMLVideoElement[], timestamp: number) {
         // Tell WebGL how to convert from clip space to pixels
         this.context.viewport(0, 0, this.projectWidth, this.projectHeight);
         this.context.clear(this.context.COLOR_BUFFER_BIT);
 
-        for (const segment of segments) {
-            this.drawImage(segment, calculateProperties(segment, timestamp));
+        for (let i = 0; i < segments.length; i++) {
+            this.drawImage(segments[i], elements[i], calculateProperties(segments[i], timestamp));
         }
 
         this.context.flush();
@@ -142,65 +138,9 @@ export class WebGLRenderer {
         return tex;
     }
 
-    // private lerp(start: number, end: number, t: number) {
-    //     return (end - start) * t + start;
-    // }
-
-    // private inverseLerp(value: number, start: number, end: number) {
-    //     return Math.min(Math.max((value - start) / (end - start), 0), 1);
-    // }
-
-    // private updateProperty(obj: Property, value: number | undefined, timestamp: number) {
-    //     if (value !== undefined) {
-    //         obj.start = obj.end;
-    //         obj.startTime = obj.endTime;
-    //         obj.end = value;
-    //         obj.endTime = timestamp;
-    //     }
-    // }
-
-    // private calculateProperties(segment: Segment, timestamp: number): KeyFrame {
-    //     timestamp -= segment.start;
-
-    //     const PROPERTY_NAMES = ['x', 'y', 'scaleX', 'scaleY', 'trimLeft', 'trimRight', 'trimBottom', 'trimTop'];
-    //     let properties = [];
-    //     for (const property of PROPERTY_NAMES) {
-    //         properties.push(
-    //             {
-    //                 //@ts-ignore
-    //                 start: segment.keyframes[0][property] ?? 0,
-    //                 startTime: 0,
-    //                 //@ts-ignore
-    //                 end: segment.keyframes[0][property] ?? 0,
-    //                 endTime: 0
-    //             }
-    //         )
-    //     }
-
-    //     for (let i = 0; i < segment.keyframes.length; i++) {
-    //         const frame = segment.keyframes[i];
-
-    //         for (let j = 0; j < PROPERTY_NAMES.length; j++) {
-    //             //@ts-ignore
-    //             this.updateProperty(properties[j], frame[PROPERTY_NAMES[j]], frame.start);
-
-    //         }
-    //         if (frame.start > timestamp) break;
-    //     }
-    //     let output = {
-    //         start: 0,
-    //     }
-    //     for (let i = 0; i < PROPERTY_NAMES.length; i++) {
-    //         //@ts-ignore
-    //         output[PROPERTY_NAMES[i]] = this.lerp(properties[i].start, properties[i].end, this.inverseLerp(timestamp, properties[i].startTime, properties[i].endTime));
-
-    //     }
-    //     return output;
-    // }
-
     // Unlike images, textures do not have a width and height associated
     // with them so we'll pass in the width and height of the texture
-    private drawImage(segment: Segment, properties: KeyFrame) {
+    private drawImage(segment: Segment, element: HTMLVideoElement, properties: KeyFrame) {
         if (properties.scaleX as number <= 0 ||
             properties.scaleY as number <= 0 ||
             (properties.trimLeft as number) + (properties.trimRight as number) >= 1 ||
@@ -208,7 +148,7 @@ export class WebGLRenderer {
             return;
         }
         this.context.bindTexture(this.context.TEXTURE_2D, segment.texture);
-        this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, segment.media.element);
+        this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, element);
 
         // Tell WebGL to use our shader program pair
         this.context.useProgram(this.program);
@@ -239,8 +179,8 @@ export class WebGLRenderer {
         // this matirx will convert from pixels to clip space
         let matrix = m4.ortho(0, this.context.canvas.width, this.context.canvas.height, 0, -1, 1);
 
-        let newWidth = segment.media.element.videoWidth * (properties.scaleX as number);
-        let newHeight = segment.media.element.videoHeight * (properties.scaleY as number);
+        let newWidth = element.videoWidth * (properties.scaleX as number);
+        let newHeight = element.videoHeight * (properties.scaleY as number);
 
         // this matrix will translate our quad to dstX, dstY
 

@@ -10,7 +10,9 @@ export default function Controls(
         projectDuration,
         setCurrentTime,
         splitVideo,
-        deleteSelectedSegment
+        deleteSelectedSegment,
+        setScaleFactor,
+        scaleFactor
     }:
         {
             playVideo: any,
@@ -21,6 +23,8 @@ export default function Controls(
             splitVideo: any;
             setCurrentTime: (timestamp: number) => void,
             deleteSelectedSegment: any
+            setScaleFactor: (scale: number) => void,
+            scaleFactor: number
         }
 ) {
     const togglePlaying = () => {
@@ -31,13 +35,20 @@ export default function Controls(
         }
     };
 
+    const increaseScale = () => {
+        setScaleFactor(Math.min(1, scaleFactor * 1.2))
+    }
+
+    const decreaseScale = () => {
+        setScaleFactor(Math.max(0.0001, scaleFactor * 0.8))
+    }
 
     const onSeek = (event: ChangeEvent<HTMLInputElement>) => {
         setCurrentTime(+event.target.value * projectDuration);
     }
 
     const createSplit = () => {
-      splitVideo(currentTime);
+        splitVideo(currentTime);
     };
 
     return (
@@ -65,14 +76,11 @@ export default function Controls(
             <button className={styles.button}>
                 <span className="material-icons">volume_up</span>
             </button>
-            <button className={styles.button}>
-                <span className="material-icons">add</span>
-            </button>
-            <button className={styles.button}>
+            <button className={styles.button} onClick={decreaseScale}>
                 <span className="material-icons">remove</span>
             </button>
-            <button className={styles.button}>
-                <span className="material-icons">undo</span>
+            <button className={styles.button} onClick={increaseScale}>
+                <span className="material-icons">add</span>
             </button>
             <button className={styles.button} onClick={createSplit}>
                 <span className="material-icons">content_cut</span>

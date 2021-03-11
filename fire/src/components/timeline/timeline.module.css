@@ -2,8 +2,12 @@
   grid-area: timeline;
   background: var(--timeline-background-color);
   padding: 0px 0px 0px 0px;
-  overflow-x: auto;
+  overflow: auto;
+}
+
+.tracks {
   position: relative;
+  min-height: 100%;
 }
 
 .timebar {
@@ -39,15 +43,18 @@
 }
 
 .track {
-  height: 40px;
+  height: 80px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  border-bottom: 1px solid var(--font-color);
+  align-items: center;
+  background: var(--timeline-background-color);
 }
 
 .card {
   border-radius: 2px;
-  transition: box-shadow 0.25s;
+  transition: box-shadow 0.25s, border-color 0.25s;
 }
 
 .fullCard {
@@ -60,10 +67,9 @@
   width: 100%;
   background: #202020;
   border-radius: 2px;
-  margin-top: 5px;
-  margin-bottom: 10px;
   height: 20px;
 }
+
 .keyframeBtn,
 .keyframeBtn:hover {
   width: 6px;
@@ -78,8 +84,11 @@
 }
 
 .ruler {
-  min-width: 100%;
-  height: 1.5em;
+  height: 40px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  align-items: baseline;
 }
 
 .s10 {

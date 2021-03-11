@@ -7,6 +7,7 @@ import Timeline from "../components/timeline/timeline";
 import { Media, Segment, SegmentID } from "../model/types";
 import { WebGLRenderer } from "../model/webgl";
 import Properties from "../components/elements/properties";
+import { useState } from "react";
 
 export default function Editor(props: {
   canvasRef: HTMLCanvasElement,
@@ -26,13 +27,14 @@ export default function Editor(props: {
   isPlaying: boolean,
   currentTime: number,
   setCurrentTime: (timestamp: number) => void,
-  dragAndDrop: (timestamp: number, media: Media, trackNum: number) => void,
+  dragAndDrop: (media: Media) => void,
   selectedSegment: SegmentID | null,
   setSelectedSegment: (selected: SegmentID | null) => void,
   updateSegment: (id: SegmentID, segment: Segment) => void,
   splitVideo: (timestamp: number) => void,
-  deleteSelectedSegment: () => void
+  deleteSelectedSegment: () => void,
 }) {
+  const [scaleFactor, setScaleFactor] = useState<number>(0.1);
   return (
     <div className={styles.container}>
       <MediaPool
@@ -57,15 +59,16 @@ export default function Editor(props: {
         setCurrentTime={props.setCurrentTime}
         deleteSelectedSegment={props.deleteSelectedSegment}
         splitVideo={props.splitVideo}
+        setScaleFactor={setScaleFactor}
+        scaleFactor={scaleFactor}
       />
-      {props.selectedSegment !== null ?
-        <Properties
-          trackList={props.trackList}
-          selectedSegment={props.selectedSegment}
-          currentTime={props.currentTime}
-          setCurrentTime={props.setCurrentTime}
-          updateSegment={props.updateSegment}
-        /> : ""}
+      <Properties
+        trackList={props.trackList}
+        selectedSegment={props.selectedSegment}
+        currentTime={props.currentTime}
+        setCurrentTime={props.setCurrentTime}
+        updateSegment={props.updateSegment}
+      />
       <Timeline
         trackList={props.trackList}
         projectDuration={props.projectDuration}
@@ -74,6 +77,8 @@ export default function Editor(props: {
         currentTime={props.currentTime}
         setCurrentTime={props.setCurrentTime}
         updateSegment={props.updateSegment}
+        scaleFactor={scaleFactor}
+        setTrackList={props.setTrackList}
       />
       <Actions></Actions>
     </div>

@@ -55,7 +55,7 @@ export default function MediaManager(props: {}) {
         );
 
         let media: Media = {
-            element: elm,
+            sources: [{ track: 0, element: elm, inUse: false }],
             file: file,
             thumbnail: thumbnailCanvas.toDataURL(),
         };
@@ -89,12 +89,12 @@ export default function MediaManager(props: {}) {
         return;
     }
 
-    const dragAndDrop = (timestamp: number, media: Media, trackNum: number) => {
+    const dragAndDrop = (media: Media) => {
         if (renderer == null) return;
         let segment: Segment = {
             media: media,
-            start: timestamp,
-            duration: media.element.duration * 1000,
+            start: 0,
+            duration: media.sources[0].element.duration * 1000,
             mediaStart: 0,
             texture: renderer.createTexture(),
             keyframes: [
@@ -109,42 +109,60 @@ export default function MediaManager(props: {}) {
                     scaleX: 1.0,
                     scaleY: 1.0,
                 },
-            ],
-            track: trackNum
+            ]
         };
 
-        setTrackList([
-            ...trackList.slice(0, trackNum),
-            [...trackList[trackNum], segment],
-            ...trackList.slice(trackNum + 1),
-        ]);
+        let newElement = media.sources[0].element.cloneNode() as HTMLVideoElement;
+        newElement.pause();
+
+        if (trackList[trackList.length - 1].length === 0) {
+            if (!media.sources.find(source => source.track === trackList.length - 1))
+                media.sources.push({ track: trackList.length - 1, element: newElement, inUse: false });
+            setTrackList([...trackList.slice(0, trackList.length - 1), [segment], []]);
+        } else {
+            media.sources.push({ track: trackList.length, element: newElement, inUse: false });
+            setTrackList([...trackList, [segment], []]);
+        }
     }
 
     const deleteVideo = (media: Media) => {
-        setMediaList(mediaList.filter((item: Media) => {
-            if (item !== media) media.element.pause();
-            return item !== media;
-        }));
+        for (const source of media.sources) {
+            source.element.pause();
+        }
 
-        setTrackList(trackList.map((track, trackInd) => track.filter((segment, segmentInd) => {
-            if (segment.media === media &&
-                selectedSegment?.track === trackInd &&
-                selectedSegment?.index === segmentInd) setSelectedSegment(null);
-            return segment.media !== media;
-        })));
+        if (selectedSegment && trackList[selectedSegment.track][selectedSegment.index].media === media) setSelectedSegment(null);
+        setMediaList(mediaList.filter(item => item !== media));
+
+        let newTrackList = trackList.map(track => track.filter(segment => segment.media !== media));
+
+        // Clean Tracklist
+        while (newTrackList.length > 0 && newTrackList[newTrackList.length - 1].length === 0) newTrackList.pop();
+        newTrackList.push([]);
+
+        setTrackList(newTrackList);
     }
 
     const deleteSelectedSegment = () => {
         if (selectedSegment === null) return;
 
-        trackList[selectedSegment.track][selectedSegment.index].media.element.pause();
-        setTrackList([
+        for (const source of trackList[selectedSegment.track][selectedSegment.index].media.sources) {
+            source.element.pause();
+        }
+
+        let newTrackList = [
             ...trackList.slice(0, selectedSegment.track),
             [...trackList[selectedSegment.track].slice(0, selectedSegment.index), ...trackList[selectedSegment.track].slice(selectedSegment.index + 1)],
             ...trackList.slice(selectedSegment.track + 1)
-        ]);
+        ];
+
+        // Clean Tracklist
+        while (newTrackList.length > 0 && newTrackList[newTrackList.length - 1].length === 0) newTrackList.pop();
+        newTrackList.push([]);
+
+        setTrackList(newTrackList);
         setSelectedSegment(null);
     }
+
     const split = (timestamp: number) => {
         if (selectedSegment === null) return;
 
@@ -163,8 +181,7 @@ export default function MediaManager(props: {}) {
                     duration: segment.start + segment.duration - timestamp,
                     mediaStart: timestamp - segment.start,
                     texture: segment.texture,
-                    keyframes: segment.keyframes,
-                    track: selectedSegment.track
+                    keyframes: segment.keyframes
                 },
                 ...trackList[selectedSegment.track].slice(selectedSegment.index + 1)
             ],
