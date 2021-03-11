@@ -26,7 +26,8 @@ export default function ExportPage(props: any) {
       }
 
        
-      
+      setLoad(0);
+      if (props.isRecordingRef.current) setLoad(Math.round(100*props.currentTime/props.projectDuration));
       
       return(
         <div className={styles.mediaList}>
