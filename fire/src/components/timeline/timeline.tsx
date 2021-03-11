@@ -47,12 +47,17 @@ export default function Timeline({
 
         let currentMinute = Math.floor(s / 60);
         let currentSecond = Math.floor(s / 1) - currentMinute * 60;
+        let currentMillisecond = (s - Math.floor(s / 1))*100;
+        currentSecond = currentSecond + Math.floor(currentMillisecond/30);
+        currentMillisecond = currentMillisecond - 30*Math.floor(currentMillisecond/30);
         let minute = String(currentMinute);
         while (minute.length < (2 || 2)) { minute = "0" + minute; }
         let second = String(currentSecond);
         while (second.length < (2 || 2)) { second = "0" + second; }
+        let millisecond = currentMillisecond.toFixed(0);
+        while (millisecond.length < (2 || 2)) { millisecond = "0" + millisecond; }
 
-        return minute + ":" + second;
+        return minute + ":" + second+ ":" + millisecond;
     }
 
     const ruler = () => {
@@ -339,7 +344,7 @@ export default function Timeline({
         {
             (provided) => (
                 <div className="timeline" {...provided.droppableProps} ref={provided.innerRef} >
-                    <div className={styles.tracks} style={{ minWidth: `${projectDuration * scaleFactor}px` }}>
+                    <div className={styles.tracks} style={{ minWidth: `${projectDuration * scaleFactor}px`, minHeight:`${containerRef.current?.clientHeight}px`}}>
                         {ruler()}
                         <div style={{
                             transform: `translateX(${currentTime * scaleFactor}px)`
