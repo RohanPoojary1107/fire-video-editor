@@ -58,3 +58,18 @@
   margin-right: 50px;
   color: --fontColor;
 }
+.progressBar {
+  position: relative;
+  top: 80px;
+  right: 70px;
+  width: 500px;
+}
+.label {
+  position: relative;
+  top: 80px;
+}
+.render {
+  position: relative;
+  right: 80px;
+  top: 80px;
+}

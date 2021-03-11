@@ -13,6 +13,7 @@ declare global {
 
 export default function ExportPage(props: any) {
   
+  const [load, setLoad] = useState<number>(0);
   
   function AddProject() {
 
@@ -30,7 +31,7 @@ export default function ExportPage(props: any) {
       return(
         <div className={styles.mediaList}>
         <ul className={styles.card}>
-          <li><img src={segment.media.thumbnail} className={styles.imageProperties}></img>Untitled</li>
+          <li><img src={segment.media.thumbnail} className={styles.imageProperties}></img>Untitled<label className={styles.render}>Rendering Progress:</label><progress max="100" value={load} className={styles.progressBar}></progress><label className={styles.label}>{load}%</label></li>
         </ul>
         </div>
       );
