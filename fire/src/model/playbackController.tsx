@@ -38,7 +38,7 @@ export default function PlaybackController(props: {
   const isPlayingRef = useRef(false);
   const SKIP_THREASHOLD = 100;
   let recordedChunks: Array<any>;
-  let mediaRecorder: MediaRecorder;
+  const mediaRecorderRef = useRef<MediaRecorder>();
 
   trackListRef.current = props.trackList;
   projectDurationRef.current = props.projectDuration;
@@ -117,7 +117,7 @@ export default function PlaybackController(props: {
     if (needsSeek) {
       if (isRecordingRef.current) {
         console.log("Recording Stopped");
-        mediaRecorder.pause();
+        if (mediaRecorderRef.current != null) mediaRecorderRef.current.pause();
       }
       for (let i = 0; i < segments.length; i++) {
         const segment = segments[i];
@@ -140,7 +140,7 @@ export default function PlaybackController(props: {
       playbackStartTimeRef.current = performance.now();
       if (isRecordingRef.current) {
         console.log("Recording Started Again");
-        mediaRecorder.resume();
+        if (mediaRecorderRef.current != null) mediaRecorderRef.current.resume();
       }
     }
 
@@ -157,7 +157,7 @@ export default function PlaybackController(props: {
       pause();
       console.log("Video Ended");
       if (isRecordingRef.current) {
-        mediaRecorder.stop();
+        if (mediaRecorderRef.current != null) mediaRecorderRef.current.stop();
         isRecordingRef.current = false;
       }
       return;
@@ -193,12 +193,13 @@ export default function PlaybackController(props: {
 
       console.log(stream);
       let options = { mimeType: "video/webm; codecs=vp9" };
-      mediaRecorder = new MediaRecorder(stream, options);
-
-      mediaRecorder.ondataavailable = handleDataAvailable;
+      mediaRecorderRef.current = new MediaRecorder(stream, options);
+      mediaRecorderRef.current.ondataavailable = handleDataAvailable;
+      mediaRecorderRef.current.onstop = download;
       setCurrentTime(0);
+      console.log(currentTime);
       isRecordingRef.current = true;
-      mediaRecorder.start();
+      mediaRecorderRef.current.start();
       console.log("Recording Started");
       play();
       console.log(props.projectDuration);
@@ -213,11 +214,24 @@ export default function PlaybackController(props: {
     }
   }
 
+  function download() {
+    var blob = new Blob(recordedChunks, {
+      type: "video/webm"
+    });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = "test.webm";
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
   return (
     <Router>
       <Switch>
         <Route path="/exportpage">
-          <ExportPage Render={Render}></ExportPage>
+          <ExportPage Render={Render} setCurrentTime={setCurrentTime} trackList={props.trackList} projectDuration={props.projectDuration} currentTime={currentTime} isRecordingRef={isRecordingRef}></ExportPage>
         </Route>
         <Route path="/about">
           <About></About>

@@ -1,8 +1,9 @@
 .container {
   padding: 25px;
+  margin-left: 200px;
   font-size: larger;
   color: var(--font-color);
-  background-color: --media-player-background-color;
+  background-color: --media-pool-card-background-color;
 }
 
 .logo {
@@ -14,4 +15,46 @@
   position: absolute;
   right: 50px;
   bottom: 100px;
+}
+.vbar {
+  height: 100%;
+  width: 200px;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.mediaList {
+  position: absolute;
+  top: 100px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  overflow-y: auto;
+  width: 100%;
+  height: auto;
+}
+.card {
+  background-color: var(--media-pool-card-background-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing);
+  margin-bottom: 20px;
+}
+.imageProperties {
+  float: left;
+  width: 200px;
+  height: auto;
+  padding: 10px;
+  position: relative;
+  margin-right: 50px;
+  color: --fontColor;
 }
