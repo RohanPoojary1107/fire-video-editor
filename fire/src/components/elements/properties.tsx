@@ -1,7 +1,7 @@
 import styles from "./properties.module.css";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Segment, SegmentID } from "../../model/types";
-import { calculateProperties } from "../../utils/interpolation";
+import { calculateProperties } from "../../utils/utils";
 
 export default function Properties({
   trackList,
@@ -12,18 +12,21 @@ export default function Properties({
 }: {
   currentTime: number;
   trackList: Segment[][];
-  selectedSegment: SegmentID;
+  selectedSegment: SegmentID | null;
   updateSegment: (id: SegmentID, segment: Segment) => void;
   setCurrentTime: (timestamp: number) => void;
 }) {
-  const segment = trackList[selectedSegment.track][selectedSegment.index];
-  
+  const segment = !selectedSegment ? null : trackList[selectedSegment.track][selectedSegment.index];
+  const currKeyframe = calculateProperties(segment, currentTime);
+
   // maintain state for keyframe buttons
   const [posState, setPositionState] = useState<boolean>(false);
   const [cropState, setCropState] = useState<boolean>(false);
   const [scaleState, setScaleState] = useState<boolean>(false);
 
   const checkKeyframeExists = () => {
+    if (!segment) return false;
+
     for (let i = 0; i < segment.keyframes.length; i++) {
       if (segment.keyframes[i].start + segment.start === currentTime) {
         return i; // return index of keyframe if it exists
@@ -35,6 +38,7 @@ export default function Properties({
   const checkPropState = (property: string): boolean => {
     let currKeyframeIndex = checkKeyframeExists();
     if (currKeyframeIndex === false) return false;
+    if (!segment) return false;
 
     if (property === "position") {
       if (
@@ -66,7 +70,9 @@ export default function Properties({
     setScaleState(checkPropState("scale"));
   }, [currentTime]);
 
-  const _updateSegment = (args: any, isButtonPressed?:boolean) => {
+  const _updateSegment = (args: any, isButtonPressed?: boolean) => {
+    if (!segment || !selectedSegment) return false;
+
     let insertPos = null;
     for (let i = 0; i < segment.keyframes.length; i++) {
       if (segment.keyframes[i].start + segment.start >= currentTime) {
@@ -79,11 +85,11 @@ export default function Properties({
 
     let currKeyframeIndex = checkKeyframeExists();
 
-    if (segment.keyframes.length===1 && isButtonPressed===undefined){
+    if (segment.keyframes.length === 1 && isButtonPressed === undefined) {
       currKeyframeIndex = 0;
     }
 
-    if (currKeyframeIndex!==false) {
+    if (currKeyframeIndex !== false) {
       let updatedKeyframe = {
         ...segment.keyframes[currKeyframeIndex],
         ...args,
@@ -139,11 +145,9 @@ export default function Properties({
     }
   };
 
-  const getInterpolatedKeyframe = () => {
-    return calculateProperties(segment, currentTime);
-  };
-
   const findNextSetKeyframe = (property: "position" | "scale" | "crop") => {
+    if (!segment) return null;
+
     for (let i = 0; i < segment.keyframes.length; i++) {
       //@ts-ignore
       if (segment.start + segment.keyframes[i].start > currentTime) {
@@ -174,6 +178,8 @@ export default function Properties({
   };
 
   const findPrevSetKeyframe = (property: "position" | "scale" | "crop") => {
+    if (!segment) return null;
+
     for (let i = segment.keyframes.length - 1; i >= 0; i--) {
       //@ts-ignore
       if (segment.start + segment.keyframes[i].start < currentTime) {
@@ -204,13 +210,15 @@ export default function Properties({
   };
 
   return (
-    <div className={styles.container}>
+    <fieldset className={`${styles.container} ${selectedSegment ? styles.slideIn : ""}`} disabled={selectedSegment === null}>
       <h2 className={styles.title}>Effects</h2>
       <label className={styles.tags}>
         Position
         <button
           className={styles.keyframeNext}
           onClick={() => {
+            if (!segment) return;
+
             let nextKeyframeIndex = findNextSetKeyframe("position");
             setCurrentTime(
               nextKeyframeIndex == null
@@ -225,8 +233,7 @@ export default function Properties({
           className={styles.keyframeBtn}
           onClick={(event) => {
             event.stopPropagation();
-            if(currentTime===0) return;
-            const currKeyframe = getInterpolatedKeyframe();
+            if (currentTime === 0) return;
             if (!posState) {
               _updateSegment({ x: currKeyframe.x, y: currKeyframe.y }, true);
             } else {
@@ -245,6 +252,8 @@ export default function Properties({
         <button
           className={styles.keyframePrev}
           onClick={() => {
+            if (!segment) return;
+
             let prevKeyframeIndex = findPrevSetKeyframe("position");
             setCurrentTime(
               prevKeyframeIndex == null
@@ -259,71 +268,43 @@ export default function Properties({
       <span className={styles.effectBox}>
         <label className={styles.tag}>X </label>
         <div className={styles.inputTagBox}>
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().x;
-          if (!value){
-            value=0;
-          }
-          _updateSegment({ x: parseFloat((value-10).toFixed(2)) })
-        }}
-        >-</button>
-        <input
-          name="X"
-          className={styles.inputTag}
-          type="number"
-          step="10"
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            _updateSegment({ x: event.target.value })
-          }
-          value={getInterpolatedKeyframe().x}
-        />
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().x;
-          if (!value){
-            value=0;
-          }
-          _updateSegment({ x: parseFloat((value+10).toFixed(2)) })
-        }}
-        >+</button>
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ x: (currKeyframe.x ?? 0) - 10 })}
+          >-</button>
+          <input
+            name="X"
+            className={styles.inputTag}
+            type="number"
+            step="10"
+            onChange={event => _updateSegment({ x: +event.target.value })}
+            value={currKeyframe.x}
+          />
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ x: (currKeyframe.x ?? 0) + 10 })}
+          >+</button>
         </div>
       </span>
       <span className={styles.effectBox}>
         <label className={styles.tag}>Y </label>
         <div className={styles.inputTagBox}>
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().y;
-          if (!value){
-            value=0;
-          }
-          _updateSegment({ y: parseFloat((value-10).toFixed(2)) })
-        }}
-        >-</button>
-        <input
-          name="Y"
-          className={styles.inputTag}
-          type="number"
-          step="10"
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            _updateSegment({ y: event.target.value })
-          }
-          value={getInterpolatedKeyframe().y}
-        />
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().y;
-          if (!value){
-            value=0;
-          }
-          _updateSegment({ y: parseFloat((value+10).toFixed(2)) })
-        }}
-        >+</button>
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ y: (currKeyframe.y ?? 0) - 10 })}
+          >-</button>
+          <input
+            name="Y"
+            className={styles.inputTag}
+            type="number"
+            step="10"
+            onChange={event => _updateSegment({ y: +event.target.value })}
+            value={currKeyframe.y}
+          />
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ y: (currKeyframe.y ?? 0) + 10 })}
+          >+</button>
         </div>
       </span>
 
@@ -332,6 +313,8 @@ export default function Properties({
         <button
           className={styles.keyframeNext}
           onClick={() => {
+            if (!segment) return;
+
             let nextKeyframeIndex = findNextSetKeyframe("scale");
             setCurrentTime(
               nextKeyframeIndex == null
@@ -346,8 +329,7 @@ export default function Properties({
           className={styles.keyframeBtn}
           onClick={(event) => {
             event.stopPropagation();
-            if(currentTime===0) return;
-            const currKeyframe = getInterpolatedKeyframe();
+            if (currentTime === 0) return;
             if (!scaleState) {
               setScaleState(!scaleState);
               _updateSegment({
@@ -358,7 +340,7 @@ export default function Properties({
               setScaleState(!scaleState);
               _updateSegment({ scaleX: undefined, scaleY: undefined }, true);
             }
-            
+
           }}
         >
           <span
@@ -371,6 +353,8 @@ export default function Properties({
         <button
           className={styles.keyframePrev}
           onClick={() => {
+            if (!segment) return;
+
             let prevKeyframeIndex = findPrevSetKeyframe("scale");
             setCurrentTime(
               prevKeyframeIndex == null
@@ -385,79 +369,45 @@ export default function Properties({
       <span className={styles.effectBox}>
         <label className={styles.tag}>X </label>
         <div className={styles.inputTagBox}>
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().scaleX;
-          if (!value){
-            value=0;
-          }
-          if (value-0.1>=0){
-            value=value-0.1
-          }
-          _updateSegment({ scaleX: parseFloat((value).toFixed(2)) })
-        }}
-        >-</button>
-        <input
-          name="height"
-          className={styles.inputTag}
-          type="number"
-          step="0.1"
-          min="0.0"
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            _updateSegment({ scaleX: event.target.value })
-          }
-          value={getInterpolatedKeyframe().scaleX}
-        />
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().scaleX;
-          if (!value){
-            value=0;
-          }
-          _updateSegment({ scaleX: parseFloat((value+0.1).toFixed(2)) })
-        }}
-        >+</button>
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ scaleX: Math.max(+((currKeyframe.scaleX ?? 0) - 0.1).toFixed(2), 0) })}
+          >-</button>
+          <input
+            name="height"
+            className={styles.inputTag}
+            type="number"
+            step="0.1"
+            min="0.0"
+            onChange={(event) => _updateSegment({ scaleX: +event.target.value })}
+            value={currKeyframe.scaleX}
+          />
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ scaleX: +((currKeyframe.scaleX ?? 0) + 0.1).toFixed(2) })}
+          >+</button>
         </div>
       </span>
       <span className={styles.effectBox}>
         <label className={styles.tag}>Y </label>
         <div className={styles.inputTagBox}>
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().scaleY;
-          if (!value){
-            value=0;
-          }
-          if (value-0.1>=0){
-            value=value-0.1
-          }
-          _updateSegment({ scaleY: parseFloat((value).toFixed(2)) })
-        }}
-        >-</button>
-        <input
-          name="width"
-          className={styles.inputTag}
-          type="number"
-          step="0.1"
-          min="0.0"
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            _updateSegment({ scaleY: event.target.value })
-          }
-          value={getInterpolatedKeyframe().scaleY}
-        />
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().scaleY;
-          if (!value){
-            value=0;
-          }
-          _updateSegment({ scaleY: parseFloat((value+0.1).toFixed(2)) })
-        }}
-        >+</button>
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ scaleY: Math.max(+((currKeyframe.scaleY ?? 0) - 0.1).toFixed(2), 0) })}
+          >-</button>
+          <input
+            name="width"
+            className={styles.inputTag}
+            type="number"
+            step="0.1"
+            min="0.0"
+            onChange={event => _updateSegment({ scaleY: +event.target.value })}
+            value={currKeyframe.scaleY}
+          />
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ scaleY: +((currKeyframe.scaleY ?? 0) + 0.1).toFixed(2) })}
+          >+</button>
         </div>
       </span>
 
@@ -466,6 +416,8 @@ export default function Properties({
         <button
           className={styles.keyframeNext}
           onClick={() => {
+            if (!segment) return;
+
             let nextKeyframeIndex = findNextSetKeyframe("crop");
             setCurrentTime(
               nextKeyframeIndex == null
@@ -480,8 +432,8 @@ export default function Properties({
           className={styles.keyframeBtn}
           onClick={(event) => {
             event.stopPropagation();
-            if(currentTime===0) return;
-            const currKeyframe = getInterpolatedKeyframe();
+            if (currentTime === 0) return;
+
             if (!cropState) {
               _updateSegment({
                 trimLeft: currKeyframe.trimLeft,
@@ -510,6 +462,8 @@ export default function Properties({
         <button
           className={styles.keyframePrev}
           onClick={() => {
+            if (!segment) return;
+
             let prevKeyframeIndex = findPrevSetKeyframe("crop");
             setCurrentTime(
               prevKeyframeIndex == null
@@ -524,175 +478,95 @@ export default function Properties({
       <span className={styles.effectBox}>
         <label className={styles.tag}>Left</label>
         <div className={styles.inputTagBox}>
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().trimLeft;
-          if (!value){
-            value=0;
-          }
-          if (value-0.1>=0){
-            value=value-0.1
-          }
-          _updateSegment({ trimLeft: parseFloat((value).toFixed(2)) })
-        }}
-        >-</button>
-        <input
-          name="Left"
-          className={styles.inputTag}
-          type="number"
-          step="0.1"
-          min="0"
-          max="1.0"
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            _updateSegment({ trimLeft: event.target.value })
-          }
-          value={getInterpolatedKeyframe().trimLeft}
-        />
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().trimLeft;
-          if (!value){
-            value=0;
-          }
-          if (value+0.1<=1){
-            value=value+0.1
-          }
-          _updateSegment({ trimLeft: parseFloat((value).toFixed(2)) })
-        }}
-        >+</button>
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ trimLeft: Math.max(+((currKeyframe.trimLeft ?? 0) - 0.1).toFixed(2), 0) })}
+          >-</button>
+          <input
+            name="Left"
+            className={styles.inputTag}
+            type="number"
+            step="0.1"
+            min="0"
+            max="1.0"
+            onChange={(event) => _updateSegment({ trimLeft: +event.target.value })}
+            value={currKeyframe.trimLeft}
+          />
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ trimLeft: Math.min(+((currKeyframe.trimLeft ?? 0) + 0.1).toFixed(2), 1) })}
+          >+</button>
         </div>
       </span>
       <span className={styles.effectBox}>
         <label className={styles.tag}>Right</label>
         <div className={styles.inputTagBox}>
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().trimRight;
-          if (!value){
-            value=0;
-          }
-          if (value-0.1>=0){
-            value=value-0.1
-          }
-          _updateSegment({ trimRight: parseFloat((value).toFixed(2)) })
-        }}
-        >-</button>
-        <input
-          name="Right"
-          className={styles.inputTag}
-          type="number"
-          step="0.1"
-          min="0"
-          max="1.0"
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            _updateSegment({ trimRight: event.target.value })
-          }
-          value={getInterpolatedKeyframe().trimRight}
-        />
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().trimRight;
-          if (!value){
-            value=0;
-          }
-          if (value+0.1<=1){
-            value=value+0.1
-          }
-          _updateSegment({ trimRight: parseFloat((value).toFixed(2)) })
-        }}
-        >+</button>
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ trimRight: Math.max(+((currKeyframe.trimRight ?? 0) - 0.1).toFixed(2), 0) })}
+          >-</button>
+          <input
+            name="Right"
+            className={styles.inputTag}
+            type="number"
+            step="0.1"
+            min="0"
+            max="1.0"
+            onChange={event => _updateSegment({ trimRight: +event.target.value })}
+            value={currKeyframe.trimRight}
+          />
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ trimRight: Math.min(+((currKeyframe.trimRight ?? 0) + 0.1).toFixed(2), 1) })}
+          >+</button>
         </div>
       </span>
       <span className={styles.effectBox}>
         <label className={styles.tag}>Top</label>
         <div className={styles.inputTagBox}>
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().trimTop;
-          if (!value){
-            value=0;
-          }
-          if (value-0.1>=0){
-            value=value-0.1
-          }
-          _updateSegment({ trimTop: parseFloat((value).toFixed(2)) })
-        }}
-        >-</button>
-        <input
-          name="Top"
-          className={styles.inputTag}
-          type="number"
-          step="0.1"
-          min="0"
-          max="1.0"
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            _updateSegment({ trimTop: event.target.value })
-          }
-          value={getInterpolatedKeyframe().trimTop}
-        />
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().trimTop;
-          if (!value){
-            value=0;
-          }
-          if (value+0.1<=1){
-            value=value+0.1
-          }
-          _updateSegment({ trimTop: parseFloat((value).toFixed(2)) })
-        }}
-        >+</button>
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ trimTop: Math.max(+((currKeyframe.trimTop ?? 0) - 0.1).toFixed(2), 0) })}
+          >-</button>
+          <input
+            name="Top"
+            className={styles.inputTag}
+            type="number"
+            step="0.1"
+            min="0"
+            max="1.0"
+            onChange={event => _updateSegment({ trimTop: +event.target.value })}
+            value={currKeyframe.trimTop}
+          />
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ trimTop: Math.min(+((currKeyframe.trimTop ?? 0) + 0.1).toFixed(2), 1) })}
+          >+</button>
         </div>
       </span>
       <span className={styles.effectBox}>
         <label className={styles.tag}>Bottom</label>
         <div className={styles.inputTagBox}>
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().trimBottom;
-          if (!value){
-            value=0;
-          }
-          if (value-0.1>=0){
-            value=value-0.1
-          }
-          _updateSegment({ trimBottom: parseFloat((value).toFixed(2)) })
-        }}
-        >-</button>
-        <input
-          name="Bottom"
-          className={styles.inputTag}
-          type="number"
-          step="0.1"
-          min="0"
-          max="1.0"
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            _updateSegment({ trimBottom: event.target.value })
-          }
-          value={getInterpolatedKeyframe().trimBottom}
-        />
-        <button
-        className={styles.inputBtn}
-        onClick={() => {
-          let value = getInterpolatedKeyframe().trimBottom;
-          if (!value){
-            value=0;
-          }
-          if (value+0.1<=1){
-            value=value+0.1
-          }
-          _updateSegment({ trimBottom: parseFloat((value).toFixed(2))})
-        }}
-        >+</button>
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ trimBottom: Math.max(+((currKeyframe.trimBottom ?? 0) - 0.1).toFixed(2), 0) })}
+          >-</button>
+          <input
+            name="Bottom"
+            className={styles.inputTag}
+            type="number"
+            step="0.1"
+            min="0"
+            max="1.0"
+            onChange={event => _updateSegment({ trimBottom: +event.target.value })}
+            value={currKeyframe.trimBottom}
+          />
+          <button
+            className={styles.inputBtn}
+            onClick={() => _updateSegment({ trimBottom: Math.min(+((currKeyframe.trimBottom ?? 0) + 0.1).toFixed(2), 1) })}
+          >+</button>
         </div>
       </span>
-    </div>
+    </fieldset>
   );
 }

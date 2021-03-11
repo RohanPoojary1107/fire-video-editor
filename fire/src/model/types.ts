@@ -1,5 +1,10 @@
-export interface Media {
+export interface Source {
+    track: number;
     element: HTMLVideoElement;
+    inUse: boolean;
+}
+export interface Media {
+    sources: Source[]; // Source 0 should allways be present
     file: File;
     thumbnail: string;
 }
@@ -9,9 +14,8 @@ export interface Segment {
     start: number; // Global start
     duration: number;
     mediaStart: number;
-    keyframes: KeyFrame[];
+    keyframes: KeyFrame[]; // Keyframe 0 should allways be present
     texture: WebGLTexture;
-    track: number;
 }
 
 export interface KeyFrame {

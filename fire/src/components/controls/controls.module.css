@@ -6,7 +6,7 @@
   align-items: center;
   background: transparent;
   gap: var(--spacing);
-  z-index:4;
+  z-index: 4;
 }
 
 .trackbar {
@@ -22,6 +22,10 @@
 .trackbar:hover {
   background: var(--icon-background-hover-color);
   cursor: pointer;
+}
+
+.trackbar:focus {
+  box-shadow: 0px 0px 5px 0px #cacaca;
 }
 
 .trackbar::-webkit-slider-thumb {
@@ -50,6 +54,6 @@
     align-items: center;
     background: transparent;
     gap: var(--spacing);
-    z-index:4;
+    z-index: 4;
   }
 }
