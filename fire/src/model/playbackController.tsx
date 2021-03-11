@@ -133,7 +133,6 @@ export default function PlaybackController(props: {
         }
       }
       try {
-        console.log("Here");
         await Promise.allSettled(elements.map((element) => element.play()));
       } catch (error) {}
       lastPlaybackTimeRef.current = curTime;

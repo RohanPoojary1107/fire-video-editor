@@ -56,7 +56,7 @@ export default function Controls(
             <button className={styles.button}>
                 <span className="material-icons">skip_previous</span>
             </button>
-            <button className={styles.button} onClick={togglePlaying}>
+            <button className={styles.button} onClick={togglePlaying} title={isPlaying? "Pause" : "Play"}>
                 <span className="material-icons">
                     {isPlaying ? "pause" : "play_arrow"}
                 </span>
@@ -73,22 +73,22 @@ export default function Controls(
                 onChange={onSeek}
                 value={projectDuration === 0 ? 0 : currentTime / projectDuration}
             ></input>
-            <button className={styles.button}>
+            <button className={styles.button} title="Volume">
                 <span className="material-icons">volume_up</span>
             </button>
-            <button className={styles.button} onClick={decreaseScale}>
+            <button className={styles.button} onClick={decreaseScale} title="Zoom out">
                 <span className="material-icons">remove</span>
             </button>
-            <button className={styles.button} onClick={increaseScale}>
+            <button className={styles.button} onClick={increaseScale} title="Zoom In">
                 <span className="material-icons">add</span>
             </button>
-            <button className={styles.button} onClick={createSplit}>
+            <button className={styles.button} onClick={createSplit} title="Split">
                 <span className="material-icons">content_cut</span>
             </button>
-            <button className={styles.button} onClick={deleteSelectedSegment}>
+            <button className={styles.button} onClick={deleteSelectedSegment} title="Delete">
                 <span className="material-icons">delete</span>
             </button>
-            <button className={styles.button}>
+            <button className={styles.button} title="Duplicate">
                 <span className="material-icons">content_copy</span>
             </button>
         </div>

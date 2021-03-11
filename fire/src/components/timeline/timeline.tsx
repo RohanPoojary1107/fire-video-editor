@@ -1,7 +1,8 @@
 import styles from "./timeline.module.css";
-import { Segment, SegmentID, Source } from "../../model/types";
+import { Media, Segment, SegmentID } from "../../model/types";
 import { useState, MouseEvent, useRef, useEffect } from "react";
 import { lerp } from "../../utils/utils";
+import { Droppable } from 'react-beautiful-dnd';
 
 export default function Timeline({
     trackList,
@@ -12,7 +13,7 @@ export default function Timeline({
     setCurrentTime,
     updateSegment,
     scaleFactor,
-    setTrackList
+    setTrackList,
 }: {
     trackList: Segment[][],
     projectDuration: number,
@@ -22,7 +23,7 @@ export default function Timeline({
     setCurrentTime: (timestamp: number) => void,
     updateSegment: (id: SegmentID, segment: Segment) => void,
     scaleFactor: number,
-    setTrackList: (tracks: Segment[][]) => void,
+    setTrackList: (tracks: Segment[][]) => void
 }) {
     enum DragMode {
         NONE,
@@ -76,7 +77,7 @@ export default function Timeline({
                     <div className={styles.sec}></div>
                     <div className={styles.sec}></div>
                     <div className={styles.sec}></div>
-                    {i == 0 ? <div className={styles.sec} style={{ height: 14 }}></div> : ''}
+                    {i === 0 ? <div className={styles.sec} style={{ height: 14 }}></div> : ''}
                 </div>
             )
         }
@@ -104,7 +105,7 @@ export default function Timeline({
         for (let i = 0; i < segments.length; i++) {
             const segment = segments[i];
             const color = COLORS[i % COLORS.length];
-            const isSelected = selectedSegment !== null && selectedSegment.track === trackInd && selectedSegment.index == i;
+            const isSelected = selectedSegment !== null && selectedSegment.track === trackInd && selectedSegment.index === i;
 
             let space = segment.start - (i === 0 ? 0 : (segments[i - 1].start + segments[i - 1].duration));
             segmentDivs.push(<div style={{ flex: `0 0 ${space * scaleFactor}px` }}></div>);
@@ -272,7 +273,6 @@ export default function Timeline({
                 }
             }
 
-            // console.log("INDEX", foundInd);
             // Insert new Segment and remove old
             let newSegment = { ...segment, start: foundTime };
             let insertedInd = -1;
@@ -335,16 +335,25 @@ export default function Timeline({
             onMouseMove={onMouseMove}
             ref={containerRef}
         >
-            <div className={styles.tracks} style={{ minWidth: `${projectDuration * scaleFactor}px` }}>
-                {ruler()}
-                <div style={{
-                    transform: `translateX(${currentTime * scaleFactor}px)`
-                }} className={styles.pointer}>
-                    <div className={styles.highlight}></div>
-                    <div className={styles.indicator}></div>
+        <Droppable droppableId="timeline">
+        {
+            (provided) => (
+                <div className="timeline" {...provided.droppableProps} ref={provided.innerRef} >
+                    <div className={styles.tracks} style={{ minWidth: `${projectDuration * scaleFactor}px` }}>
+                        {ruler()}
+                        <div style={{
+                            transform: `translateX(${currentTime * scaleFactor}px)`
+                        }} className={styles.pointer}>
+                            <div className={styles.highlight}></div>
+                            <div className={styles.indicator}></div>
+                        </div>
+                        {trackDivs}
+                    </div>
+                {provided.placeholder}
                 </div>
-                {trackDivs}
-            </div>
+                )
+            }
+        </Droppable>
         </div >
     );
 }

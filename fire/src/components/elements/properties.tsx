@@ -1,5 +1,5 @@
 import styles from "./properties.module.css";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Segment, SegmentID } from "../../model/types";
 import { calculateProperties } from "../../utils/utils";
 
@@ -70,7 +70,7 @@ export default function Properties({
     setScaleState(checkPropState("scale"));
   }, [currentTime]);
 
-  const _updateSegment = (args: any, isButtonPressed?: boolean) => {
+  const _updateSegment = (args: any, property?: "position" | "scale" | "crop", isButtonPressed?: boolean) => {
     if (!segment || !selectedSegment) return false;
 
     let insertPos = null;
@@ -88,6 +88,10 @@ export default function Properties({
     if (segment.keyframes.length === 1 && isButtonPressed === undefined) {
       currKeyframeIndex = 0;
     }
+
+    if(segment.keyframes.length > 1 && property === "position")setPositionState(true);
+    else if(segment.keyframes.length > 1 && property === "scale")setScaleState(true);
+    else if(segment.keyframes.length > 1 && property === "crop")setCropState(true);
 
     if (currKeyframeIndex !== false) {
       let updatedKeyframe = {
@@ -235,9 +239,9 @@ export default function Properties({
             event.stopPropagation();
             if (currentTime === 0) return;
             if (!posState) {
-              _updateSegment({ x: currKeyframe.x, y: currKeyframe.y }, true);
+              _updateSegment({ x: currKeyframe.x, y: currKeyframe.y }, undefined, true);
             } else {
-              _updateSegment({ x: undefined, y: undefined }, true);
+              _updateSegment({ x: undefined, y: undefined }, undefined, true);
             }
             setPositionState(!posState);
           }}
@@ -270,19 +274,19 @@ export default function Properties({
         <div className={styles.inputTagBox}>
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ x: (currKeyframe.x ?? 0) - 10 })}
+            onClick={() => _updateSegment({ x: (currKeyframe.x ?? 0) - 10 }, "position")}
           >-</button>
           <input
             name="X"
             className={styles.inputTag}
             type="number"
             step="10"
-            onChange={event => _updateSegment({ x: +event.target.value })}
+            onChange={event => _updateSegment({ x: +event.target.value }, "position")}
             value={currKeyframe.x}
           />
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ x: (currKeyframe.x ?? 0) + 10 })}
+            onClick={() => _updateSegment({ x: (currKeyframe.x ?? 0) + 10 }, "position")}
           >+</button>
         </div>
       </span>
@@ -291,19 +295,19 @@ export default function Properties({
         <div className={styles.inputTagBox}>
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ y: (currKeyframe.y ?? 0) - 10 })}
+            onClick={() => _updateSegment({ y: (currKeyframe.y ?? 0) - 10 }, "position")}
           >-</button>
           <input
             name="Y"
             className={styles.inputTag}
             type="number"
             step="10"
-            onChange={event => _updateSegment({ y: +event.target.value })}
+            onChange={event => _updateSegment({ y: +event.target.value }, "position")}
             value={currKeyframe.y}
           />
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ y: (currKeyframe.y ?? 0) + 10 })}
+            onClick={() => _updateSegment({ y: (currKeyframe.y ?? 0) + 10 }, "position")}
           >+</button>
         </div>
       </span>
@@ -335,10 +339,10 @@ export default function Properties({
               _updateSegment({
                 scaleX: currKeyframe.scaleX,
                 scaleY: currKeyframe.scaleY,
-              }, true);
+              }, undefined, true);
             } else {
               setScaleState(!scaleState);
-              _updateSegment({ scaleX: undefined, scaleY: undefined }, true);
+              _updateSegment({ scaleX: undefined, scaleY: undefined }, undefined, true);
             }
 
           }}
@@ -371,7 +375,7 @@ export default function Properties({
         <div className={styles.inputTagBox}>
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ scaleX: Math.max(+((currKeyframe.scaleX ?? 0) - 0.1).toFixed(2), 0) })}
+            onClick={() => _updateSegment({ scaleX: Math.max(+((currKeyframe.scaleX ?? 0) - 0.1).toFixed(2), 0)}, "scale")}
           >-</button>
           <input
             name="height"
@@ -379,12 +383,12 @@ export default function Properties({
             type="number"
             step="0.1"
             min="0.0"
-            onChange={(event) => _updateSegment({ scaleX: +event.target.value })}
+            onChange={(event) => _updateSegment({ scaleX: +event.target.value }, "scale")}
             value={currKeyframe.scaleX}
           />
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ scaleX: +((currKeyframe.scaleX ?? 0) + 0.1).toFixed(2) })}
+            onClick={() => _updateSegment({ scaleX: +((currKeyframe.scaleX ?? 0) + 0.1).toFixed(2) }, "scale")}
           >+</button>
         </div>
       </span>
@@ -393,7 +397,7 @@ export default function Properties({
         <div className={styles.inputTagBox}>
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ scaleY: Math.max(+((currKeyframe.scaleY ?? 0) - 0.1).toFixed(2), 0) })}
+            onClick={() => _updateSegment({ scaleY: Math.max(+((currKeyframe.scaleY ?? 0) - 0.1).toFixed(2), 0) }, "scale")}
           >-</button>
           <input
             name="width"
@@ -401,12 +405,12 @@ export default function Properties({
             type="number"
             step="0.1"
             min="0.0"
-            onChange={event => _updateSegment({ scaleY: +event.target.value })}
+            onChange={event => _updateSegment({ scaleY: +event.target.value }, "scale")}
             value={currKeyframe.scaleY}
           />
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ scaleY: +((currKeyframe.scaleY ?? 0) + 0.1).toFixed(2) })}
+            onClick={() => _updateSegment({ scaleY: +((currKeyframe.scaleY ?? 0) + 0.1).toFixed(2) }, "scale")}
           >+</button>
         </div>
       </span>
@@ -440,14 +444,14 @@ export default function Properties({
                 trimRight: currKeyframe.trimRight,
                 trimTop: currKeyframe.trimTop,
                 trimBottom: currKeyframe.trimBottom,
-              }, true);
+              }, undefined, true);
             } else {
               _updateSegment({
                 trimLeft: undefined,
                 trimRight: undefined,
                 trimTop: undefined,
                 trimBottom: undefined,
-              }, true);
+              }, undefined, true);
             }
             setCropState(!cropState);
           }}
@@ -480,7 +484,7 @@ export default function Properties({
         <div className={styles.inputTagBox}>
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ trimLeft: Math.max(+((currKeyframe.trimLeft ?? 0) - 0.1).toFixed(2), 0) })}
+            onClick={() => _updateSegment({ trimLeft: Math.max(+((currKeyframe.trimLeft ?? 0) - 0.1).toFixed(2), 0) }, "crop")}
           >-</button>
           <input
             name="Left"
@@ -489,12 +493,12 @@ export default function Properties({
             step="0.1"
             min="0"
             max="1.0"
-            onChange={(event) => _updateSegment({ trimLeft: +event.target.value })}
+            onChange={(event) => _updateSegment({ trimLeft: +event.target.value },"crop")}
             value={currKeyframe.trimLeft}
           />
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ trimLeft: Math.min(+((currKeyframe.trimLeft ?? 0) + 0.1).toFixed(2), 1) })}
+            onClick={() => _updateSegment({ trimLeft: Math.min(+((currKeyframe.trimLeft ?? 0) + 0.1).toFixed(2), 1) }, "crop")}
           >+</button>
         </div>
       </span>
@@ -503,7 +507,7 @@ export default function Properties({
         <div className={styles.inputTagBox}>
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ trimRight: Math.max(+((currKeyframe.trimRight ?? 0) - 0.1).toFixed(2), 0) })}
+            onClick={() => _updateSegment({ trimRight: Math.max(+((currKeyframe.trimRight ?? 0) - 0.1).toFixed(2), 0) }, "crop")}
           >-</button>
           <input
             name="Right"
@@ -512,12 +516,12 @@ export default function Properties({
             step="0.1"
             min="0"
             max="1.0"
-            onChange={event => _updateSegment({ trimRight: +event.target.value })}
+            onChange={event => _updateSegment({ trimRight: +event.target.value }, "crop")}
             value={currKeyframe.trimRight}
           />
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ trimRight: Math.min(+((currKeyframe.trimRight ?? 0) + 0.1).toFixed(2), 1) })}
+            onClick={() => _updateSegment({ trimRight: Math.min(+((currKeyframe.trimRight ?? 0) + 0.1).toFixed(2), 1) }, "crop")}
           >+</button>
         </div>
       </span>
@@ -526,7 +530,7 @@ export default function Properties({
         <div className={styles.inputTagBox}>
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ trimTop: Math.max(+((currKeyframe.trimTop ?? 0) - 0.1).toFixed(2), 0) })}
+            onClick={() => _updateSegment({ trimTop: Math.max(+((currKeyframe.trimTop ?? 0) - 0.1).toFixed(2), 0) }, "crop")}
           >-</button>
           <input
             name="Top"
@@ -540,7 +544,7 @@ export default function Properties({
           />
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ trimTop: Math.min(+((currKeyframe.trimTop ?? 0) + 0.1).toFixed(2), 1) })}
+            onClick={() => _updateSegment({ trimTop: Math.min(+((currKeyframe.trimTop ?? 0) + 0.1).toFixed(2), 1) }, "crop")}
           >+</button>
         </div>
       </span>
@@ -549,7 +553,7 @@ export default function Properties({
         <div className={styles.inputTagBox}>
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ trimBottom: Math.max(+((currKeyframe.trimBottom ?? 0) - 0.1).toFixed(2), 0) })}
+            onClick={() => _updateSegment({ trimBottom: Math.max(+((currKeyframe.trimBottom ?? 0) - 0.1).toFixed(2), 0) }, "crop")}
           >-</button>
           <input
             name="Bottom"
@@ -563,7 +567,7 @@ export default function Properties({
           />
           <button
             className={styles.inputBtn}
-            onClick={() => _updateSegment({ trimBottom: Math.min(+((currKeyframe.trimBottom ?? 0) + 0.1).toFixed(2), 1) })}
+            onClick={() => _updateSegment({ trimBottom: Math.min(+((currKeyframe.trimBottom ?? 0) + 0.1).toFixed(2), 1) }, "crop")}
           >+</button>
         </div>
       </span>

@@ -1,7 +1,7 @@
 import styles from "./mediaPool.module.css";
 import React, { useState } from 'react';
 import { Media } from "../../model/types";
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
 
 const options = {
     types: [
@@ -73,19 +73,6 @@ export default function MediaPool(props: any) {
         setStatus('');
     }
 
-    //@ts-ignore
-    function handleOnDragEnd(result) {
-        if (result.destination) {
-            const items = props.mediaList.slice();
-            const [reorderedItem] = items.splice(result.source.index, 1);
-            items.splice(result.destination.index, 0, reorderedItem);
-            props.setMediaList(items);
-        }
-        else {
-            props.dragAndDrop(props.mediaList[result.source.index]);  // currently only adding to track 0. 
-        }
-    }
-
     return (
         <div
             onDragOver={(e) => { e.stopPropagation(); e.preventDefault(); setDraggedOn('draggedOn'); }}
@@ -98,12 +85,13 @@ export default function MediaPool(props: any) {
                 <h2 className={styles.title}>Project Files</h2>
                 <button
                     className={styles.addFiles}
-                    onClick={onClick}>
+                    onClick={onClick}
+                    title="Add files"
+                    >
                     <span className="material-icons md-36">add</span>
                 </button>
             </div>
             <div className={styles.mediaList}>
-                <DragDropContext onDragEnd={handleOnDragEnd}>
                     <Droppable droppableId="card">
                         {
                             (provided) => (
@@ -111,10 +99,8 @@ export default function MediaPool(props: any) {
                                     {listItems}
                                     {provided.placeholder}
                                 </ul>
-                            )
-                        }
+                        )}
                     </Droppable>
-                </DragDropContext>
             </div>
 
             <p className={styles.loader}>{status}</p>
