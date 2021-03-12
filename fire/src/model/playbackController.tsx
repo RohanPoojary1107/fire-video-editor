@@ -70,6 +70,7 @@ export default function PlaybackController(props: {
     if (curTime >= projectDurationRef.current)
       curTime = projectDurationRef.current;
     _setCurrentTime(curTime);
+    console.log(curTime);
 
     for (const media of mediaListRef.current) {
       for (const source of media.sources) {
@@ -200,7 +201,8 @@ export default function PlaybackController(props: {
       isRecordingRef.current = true;
       mediaRecorderRef.current.start();
       console.log("Recording Started");
-      play();
+      setIsPlaying(true);
+      renderFrame(true);
       console.log(props.projectDuration);
     }
   }
@@ -215,7 +217,7 @@ export default function PlaybackController(props: {
 
   function download() {
     var blob = new Blob(recordedChunks, {
-      type: "video/webm"
+      type: "video/webm",
     });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
@@ -230,7 +232,14 @@ export default function PlaybackController(props: {
     <Router>
       <Switch>
         <Route path="/exportpage">
-          <ExportPage Render={Render} setCurrentTime={setCurrentTime} trackList={props.trackList} projectDuration={props.projectDuration} currentTime={currentTime} isRecordingRef={isRecordingRef}></ExportPage>
+          <ExportPage
+            Render={Render}
+            setCurrentTime={setCurrentTime}
+            trackList={props.trackList}
+            projectDuration={props.projectDuration}
+            currentTime={currentTime}
+            isRecordingRef={isRecordingRef}
+          ></ExportPage>
         </Route>
         <Route path="/about">
           <About></About>
