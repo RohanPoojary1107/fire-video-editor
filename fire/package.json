@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "csstype": "^3.0.6",
+    "csstype": "^3.0.7",
     "react": "^17.0.1",
     "react-beautiful-dnd": "^13.0.0",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
-    "twgl.js": "^4.18.0",
+    "twgl.js": "^4.19.1",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
@@ -38,12 +38,12 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.3",
-    "@testing-library/user-event": "^12.7.0",
+    "@testing-library/user-event": "^12.8.3",
     "@types/dom-mediacapture-record": "^1.0.7",
     "@types/react-beautiful-dnd": "^13.0.0",
-    "@types/react-dom": "^17.0.0",
+    "@types/react-dom": "^17.0.2",
     "@types/react-router-dom": "^5.1.7",
     "react-scripts": "4.0.1",
-    "typescript": "^4.1.5"
+    "typescript": "^4.2.3"
   }
 }

@@ -9,8 +9,6 @@ declare global {
   }
 }
 
-
-
 export default function ExportPage(props: any) {
   
   const [load, setLoad] = useState<number>(0);
@@ -32,7 +30,9 @@ export default function ExportPage(props: any) {
       return(
         <div className={styles.mediaList}>
         <ul className={styles.card}>
-          <li><img src={segment.media.thumbnail} className={styles.imageProperties}></img>Untitled<label className={styles.render}>Rendering Progress:</label><progress max="100" value={load} className={styles.progressBar}></progress><label className={styles.label}>{load}%</label></li>
+          <li><div style={{
+                            backgroundImage: `url(${segment.media.thumbnail})`
+                        }} className={styles.imageProperties}></div><h3>Untitled</h3><div className={styles.process}><label className={styles.render}>Rendering Progress</label><progress max="100" value={load} className={styles.progressBar}></progress><label className={styles.label}>{load}%</label></div></li>
         </ul>
         </div>
       );
@@ -45,23 +45,31 @@ export default function ExportPage(props: any) {
   
   return (
     <div className={styles.container}>
-      <div className={styles.vbar}>
-        <p>
-          <Link to="/">
-            <img className={styles.logo} src="/logo192.png"/>
-          </Link>
-          Fire
-        </p>
-        <p>Video Editor</p>
-      </div>
-      <div className={styles.downloadButton}>
-        <button>
+      <div className={styles.sidebar}>
+                <div className={styles.vbar}>
+                    <Link to="/">
+                        <img className={styles.logo} src="/logo192.png"/>
+                    </Link>
+                    <div>
+                        <h1>Fire</h1>
+                        <p>Video Editor</p>
+                    </div>
+                </div>
+                <Link to="/projects" className={styles.btn}>
+                    <span className="material-icons">layers</span> Current Projects
+                </Link>
+                <Link to="/export" className={styles.active}>
+                    <span className="material-icons">save_alt</span> Exported Files
+                </Link>
+            </div>
+        <button className={styles.downlaod}>
           <span className="material-icons" onClick={props.Render}>
-            download
+            save_alt
           </span>
         </button>
-      </div>
-      <AddProject/>
+        <div className={styles.main}>
+          <AddProject/>
+        </div>
     </div>
   );
 }

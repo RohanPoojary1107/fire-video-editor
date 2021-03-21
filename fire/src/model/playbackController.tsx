@@ -5,6 +5,8 @@ import { WebGLRenderer } from "./webgl";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import About from "../routes/about";
 import ExportPage from "../routes/exportPage";
+import Login from "../routes/login";
+import Projects from "../routes/projects";
 import { setSamplerParameters } from "twgl.js";
 
 export default function PlaybackController(props: {
@@ -231,7 +233,7 @@ export default function PlaybackController(props: {
   return (
     <Router>
       <Switch>
-        <Route path="/exportpage">
+        <Route path="/export">
           <ExportPage
             Render={Render}
             setCurrentTime={setCurrentTime}
@@ -243,6 +245,12 @@ export default function PlaybackController(props: {
         </Route>
         <Route path="/about">
           <About></About>
+        </Route>
+        <Route path="/login">
+          <Login></Login>
+        </Route>
+        <Route path="/projects">
+          <Projects></Projects>
         </Route>
         <Route path="/">
           <Editor
