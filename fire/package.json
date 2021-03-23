@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.21.1",
+    "cors": "^2.8.5",
     "csstype": "^3.0.7",
     "react": "^17.0.1",
     "react-beautiful-dnd": "^13.0.0",
