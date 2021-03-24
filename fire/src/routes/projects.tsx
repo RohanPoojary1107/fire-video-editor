@@ -1,14 +1,14 @@
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styles from "./projects.module.css";
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 
-export default function Projects() {
+export default function Projects(props: { projectUser: string }) {
   function addProject(event: any) {
     event.preventDefault();
-    console.log(event.target.elements.title.value);
     const instance = axios.create({ baseURL: "http://localhost:8000" });
     let data = {
+      projectUser: props.projectUser,
       title: event.target.elements.title.value,
       frameRate: +event.target.elements.frame.value,
       width: +event.target.elements.width.value,
@@ -17,7 +17,6 @@ export default function Projects() {
     instance.put("/addProject", data).then((res) => {});
   }
 
-  const history = useHistory();
   const [createForm, setCreateForm] = useState<boolean>(false);
 
   const addClick = () => setCreateForm(true);

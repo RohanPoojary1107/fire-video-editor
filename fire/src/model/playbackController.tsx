@@ -1,13 +1,12 @@
 import Editor from "../routes/editor";
 import { Media, Segment, SegmentID, Source } from "./types";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { WebGLRenderer } from "./webgl";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import About from "../routes/about";
 import ExportPage from "../routes/exportPage";
 import Login from "../routes/login";
 import Projects from "../routes/projects";
-import { setSamplerParameters } from "twgl.js";
 
 export default function PlaybackController(props: {
   projectUser: string;
@@ -19,17 +18,20 @@ export default function PlaybackController(props: {
   setTrackList: (segments: Segment[][]) => void;
   addVideo: (file: File[]) => void;
   deleteVideo: (media: Media) => void;
-  projectWidth: number;
-  projectHeight: number;
   renderer: WebGLRenderer;
-  projectFrameRate: number;
-  projectDuration: number;
   dragAndDrop: (media: Media) => void;
   setSelectedSegment: (selected: SegmentID | null) => void;
   selectedSegment: SegmentID | null;
   updateSegment: (id: SegmentID, segment: Segment) => void;
   splitVideo: (timestamp: number) => void;
   deleteSelectedSegment: () => void;
+  projectWidth: number;
+  projectHeight: number;
+  projectFramerate: number;
+  projectDuration: number;
+  projectId: string;
+  setProjectId: (id: string) => void;
+  setProjectDuration: (duration: number) => void;
 }) {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const isRecordingRef = useRef(false);
@@ -169,7 +171,7 @@ export default function PlaybackController(props: {
 
     (setTimeout(() => {
       renderFrame(true);
-    }, 1 / props.projectFrameRate) as unknown) as number;
+    }, 1 / props.projectFramerate) as unknown) as number;
   };
 
   const play = async () => {
@@ -192,10 +194,8 @@ export default function PlaybackController(props: {
 
     // Optional frames per second argument.
     if (canvas != null) {
-      let stream = canvas.captureStream(props.projectFrameRate);
+      let stream = canvas.captureStream(props.projectFramerate);
       recordedChunks = [];
-
-      console.log(stream);
       let options = { mimeType: "video/webm; codecs=vp9" };
       mediaRecorderRef.current = new MediaRecorder(stream, options);
       mediaRecorderRef.current.ondataavailable = handleDataAvailable;
@@ -249,7 +249,9 @@ export default function PlaybackController(props: {
           <About></About>
         </Route>
         <Route path="/projects">
-          <Projects></Projects>
+          <Projects 
+            projectUser = {props.projectUser}
+          />
         </Route>
         <Route path="/editor">
           <Editor
@@ -258,7 +260,6 @@ export default function PlaybackController(props: {
             pauseVideo={pause}
             isPlaying={isPlaying}
             currentTime={currentTime}
-            projectDuration={props.projectDuration}
             setCurrentTime={setCurrentTime}
           />
         </Route>
@@ -266,7 +267,6 @@ export default function PlaybackController(props: {
           <Login 
           projectUser = {props.projectUser}
           setProjectUser = {props.setProjectUser}/> 
-          
         </Route>
       </Switch>
     </Router>
