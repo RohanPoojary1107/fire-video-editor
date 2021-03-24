@@ -1,5 +1,5 @@
 import styles from "./timeline.module.css";
-import { Media, Segment, SegmentID } from "../../model/types";
+import { Segment, SegmentID } from "../../model/types";
 import { useState, MouseEvent, useRef, useEffect } from "react";
 import { lerp } from "../../utils/utils";
 import { Droppable } from 'react-beautiful-dnd';

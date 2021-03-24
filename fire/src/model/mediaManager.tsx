@@ -6,22 +6,29 @@ import { WebGLRenderer } from "./webgl";
 export default function MediaManager(props: {
     projectUser: string;
     setProjectUser: (user: string) => void;
+    projectHeight: number;
+    setProjectHeight: (height: number) => void;
+    projectWidth: number;
+    setProjectWidth: (width: number) => void;
+    projectFramerate: number;
+    setProjectFramerate: (framerate: number) => void;
+    projectName: string;
+    setProjectName: (name: string) => void;
+    projectId: string;
+    setProjectId: (id: string) => void;
+    projectDuration: number;
+    setProjectDuration: (duration: number) => void;
 }) {
     const [mediaList, setMediaList] = useState<Media[]>([]);
     const [trackList, setTrackList] = useState<Segment[][]>([[]]);
-    const [projectName, setProjectName] = useState<string>("");
-    const [projectWidth, setProjectWidth] = useState<number>(1920);
-    const [projectHeight, setProjectHeight] = useState<number>(1080);
-    const [projectFramerate, setProjectFrameRate] = useState<number>(30);
-    const [projectDuration, setProjectDuration] = useState<number>(0);
     const [selectedSegment, setSelectedSegment] = useState<SegmentID | null>(null);
     const [canvasRef, setCanvasRef] = useState<HTMLCanvasElement>(document.createElement("canvas"));
-    const [renderer, setRenderer] = useState<WebGLRenderer>(new WebGLRenderer(canvasRef, projectWidth, projectHeight));
+    const [renderer, setRenderer] = useState<WebGLRenderer>(new WebGLRenderer(canvasRef, props.projectWidth, props.projectHeight));
 
     useEffect(() => {
-        canvasRef.width = projectWidth;
-        canvasRef.height = projectHeight;
-    }, [canvasRef, projectHeight, projectWidth]);
+        canvasRef.width = props.projectWidth;
+        canvasRef.height = props.projectHeight;
+    }, [canvasRef, props.projectHeight, props.projectWidth]);
 
     useEffect(() => {
         let duration = 0;
@@ -30,7 +37,7 @@ export default function MediaManager(props: {
             duration = Math.max(duration, track[track.length - 1].start + track[track.length - 1].duration);
         }
 
-        setProjectDuration(duration);
+        props.setProjectDuration(duration);
     }, [trackList]);
 
     const thumbnailCanvas = document.createElement("canvas");
@@ -211,18 +218,12 @@ export default function MediaManager(props: {
             addVideo={addVideo}
             deleteVideo={deleteVideo}
             deleteSelectedSegment={deleteSelectedSegment}
-            projectWidth={projectWidth}
-            projectHeight={projectHeight}
             renderer={renderer}
-            projectDuration={projectDuration}
-            projectFrameRate={projectFramerate}
             dragAndDrop={dragAndDrop}
             selectedSegment={selectedSegment}
             setSelectedSegment={setSelectedSegment}
             updateSegment={updateSegment}
             splitVideo={split}
-            projectUser = {props.projectUser}
-            setProjectUser = {props.setProjectUser}
         />
     );
 }

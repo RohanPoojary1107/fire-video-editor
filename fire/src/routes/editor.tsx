@@ -23,7 +23,7 @@ export default function Editor(props: {
   projectWidth: number,
   projectHeight: number,
   renderer: WebGLRenderer,
-  projectFrameRate: number,
+  projectFramerate: number,
   projectDuration: number,
   isPlaying: boolean,
   currentTime: number,
@@ -34,6 +34,9 @@ export default function Editor(props: {
   updateSegment: (id: SegmentID, segment: Segment) => void,
   splitVideo: (timestamp: number) => void,
   deleteSelectedSegment: () => void,
+  projectId: string,
+  setProjectId: (id: string) => void
+  projectUser: string
 }) {
   const [scaleFactor, setScaleFactor] = useState<number>(0.1);
 
@@ -103,7 +106,12 @@ export default function Editor(props: {
           scaleFactor={scaleFactor}
           setTrackList={props.setTrackList}
         />
-        <Actions></Actions>
+        <Actions 
+        projectId={props.projectId}
+        projectUser={props.projectUser}
+        mediaList={props.mediaList}
+        trackList={props.trackList}
+        />
       </div>
     </DragDropContext>
   );
