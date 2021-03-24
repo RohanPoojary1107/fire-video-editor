@@ -10,6 +10,8 @@ import Projects from "../routes/projects";
 import { setSamplerParameters } from "twgl.js";
 
 export default function PlaybackController(props: {
+  projectUser: string;
+  setProjectUser: (user: string) => void;
   canvasRef: HTMLCanvasElement;
   mediaList: Media[];
   setMediaList: (mediaList: Media[]) => void;
@@ -246,13 +248,10 @@ export default function PlaybackController(props: {
         <Route path="/about">
           <About></About>
         </Route>
-        <Route path="/login">
-          <Login></Login>
-        </Route>
         <Route path="/projects">
           <Projects></Projects>
         </Route>
-        <Route path="/">
+        <Route path="/editor">
           <Editor
             {...props}
             playVideo={play}
@@ -262,6 +261,12 @@ export default function PlaybackController(props: {
             projectDuration={props.projectDuration}
             setCurrentTime={setCurrentTime}
           />
+        </Route>
+        <Route path="/">
+          <Login 
+          projectUser = {props.projectUser}
+          setProjectUser = {props.setProjectUser}/> 
+          
         </Route>
       </Switch>
     </Router>
