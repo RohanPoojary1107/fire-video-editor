@@ -2,7 +2,8 @@ import MediaManager from "./mediaManager";
 import { useEffect, useRef, useState } from "react";
 
 export default function ProjectManager() {
-  const [projectId, setProjectId] = useState<string[]>([]);
+  const [projectUser, setProjectUser] = useState<string>("");
+
 
   //   var recordedChunks;
 
@@ -29,5 +30,8 @@ export default function ProjectManager() {
   //     }
   //   }
 
-  return <MediaManager />;
+  return <MediaManager 
+  projectUser = {projectUser}
+  setProjectUser = {setProjectUser}
+  />;
 }

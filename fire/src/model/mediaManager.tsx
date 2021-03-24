@@ -3,7 +3,10 @@ import PlaybackController from "./playbackController";
 import { Media, Segment, SegmentID } from "./types";
 import { WebGLRenderer } from "./webgl";
 
-export default function MediaManager(props: {}) {
+export default function MediaManager(props: {
+    projectUser: string;
+    setProjectUser: (user: string) => void;
+}) {
     const [mediaList, setMediaList] = useState<Media[]>([]);
     const [trackList, setTrackList] = useState<Segment[][]>([[]]);
     const [projectName, setProjectName] = useState<string>("");
@@ -218,6 +221,8 @@ export default function MediaManager(props: {}) {
             setSelectedSegment={setSelectedSegment}
             updateSegment={updateSegment}
             splitVideo={split}
+            projectUser = {props.projectUser}
+            setProjectUser = {props.setProjectUser}
         />
     );
 }
