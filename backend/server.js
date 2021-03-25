@@ -3,6 +3,7 @@ var cors = require("cors");
 var app = express();
 var port = 8000;
 var db;
+var authToken = false;
 const CLIENT_ID = "956647101334-784vc8rakg2kbaeil4gug1ukefc9vehk.apps.googleusercontent.com";
 const uri =
     "mongodb+srv://dbUser:fire@2021@fire.fojp1.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
@@ -10,6 +11,8 @@ const uri =
 const { OAuth2Client } = require('google-auth-library');
 const loginClient = new OAuth2Client(CLIENT_ID);
 const MongoClient = require("mongodb").MongoClient;
+const ObjectID = require("mongodb").ObjectID;
+const { request } = require("express");
 const client = new MongoClient(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -39,6 +42,7 @@ app.post("/auth/login", async (req, res) => {
         idToken: token,
         audience: CLIENT_ID
     });
+    authToken = true;
     const { name, email, picture } = ticket.getPayload();
     res.status(200).json({ email: email });
 })
@@ -80,4 +84,28 @@ app.put("/saveProject", (req, res) => {
             res.status(500).json({error: "Unable to save project to cloud. Try again later!"})
         }
     });
+});
+
+app.delete("/deleteProject/:id", (req, res) => {
+    if(authToken == false) return;
+    const query = {
+        _id: new ObjectID(req.params.id)
+    }
+    db.collection("projects").deleteOne(query, (err, response)  => {
+        if (err){
+            res.status(400).json({ error: "Unable to delete project. Try again later!"})
+        }else {
+            const query1 = {
+                projectId: req.params.id
+            }
+            db.collection("projectFiles").deleteOne(query1, (err, response)  => {
+                if (err){
+                    res.status(400).json({ error: "Unable to delete project. Try again later!"})
+                }
+                else{res.status(200).json({ success: "Project has been successfully deleted." });}
+            });
+            
+        }
+    }); 
+    
 });
