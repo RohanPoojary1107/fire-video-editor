@@ -30,6 +30,12 @@ export default function Projects(props: { projectUser: string }) {
     };
     instance.put("/editProject", data).then((res) => {});
   }
+  function deleteProject() {
+    const instance = axios.create({ baseURL: "http://localhost:8000" });
+    instance
+      .delete("/deleteProject/605bd96d7a856959000f5040")
+      .then((res) => {});
+  }
 
   const [createForm, setCreateForm] = useState<boolean>(false);
   const [createFormEdit, setCreateFormEdit] = useState<boolean>(false);
@@ -121,6 +127,9 @@ export default function Projects(props: { projectUser: string }) {
           <h2>Project Name</h2>
           <button onClick={addClickEdit}>
             <span className="material-icons">mode</span>
+          </button>
+          <button onClick={deleteProject}>
+            <span className="material-icons">delete</span>
           </button>
         </div>
 
