@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { calculateProperties } from "../utils/utils";
 import PlaybackController from "./playbackController";
 import { Media, Segment, SegmentID } from "./types";
 import { WebGLRenderer } from "./webgl";
@@ -164,24 +165,59 @@ export default function MediaManager(props: {}) {
     }
 
     const split = (timestamp: number) => {
+        
         if (selectedSegment === null) return;
-
+        
         const segment = trackList[selectedSegment.track][selectedSegment.index];
-
+        
         if (segment.start > timestamp || segment.start + segment.duration < timestamp) return;
+
+        // Find index of current keyframe at timestamp
+        // There is always at least 1 keyframe in a segment
+
+        let segmentTimeCut = timestamp - segment.start;
+        let lenKeyframes = segment.keyframes.length;
+        let keyFrameIndex = 0;
+        for (let i = 1; i < lenKeyframes; i++) {
+            let checkKeyframe = segment.keyframes[i];
+            if (checkKeyframe.start > segmentTimeCut) {
+                break;
+            }
+            keyFrameIndex = i;
+        }
+
+        let interpKeyFrame = calculateProperties(segment, timestamp);
+  
+        // Remove remaining keyframes from split segment
+        let leftSegmentKeyFrames = segment.keyframes.slice(0, keyFrameIndex+1);
+        // Move remaining keyframes to new split segment
+        let rightSegmentKeyFrames = segment.keyframes.slice(keyFrameIndex+1,lenKeyframes);
+        
+        // Edit new keyframes to new offset
+        for (let i = 0; i < rightSegmentKeyFrames.length; i++) {
+            rightSegmentKeyFrames[i].start -= segmentTimeCut;
+        }
+
+        // Add interpolated keyframe at the end of the selected split segement
+        let newInterpKeyFrame = {
+            ...interpKeyFrame,
+            start: segmentTimeCut - 1/projectFramerate
+        };
+        leftSegmentKeyFrames.push(newInterpKeyFrame);
 
         setTrackList([
             ...trackList.slice(0, selectedSegment.track),
             [
                 ...trackList[selectedSegment.track].slice(0, selectedSegment.index),
-                { ...trackList[selectedSegment.track][selectedSegment.index], duration: timestamp - segment.start },
+                { ...trackList[selectedSegment.track][selectedSegment.index], duration: timestamp - segment.start,
+                    keyframes: leftSegmentKeyFrames },
                 {
                     media: segment.media,
                     start: timestamp,
                     duration: segment.start + segment.duration - timestamp,
-                    mediaStart: timestamp - segment.start,
+                    mediaStart: timestamp - segment.start + segment.mediaStart,
                     texture: segment.texture,
-                    keyframes: segment.keyframes
+                    keyframes: [interpKeyFrame].concat(rightSegmentKeyFrames)
                 },
                 ...trackList[selectedSegment.track].slice(selectedSegment.index + 1)
             ],
