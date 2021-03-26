@@ -18,9 +18,11 @@ const client = new MongoClient(uri, {
 });
 
 app.use(cors());
+app.use(express.json({limit: '50mb'}));
 app.use(
   express.urlencoded({
     extended: true,
+    limit: '50mb',
   })
 );
 app.use(express.json());
@@ -79,7 +81,7 @@ app.put("/addProject", (req, res) => {
         .status(400)
         .json({ error: "Unable to create project. Try again later!" });
     } else if (response.insertedCount === 1) {
-      res.status(200).json(response);
+      res.status(200).json(response.ops[0]);
     } else {
       res
         .status(500)
