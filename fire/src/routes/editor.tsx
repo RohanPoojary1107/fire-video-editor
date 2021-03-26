@@ -35,8 +35,9 @@ export default function Editor(props: {
   splitVideo: (timestamp: number) => void,
   deleteSelectedSegment: () => void,
   projectId: string,
-  setProjectId: (id: string) => void
-  projectUser: string
+  setProjectId: (id: string) => void,
+  projectUser: string,
+  setProjectUser: (user:string) => void,
 }) {
   const [scaleFactor, setScaleFactor] = useState<number>(0.1);
 
@@ -110,6 +111,7 @@ export default function Editor(props: {
           projectUser={props.projectUser}
           mediaList={props.mediaList}
           trackList={props.trackList}
+          setProjectUser={props.setProjectUser}
         />
       </div>
     </DragDropContext>

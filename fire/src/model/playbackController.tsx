@@ -78,7 +78,6 @@ export default function PlaybackController(props: {
     if (curTime >= projectDurationRef.current)
       curTime = projectDurationRef.current;
     _setCurrentTime(curTime);
-    console.log(curTime);
 
     for (const media of mediaListRef.current) {
       for (const source of media.sources) {
@@ -125,7 +124,6 @@ export default function PlaybackController(props: {
 
     if (needsSeek) {
       if (isRecordingRef.current) {
-        console.log("Recording Stopped");
         if (mediaRecorderRef.current != null) mediaRecorderRef.current.pause();
       }
       for (let i = 0; i < segments.length; i++) {
@@ -147,7 +145,6 @@ export default function PlaybackController(props: {
       lastPlaybackTimeRef.current = curTime;
       playbackStartTimeRef.current = performance.now();
       if (isRecordingRef.current) {
-        console.log("Recording Started Again");
         if (mediaRecorderRef.current != null) mediaRecorderRef.current.resume();
       }
     }
@@ -163,7 +160,6 @@ export default function PlaybackController(props: {
 
     if (curTime === projectDurationRef.current) {
       pause();
-      console.log("Video Ended");
       if (isRecordingRef.current) {
         if (mediaRecorderRef.current != null) mediaRecorderRef.current.stop();
         isRecordingRef.current = false;
@@ -203,21 +199,16 @@ export default function PlaybackController(props: {
       mediaRecorderRef.current.ondataavailable = handleDataAvailable;
       mediaRecorderRef.current.onstop = download;
       setCurrentTime(0);
-      console.log(currentTime);
       isRecordingRef.current = true;
       mediaRecorderRef.current.start();
-      console.log("Recording Started");
       setIsPlaying(true);
       renderFrame(true);
-      console.log(props.projectDuration);
     }
   }
 
   function handleDataAvailable(event: any) {
-    console.log("data-available");
     if (event.data.size > 0) {
       recordedChunks.push(event.data);
-      console.log(recordedChunks);
     }
   }
 

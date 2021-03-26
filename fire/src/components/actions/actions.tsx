@@ -4,16 +4,21 @@ import { Media, Segment } from "../../model/types";
 import axios from "axios";
 import { GoogleLogout } from "react-google-login";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 export default function Actions(props: {
     projectId: string;
     projectUser: string;
     mediaList: Media[];
     trackList: Segment[][];
+    setProjectUser: (user:string) => void;
 }) {
     const history = useHistory();
 
+    const [loadStatus, setLoadStatus] = useState<string>("down");
+
     const saveProject = () => {
+        setLoadStatus("loading");
         const instance = axios.create({ baseURL: "http://localhost:8000" });
         let data = {
             projectId: props.projectId,
@@ -21,17 +26,49 @@ export default function Actions(props: {
             mediaList: props.mediaList,
             trackList: props.trackList,
         };
-        instance.put("/saveProject", data).then((res) => {
+        instance.put("/saveProject", data, { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }}).then((res) => {
             if (res.status === 200) {
+                setLoadStatus("success");
                 console.log(res.data.success);
             } else {
+                setLoadStatus(res.data.error);
                 console.log(res.data.error);
             }
         });
     };
 
+    let color='rgb(51, 51, 51)';
+    let message='saving your project...';
+
+    if(loadStatus === "loading"){
+        color='rgb(51, 51, 51)';
+        message='saving your project...';
+    }
+    else if(loadStatus === "success"){
+        color='rgb(0, 153, 51)';
+        message='Project saved successfully!';
+    }
+    else{
+        color='rgb(204, 0, 0)';
+        message=loadStatus;
+    }
+
+
     return (
+
         <div className={styles.container}>
+
+        <div className={styles.popup}><div className={styles.popupContainer} style={{
+            display: loadStatus === "down" ? "none" : "block",
+            backgroundColor: `${color}`,
+        }}>
+            <button className={styles.popupClose} onClick={() => {setLoadStatus("down");}}>
+            <span className="material-icons">close</span>
+            </button>
+            {message}
+            </div>
+            </div>
+
             <Link to="/projects">
             <button className={styles.button}>
                 <img className={styles.logo} src="/logo192.png" />
@@ -50,7 +87,7 @@ export default function Actions(props: {
                     </button>
                 )}
                 buttonText="Logout"
-                onLogoutSuccess={() => history.push("/login")}
+                onLogoutSuccess={() => {props.setProjectUser(""); history.push("/")}}
             ></GoogleLogout>
             <Link to="/export">
             <button className={styles.button} title="Export">

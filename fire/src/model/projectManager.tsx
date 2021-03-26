@@ -38,7 +38,6 @@ export default function ProjectManager() {
     const instance = axios.create({ baseURL: "http://localhost:8000" });
     instance.get("/getProjects", { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` } }).then((res) => {
       setProjects(res.data);
-      console.log(res.data);
     });
   }, [projectUser]);
 

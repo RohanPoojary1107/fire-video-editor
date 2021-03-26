@@ -14,7 +14,7 @@ export default function Projects(props: { projectUser: string, projects: Project
 
     const instance = axios.create({ baseURL: "http://localhost:8000" });
 
-    if (modifyingProject._id != "") {
+    if (modifyingProject._id !== "") {
       instance.put("/editProject", modifyingProject, { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` } }).then((res) => { setModifyingProject(null); });
       let newProjects = [];
       for (const proj of props.projects) {
@@ -26,8 +26,8 @@ export default function Projects(props: { projectUser: string, projects: Project
       }
       props.setProjects(newProjects);
     } else {
-      instance.put("/addProject", modifyingProject, { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` } }).then((res) => { setModifyingProject(null); });
-      props.setProjects([...props.projects, modifyingProject]);
+      instance.put("/addProject", modifyingProject, { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` } }).then((res) => {
+        props.setProjects([...props.projects, res.data]); setModifyingProject(null); });
     }
   }
 
@@ -45,33 +45,35 @@ export default function Projects(props: { projectUser: string, projects: Project
   const NewProject = () => {
     if (!modifyingProject) return;
 
-    return (<div id="project">
-      <form onSubmit={modifyProject}>
-        <label>{modifyingProject._id === "" ? "Create" : "Modify"} Project </label>
-        <button onClick={() => { setModifyingProject(null) }}>
+    return (<div className={styles.popup}><div id="project" className={styles.popupContainer}>
+      <h2>{modifyingProject._id === "" ? "Create" : "Modify"} Project </h2>
+        <button className={styles.popupClose} onClick={() => { setModifyingProject(null) }}>
           <span className="material-icons">close</span>
         </button>
-        <br />
+      <form onSubmit={modifyProject}>
+        <div>
         <label>Name: </label>
         <input type="text" id="title" name="title" required value={modifyingProject.name}
           onChange={(event) => { setModifyingProject({ ...modifyingProject, name: event.target.value }) }}></input>
-        <br />
+        </div><div>
         <label>Framerate: </label>
         <input type="number" id="frame" name="frame" min="1" required value={modifyingProject.framerate}
           onChange={(event) => { setModifyingProject({ ...modifyingProject, framerate: +event.target.value }) }}></input>
-        <br />
+        </div><div>
         <label>Width: </label>
         <input type="number" id="width" name="width" min="1" required value={modifyingProject.width}
           onChange={(event) => { setModifyingProject({ ...modifyingProject, width: +event.target.value }) }}></input>
-        <br />
+        </div><div>
         <label>Height: </label>
         <input type="number" id="height" name="height" min="1" required value={modifyingProject.height}
           onChange={(event) => { setModifyingProject({ ...modifyingProject, height: +event.target.value }) }}></input>
-        <br />
+        </div><div>
         <button type="submit">
           <span className="material-icons">send</span>
         </button>
+        </div>
       </form>
+    </div>
     </div>
     )
   };
@@ -105,6 +107,7 @@ export default function Projects(props: { projectUser: string, projects: Project
             }}
             onClick={() => { history.push("/editor"); }}
           >
+            <div className={styles.boxShadow}>
             <h2>{project.name}</h2>
             <button onClick={(evt) => { evt.stopPropagation(); setModifyingProject({ ...project }) }}>
               <span className="material-icons">mode</span>
@@ -112,6 +115,7 @@ export default function Projects(props: { projectUser: string, projects: Project
             <button onClick={(evt) => { evt.stopPropagation(); deleteProject(project._id) }}>
               <span className="material-icons">delete</span>
             </button>
+          </div>
           </div>
         })}
         {modifyingProject != null ? NewProject() : null}
