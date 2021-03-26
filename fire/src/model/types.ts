@@ -35,3 +35,12 @@ export interface SegmentID {
     track: number;
 }
 
+
+export interface Project {
+    _id: string;
+    name: string;
+    width: number;
+    height: number;
+    framerate: number;
+    duration: number;
+}

@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { calculateProperties } from "../utils/utils";
 import PlaybackController from "./playbackController";
-import { Media, Segment, SegmentID } from "./types";
+import { Media, Project, Segment, SegmentID } from "./types";
 import { WebGLRenderer } from "./webgl";
 
 export default function MediaManager(props: {
+    setProjects: (projects: Project[]) => void;
+    projects: Project[];
     projectUser: string;
     setProjectUser: (user: string) => void;
     projectHeight: number;
@@ -175,11 +177,11 @@ export default function MediaManager(props: {
     }
 
     const split = (timestamp: number) => {
-        
+
         if (selectedSegment === null) return;
-        
+
         const segment = trackList[selectedSegment.track][selectedSegment.index];
-        
+
         if (segment.start > timestamp || segment.start + segment.duration < timestamp) return;
 
         // Find index of current keyframe at timestamp
@@ -197,12 +199,12 @@ export default function MediaManager(props: {
         }
 
         let interpKeyFrame = calculateProperties(segment, timestamp);
-  
+
         // Remove remaining keyframes from split segment
-        let leftSegmentKeyFrames = segment.keyframes.slice(0, keyFrameIndex+1);
+        let leftSegmentKeyFrames = segment.keyframes.slice(0, keyFrameIndex + 1);
         // Move remaining keyframes to new split segment
-        let rightSegmentKeyFrames = segment.keyframes.slice(keyFrameIndex+1,lenKeyframes);
-        
+        let rightSegmentKeyFrames = segment.keyframes.slice(keyFrameIndex + 1, lenKeyframes);
+
         // Edit new keyframes to new offset
         for (let i = 0; i < rightSegmentKeyFrames.length; i++) {
             rightSegmentKeyFrames[i].start -= segmentTimeCut;
@@ -211,7 +213,7 @@ export default function MediaManager(props: {
         // Add interpolated keyframe at the end of the selected split segement
         let newInterpKeyFrame = {
             ...interpKeyFrame,
-            start: segmentTimeCut - 1/projectFramerate
+            start: segmentTimeCut - 1 / props.projectFramerate
         };
         leftSegmentKeyFrames.push(newInterpKeyFrame);
 
@@ -219,8 +221,10 @@ export default function MediaManager(props: {
             ...trackList.slice(0, selectedSegment.track),
             [
                 ...trackList[selectedSegment.track].slice(0, selectedSegment.index),
-                { ...trackList[selectedSegment.track][selectedSegment.index], duration: timestamp - segment.start,
-                    keyframes: leftSegmentKeyFrames },
+                {
+                    ...trackList[selectedSegment.track][selectedSegment.index], duration: timestamp - segment.start,
+                    keyframes: leftSegmentKeyFrames
+                },
                 {
                     media: segment.media,
                     start: timestamp,
