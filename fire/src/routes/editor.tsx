@@ -41,29 +41,28 @@ export default function Editor(props: {
   const [scaleFactor, setScaleFactor] = useState<number>(0.1);
 
   const handleOnDragEnd = (result: any) => {
-
     if (!result.destination) return;
 
-    const {source, destination} = result;
+    const { source, destination } = result;
 
     // for re-ordering files in the media pool
     if (source.droppableId === destination.droppableId) {
-        const items = props.mediaList.slice();
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
-        props.setMediaList(items);
+      const items = props.mediaList.slice();
+      const [reorderedItem] = items.splice(result.source.index, 1);
+      items.splice(result.destination.index, 0, reorderedItem);
+      props.setMediaList(items);
     }
     else {
-        props.dragAndDrop(props.mediaList[result.source.index]); 
-        const items = props.mediaList.slice();
-        props.setMediaList(items);
+      props.dragAndDrop(props.mediaList[result.source.index]);
+      const items = props.mediaList.slice();
+      props.setMediaList(items);
     }
-}
+  }
 
   return (
     <DragDropContext onDragEnd={handleOnDragEnd}>
       <div className={styles.container}>
-        <MediaPool 
+        <MediaPool
           mediaList={props.mediaList}
           setMediaList={props.setMediaList}
           addVideo={props.addVideo}
@@ -106,11 +105,11 @@ export default function Editor(props: {
           scaleFactor={scaleFactor}
           setTrackList={props.setTrackList}
         />
-        <Actions 
-        projectId={props.projectId}
-        projectUser={props.projectUser}
-        mediaList={props.mediaList}
-        trackList={props.trackList}
+        <Actions
+          projectId={props.projectId}
+          projectUser={props.projectUser}
+          mediaList={props.mediaList}
+          trackList={props.trackList}
         />
       </div>
     </DragDropContext>

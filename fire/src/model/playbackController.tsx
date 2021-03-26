@@ -1,14 +1,16 @@
 import Editor from "../routes/editor";
-import { Media, Segment, SegmentID, Source } from "./types";
-import { useEffect, useRef, useState } from "react";
+import { Media, Project, Segment, SegmentID, Source } from "./types";
+import React, { useEffect, useRef, useState } from "react";
 import { WebGLRenderer } from "./webgl";
-import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import { Route, BrowserRouter as Router, Switch, Redirect } from "react-router-dom";
 import About from "../routes/about";
 import ExportPage from "../routes/exportPage";
 import Login from "../routes/login";
 import Projects from "../routes/projects";
 
 export default function PlaybackController(props: {
+  setProjects: (projects: Project[]) => void;
+  projects: Project[];
   projectUser: string;
   setProjectUser: (user: string) => void;
   canvasRef: HTMLCanvasElement;
@@ -102,7 +104,7 @@ export default function PlaybackController(props: {
           let mediaTime = curTime - segment.start + segment.mediaStart;
           if (
             Math.abs(source.element.currentTime * 1000 - mediaTime) >
-              SKIP_THREASHOLD ||
+            SKIP_THREASHOLD ||
             source.element.paused
           )
             needsSeek = true;
@@ -141,7 +143,7 @@ export default function PlaybackController(props: {
       }
       try {
         await Promise.allSettled(elements.map((element) => element.play()));
-      } catch (error) {}
+      } catch (error) { }
       lastPlaybackTimeRef.current = curTime;
       playbackStartTimeRef.current = performance.now();
       if (isRecordingRef.current) {
@@ -249,24 +251,27 @@ export default function PlaybackController(props: {
           <About></About>
         </Route>
         <Route path="/projects">
-          <Projects 
-            projectUser = {props.projectUser}
-          />
+          {props.projectUser != "" ? <Projects
+            projectUser={props.projectUser}
+            projects={props.projects}
+            setProjects={props.setProjects}
+          /> : <Redirect to='/' />}
         </Route>
         <Route path="/editor">
-          <Editor
+          {props.projectUser != "" ? <Editor
             {...props}
             playVideo={play}
             pauseVideo={pause}
             isPlaying={isPlaying}
             currentTime={currentTime}
             setCurrentTime={setCurrentTime}
-          />
+          /> : <Redirect to='/' />}
         </Route>
         <Route path="/">
-          <Login 
-          projectUser = {props.projectUser}
-          setProjectUser = {props.setProjectUser}/> 
+          {props.projectUser === "" ? <Login
+            projectUser={props.projectUser}
+            setProjectUser={props.setProjectUser} />
+            : <Redirect to='/projects' />}
         </Route>
       </Switch>
     </Router>
