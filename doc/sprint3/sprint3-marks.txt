@@ -49,7 +49,7 @@ User Stories (Tracked in Jira) (Max 10 marks) (8/10)
  [1 mark=two or more stories in Jira Backlog are not point estimated or the point value is not recorded in Jira]
  [0 marks=the majority of stories in Jira Backlog are not point estimated or the point value is not recorded in Jira]
 
-0/2
+2/2
 
 -Prioritized	
  [2 marks=all stories in Jira Backlog are prioritized in the order which matches the priority of their associated milestones]
@@ -176,6 +176,6 @@ System Design - (PDF or MD file or another suitable format) (Max 10 marks) (10/1
 
 4/4
 
-Total: 76/78
+Total: 78/78
 
   
