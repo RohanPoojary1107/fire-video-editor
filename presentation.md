@@ -10,13 +10,13 @@ Your mark: 1
 Features Demo: up to 3 marks for each major feature presented 
 - Feature 1 presentation: 0-3 marks [3=Excellent, 2=Adequate, 1=Inadequate, 0=No feature]
 
-Your mark:
+Your mark: 3
 - Feature 2 presentation: 0-3 marks [3=Excellent, 2=Adequate, 1=Inadequate, 0=No feature]
 
- 	Your mark:
+ 	Your mark: 3
 - Feature 3 presentation: 0-3 marks [3=Excellent, 2=Adequate, 1=Inadequate, 0=No feature]
 
-Your mark: 9 
+Your mark: 3
  		
 ### b. Process [10 marks]:
 Team Introduction: 0-4 marks 
